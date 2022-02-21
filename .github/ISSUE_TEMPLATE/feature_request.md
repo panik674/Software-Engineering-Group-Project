@@ -1,20 +1,17 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+name: User Story
+about: Enter a user story for the project.
+title: BUG
+labels: 'User Story'
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**User Story**
+Enter user story here.
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
-
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Describe the solution / implmentation you'd like**
+A clear and concise description of what you want to happen or did.
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
