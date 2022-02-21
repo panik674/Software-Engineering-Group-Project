@@ -1,7 +1,7 @@
 ---
 name: User Story
 about: Enter a user story for the project.
-title: BUG
+title: ''
 labels: 'User Story'
 assignees: ''
 
