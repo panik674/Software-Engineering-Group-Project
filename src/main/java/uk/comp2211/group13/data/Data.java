@@ -1,5 +1,7 @@
 package uk.comp2211.group13.data;
 
+import uk.comp2211.group13.enums.Path;
+
 import java.util.HashMap;
 
 /**
