@@ -1,4 +1,4 @@
-package uk.comp2211.group13.data;
+package uk.comp2211.group13.enums;
 
 /**
  * This stores the metrics which we can request from the Metrics class
