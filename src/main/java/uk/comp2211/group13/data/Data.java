@@ -27,28 +27,29 @@ public class Data {
   /**
    * These store the logs we ingest
    */
-  private ArrayList<Impression> impressionLogs ;
+  private ArrayList<Impression> impressionLogs;
   private ArrayList<Click> clickLogs;
-  private ArrayList<Server> serverLogs ;
+  private ArrayList<Server> serverLogs;
+
+  /**
+   * This stores the state of the loaded logs
+   */
+  private Boolean logsLoaded = false;
 
   /**
    * This is used to ingest data into the data object from the various logs.
    *
    * @param paths this is a dictionary with the key as type of log and String as the path to the file.
+   * @return boolean value for ingest success
    */
-  public void ingest(HashMap<Path, String> paths) { // TODO: May be worth thinking about better validation or having 3 parameters 1 for each log
-    for (Map.Entry<Path, String> path : paths.entrySet()) {  // For each path
-      try {
+  public boolean ingest(HashMap<Path, String> paths) { // TODO: May be worth thinking about better validation or having 3 parameters 1 for each log
+    resetLogs();
+
+    try {
+      for (Map.Entry<Path, String> path : paths.entrySet()) {
         // Validation
         validatePath(path.getValue());  // Validate file exists
         validateLogFormat(path.getKey(), path.getValue()); // Validate file contains valid data
-
-        // Clean slate log on each update to avoid conflicting or repeated data
-        switch (path.getKey()) {
-          case Impression -> impressionLogs = new ArrayList<>();
-          case Click -> clickLogs = new ArrayList<>();
-          case Server -> serverLogs = new ArrayList<>();
-        }
 
         // Setup file reader
         Scanner reader = new Scanner(new File(path.getValue()));
@@ -90,10 +91,16 @@ public class Data {
         }
 
         reader.close();
-      } catch (Exception e){
-        // TODO: invalid error catching
       }
+    } catch (Exception e) {
+      logger.error(String.format("Log ingest failed Reason: %s", e.getMessage()));
+      resetLogs();
+
+      return false;
     }
+
+    logsLoaded = true;
+    return true;
   }
 
   /**
@@ -101,8 +108,8 @@ public class Data {
    *
    * @param path path to file
    */
-  private void validatePath(String path) {
-
+  private void validatePath(String path) throws Exception {
+    throw new Exception("Invalid Log Path");
   }
 
 
@@ -112,8 +119,19 @@ public class Data {
    * @param type type of log
    * @param file path to file
    */
-  private void validateLogFormat(Path type, String file) {
+  private void validateLogFormat(Path type, String file) throws Exception {
+    throw new Exception("Invalid Log Format");
+  }
 
+  /**
+   * This is used to clear the stored logs to add new data or to remove inconsistencies
+   */
+  private void resetLogs() {
+    impressionLogs = new ArrayList<>();
+    clickLogs = new ArrayList<>();
+    serverLogs = new ArrayList<>();
+
+    logsLoaded = false;
   }
 
   /**
@@ -122,6 +140,7 @@ public class Data {
    * @return returns requested data.
    */
   public String request() { // TODO: Correct data format as return type
+    // TODO: Create super log
     return "Data";
   }
 
