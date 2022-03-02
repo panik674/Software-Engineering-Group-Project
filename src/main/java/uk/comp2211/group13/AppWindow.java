@@ -11,6 +11,19 @@ import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.scenes.BaseScene;
 
+// The code here has been taken from our last year Programming II Coursework
+/**
+ * The App Pane is a special pane which will scale anything inside it to the screen and maintain the aspect ratio.
+ *
+ * Drawing will be scaled appropriately.
+ *
+ * This takes the worry about the layout out and will allow the app to scale to any resolution easily.
+ *
+ * It uses the width and height given which should match the main window size. This will be the base drawing resolution,
+ * but will be scaled up or down as the window is resized.
+ *
+ */
+
 public class AppWindow {
 
   private static final Logger logger = LogManager.getLogger(AppWindow.class);
