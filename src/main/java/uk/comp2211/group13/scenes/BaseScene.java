@@ -3,7 +3,7 @@ package uk.comp2211.group13.scenes;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import uk.comp2211.group13.AppWindow;
+import uk.comp2211.group13.ui.AppWindow;
 
 public abstract class BaseScene {
   protected final AppWindow appWindow;
