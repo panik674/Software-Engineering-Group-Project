@@ -10,6 +10,15 @@ import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.scenes.BaseScene;
+import uk.comp2211.group13.scenes.WelcomeScene;
+
+// The code here has been taken from our last year Programming II Coursework
+/**
+ * The AppWindow is the single window for the app where everything takes place. To move between screens in the game,
+ * we simply change the scene.
+ *
+ * The AppWindow has methods to launch each of the different parts of the app by switching scenes.
+ */
 
 public class AppWindow {
 
@@ -70,14 +79,15 @@ public class AppWindow {
 
     logger.info("Initialised AppWindow loading start screen");
 
-    // Go to start screen
+    // Go to welcome screen
+    welcomeScreen();
   }
 
   /**
    * Display start screen
    */
-  public void startScreen() {
-    //loadScene(new Scene()); TODO: Create MenuScene
+  public void welcomeScreen() {
+    loadScene(new WelcomeScene(this));
   }
 
   /**
@@ -109,12 +119,28 @@ public class AppWindow {
   }
 
   /**
+   * Exit the programme
+   */
+  public void exit() {
+    App.getInstance().shutdown();
+  }
+
+  /**
    * Get the current scene being displayed.
    *
    * @return scene
    */
   public Scene getScene() {
     return scene;
+  }
+
+  /**
+   * Get the app stage.
+   *
+   * @return stage
+   */
+  public Stage getStage() {
+    return stage;
   }
 
   /**

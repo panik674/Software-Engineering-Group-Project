@@ -30,7 +30,8 @@ public class AppPane extends StackPane {
     private final boolean autoScale = true;
 
     /**
-     * Create a new scalable GamePane with the given drawing width and height.
+     * Create a new scalable AppPane with the given drawing width and height.
+     *
      * @param width width
      * @param height height
      */
