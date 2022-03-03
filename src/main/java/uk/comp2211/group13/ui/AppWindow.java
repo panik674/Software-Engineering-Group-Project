@@ -136,6 +136,15 @@ public class AppWindow {
   }
 
   /**
+   * Get the app stage.
+   *
+   * @return stage
+   */
+  public Stage getStage() {
+    return stage;
+  }
+
+  /**
    * Get the width of the AppWindow.
    *
    * @return width

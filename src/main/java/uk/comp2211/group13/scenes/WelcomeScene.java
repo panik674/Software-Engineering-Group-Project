@@ -11,10 +11,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
+
+import java.io.File;
 
 public class WelcomeScene extends BaseScene {
 
@@ -71,6 +74,7 @@ public class WelcomeScene extends BaseScene {
         Button loadButton = new Button("Load Data");
         vbox.getChildren().add(loadButton);
         loadButton.setOnMouseClicked(this::fileLoader);
+
         HBox hbox  = new HBox();
         vbox.getChildren().add(hbox);
         hbox.setAlignment(Pos.CENTER);
@@ -79,6 +83,7 @@ public class WelcomeScene extends BaseScene {
 
         radioButton = new RadioButton();
         hbox.getChildren().add(radioButton);
+
         Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
         hbox.getChildren().add(termsText);
     }
@@ -91,9 +96,24 @@ public class WelcomeScene extends BaseScene {
         });
     }
 
+    // Code was inspired by: https://www.geeksforgeeks.org/javafx-filechooser-class/
     public void fileLoader(MouseEvent event) {
-        if (radioButton.isSelected()) {
-            System.out.println("Test");
+        try {
+            if (radioButton.isSelected()) {
+                // create a File chooser
+                FileChooser fil_chooser = new FileChooser();
+                // get the file selected
+                File file = fil_chooser.showOpenDialog(appWindow.getStage());
+
+                if (file != null) {
+
+                    System.out.println(file.getAbsolutePath()
+                            + "  selected");
+                }
+            }
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
         }
     }
 }
