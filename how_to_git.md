@@ -34,3 +34,4 @@ Basically you want to keep this short and easily readable.
 **For the love of god don't**
 - If you get odd error messages and unsure, ask don't try and force something through.
 - Don't use **git push --force** unless you are unequivocally 100% certain about what that command will do.
+- Be weary of git rebase or reset, make sure you know what the command will do before running
