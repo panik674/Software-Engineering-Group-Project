@@ -66,7 +66,7 @@ public class AppWindow {
 
     // Create Data and Metric objects
     this.data = new Data();
-    this.metrics = new Metrics();
+    this.metrics = new Metrics(this.data);
 
     logger.info("Initialised AppWindow loading start screen");
 
