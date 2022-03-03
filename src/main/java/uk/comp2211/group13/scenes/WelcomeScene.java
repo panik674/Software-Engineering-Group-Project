@@ -14,14 +14,15 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
+import uk.comp2211.group13.ui.AppPane;
 
 import java.io.File;
 
 public class WelcomeScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
+
     private StackPane welcomePane;
     private RadioButton radioButton;
 

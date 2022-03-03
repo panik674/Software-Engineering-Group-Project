@@ -1,12 +1,9 @@
 package uk.comp2211.group13.scenes;
 
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
+import uk.comp2211.group13.ui.AppPane;
 
 public abstract class BaseScene {
   protected final AppWindow appWindow;

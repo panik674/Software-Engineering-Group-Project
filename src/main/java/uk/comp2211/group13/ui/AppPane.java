@@ -7,7 +7,7 @@ import javafx.scene.transform.Translate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// The code here has been taken from our last year Programming II Coursework
+// The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
 /**
  * The App Pane is a special pane which will scale anything inside it to the screen and maintain the aspect ratio.
  *
@@ -69,11 +69,7 @@ public class AppPane extends StackPane {
         var scaleFactorWidth = getWidth() / width;
 
         //Work out whether to scale by width or height
-        if (scaleFactorHeight > scaleFactorWidth) {
-            setScalar(scaleFactorWidth);
-        } else {
-            setScalar(scaleFactorHeight);
-        }
+        setScalar(Math.min(scaleFactorHeight, scaleFactorWidth));
 
         //Set up the scale
         Scale scale = new Scale(scalar,scalar);

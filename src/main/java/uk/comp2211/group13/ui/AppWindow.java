@@ -8,134 +8,175 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.App;
-import uk.comp2211.group13.scenes.*;
+import uk.comp2211.group13.data.Data;
+import uk.comp2211.group13.data.Metrics;
+import uk.comp2211.group13.scenes.BaseScene;
+import uk.comp2211.group13.scenes.WelcomeScene;
 
-// The code here has been taken from our last year Programming II Coursework
+// The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
 /**
- * The AppWindow is the single window for the app where everything takes place. To move between screens in the game,
+ * The AppWindow is the single window for the app where everything takes place. To move between screens in the program,
  * we simply change the scene.
  *
  * The AppWindow has methods to launch each of the different parts of the app by switching scenes.
  */
+
 public class AppWindow {
-    private static final Logger logger = LogManager.getLogger(AppWindow.class);
 
-    /**
-     * Window width
-     */
-    private final int width;
+  private static final Logger logger = LogManager.getLogger(AppWindow.class);
 
-    /**
-     * Window height
-     */
-    private final int height;
+  /**
+   * Stores the width and height
+   */
+  private final int width;
+  private final int height;
 
-    /**
-     * The stage
-     */
-    private final Stage stage;
+  /**
+   * Stores stage.
+   */
+  private final Stage stage;
 
-    /**
-     * The BaseScene Object
-     */
-    private BaseScene currentScene;
+  /**
+   * Stores the currently displayed scene class.
+   */
+  private BaseScene currentScene;
 
-    /**
-     * The scene
-     */
-    private Scene scene;
+  /**
+   * Stores the scene created by the currently displayed scene class.
+   */
+  private Scene scene;
 
-    /**
-     * Create a new GameWindow attached to the given stage with the specified width and height
-     * @param stage stage
-     * @param width width
-     * @param height height
-     */
-    public AppWindow(Stage stage, int width, int height) {
-        this.width = width;
-        this.height = height;
+  /**
+   * Stores the data object used to ingest data and reply to data requests
+   */
+  private final Data data;
 
-        this.stage = stage;
+  /**
+   * Stores the metrics object used to calculate metrics and reply to request.
+   */
+  private final Metrics metrics;
 
-        //Setup window
-        setupStage();
+  /**
+   * Creates a new AppWindow using the given stage using the specified width and height.
+   *
+   * @param stage stage
+   * @param width window width
+   * @param height window height
+   */
+  public AppWindow(Stage stage, int width, int height) {
+    this.stage = stage;
+    this.width = width;
+    this.height = height;
 
-        //Setup default scene
-        setupDefaultScene();
-    }
+    // Setup Stage
+    setupStage();
 
-    /**
-     * Exit the programme
-     */
-    public void exit() {
-        App.getInstance().shutdown();
-    }
+    // Setup default scene
+    setupDefaultScene();
 
-    /**
-     * Setup the default settings for the stage itself (the window), such as the title and minimum width and height.
-     */
-    public void setupStage() {
-        stage.setTitle("our witty app name");
-        stage.setMinWidth(width);
-        stage.setMinHeight(height + 20);
-        stage.setOnCloseRequest(ev -> exit());
-    }
+    // Create Data and Metric objects
+    this.data = new Data();
+    this.metrics = new Metrics(this.data);
 
-    /**
-     * Load a given scene which extends BaseScene and switch over.
-     * @param newScene new scene to load
-     */
-    public void loadScene(BaseScene newScene) {
-        //Cleanup remains of the previous scene
-        cleanup();
+    logger.info("Initialised AppWindow loading start screen");
 
-        //Create the new scene and set it up
-        newScene.build();
-        currentScene = newScene;
-        scene = newScene.setScene();
-        stage.setScene(scene);
+    // Go to welcome screen
+    welcomeScreen();
+  }
 
-        //Initialise the scene when ready
-        Platform.runLater(() -> currentScene.initialise());
-    }
+  /**
+   * Display start screen
+   */
+  public void welcomeScreen() {
+    loadScene(new WelcomeScene(this));
+  }
 
-    /**
-     * Setup the default scene (an empty black scene) when no scene is loaded
-     */
-    public void setupDefaultScene() {
-        this.scene = new Scene(new Pane(),width,height, Color.BLACK);
-        stage.setScene(this.scene);
-    }
+  /**
+   * This is used to set the default settings for the stage. (ie, title and dimensions)
+   */
+  private void setupStage() {
+    stage.setTitle("Think of witty name");  // TODO: Think of witty name
+    stage.setMinWidth(width);
+    stage.setMinHeight(height);
+    stage.setOnCloseRequest(ev -> App.getInstance().shutdown());
+  }
 
-    /**
-     * When switching scenes, perform any cleanup needed, such as removing previous listeners
-     */
-    public void cleanup() {
-        logger.info("Clearing up previous scene");
-    }
+  /**
+   * Used to set up the default scene (empty black scene)
+   */
+  public void setupDefaultScene() {
+    this.scene = new Scene(new Pane(), width, height, Color.BLACK);
+    stage.setScene(this.scene);
+  }
 
-    /**
-     * Get the current scene being displayed
-     * @return scene
-     */
-    public Scene getScene() {
-        return scene;
-    }
+  public void loadScene(BaseScene newScene) {
+    newScene.build();
+    currentScene = newScene;
+    scene = newScene.setScene();
+    stage.setScene(scene);
 
-    /**
-     * Get the width of the Game Window
-     * @return width
-     */
-    public int getWidth() {
-        return this.width;
-    }
+    // Initialise the scene when ready
+    Platform.runLater(() -> currentScene.initialise());
+  }
 
-    /**
-     * Get the height of the Game Window
-     * @return height
-     */
-    public int getHeight() {
-        return this.height;
-    }
+  /**
+   * Exit the programme
+   */
+  public void exit() {
+    App.getInstance().shutdown();
+  }
 
+  /**
+   * Get the current scene being displayed.
+   *
+   * @return scene
+   */
+  public Scene getScene() {
+    return scene;
+  }
+
+  /**
+   * Get the app stage.
+   *
+   * @return stage
+   */
+  public Stage getStage() {
+    return stage;
+  }
+
+  /**
+   * Get the width of the AppWindow.
+   *
+   * @return width
+   */
+  public int getWidth() {
+    return this.width;
+  }
+
+  /**
+   * Get the height of the AppWindow.
+   *
+   * @return height
+   */
+  public int getHeight() {
+    return this.height;
+  }
+
+  /**
+   * Get the data.
+   *
+   * @return data
+   */
+  public Data getData() {
+    return data;
+  }
+
+  /**
+   * Get the metrics.
+   *
+   * @return metrics
+   */
+  public Metrics getMetrics() {
+    return metrics;
+  }
 }

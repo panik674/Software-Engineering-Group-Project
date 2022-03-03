@@ -4,11 +4,14 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.ui.AppWindow;
 
 /**
  * JavaFX Application Class
  */
 public class App extends Application {
+
+  private static final Logger logger = LogManager.getLogger(App.class);
 
   /**
    * Base resolution width and height
@@ -16,8 +19,14 @@ public class App extends Application {
   private final int width = 800;
   private final int height = 600;
 
+  /**
+   * This stores the instance of the app, so we can return it with getInstance()
+   */
   private static App instance;
-  private static final Logger logger = LogManager.getLogger(App.class);
+
+  /**
+   * This stores the currently displayed stage
+   */
   private Stage stage;
 
   public static void main( String[] args )
@@ -40,7 +49,7 @@ public class App extends Application {
     logger.info("Creating AppWindow");
     var appWindow = new AppWindow(stage, width, height);
 
-    stage.show();
+    this.stage.show();
   }
 
   /**
