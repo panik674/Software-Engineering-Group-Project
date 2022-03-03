@@ -8,6 +8,7 @@ import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,39 +21,41 @@ public class Data {
 
   private static final Logger logger = LogManager.getLogger(Data.class);
 
+
   /**
    * These store the logs we ingest
    */
-  private Logs logs = new Logs();
+  private  ArrayList<Impression> impressionLogs;
+  private  ArrayList<Click> clickLogs;
+  private  ArrayList<Server> serverLogs;
+
+    /**
+     * These store the logs we ingest
+     */
+    private  Logs logs = new Logs();
+
+
+    /**
+   * This stores the state of the loaded logs
+   */
+  private  Boolean logsLoaded = false;
 
   /**
    * This is used to ingest data into the data object from the various logs.
    *
-   * If this returns false, an error message will be logged and the stored logs are cleared
-   * If this returns true, it has successfully loaded the logs
-   *
    * @param paths this is a dictionary with the key as type of log and String as the path to the file.
    * @return boolean value for ingest success
    */
-  public boolean ingest(HashMap<Path, String> paths) { // TODO: May be worth thinking about better validation or having 3 parameters 1 for each log
-    logs = new Logs();
-
-    if (paths.containsKey(Path.Impression) && paths.containsKey(Path.Click) && paths.containsKey(Path.Server)) {
-      logger.error("Log ingest failed since there is a lack of paths");
-
-      return false;
-    }
+  public  boolean ingest(HashMap<Path, String> paths) { // TODO: May be worth thinking about better validation or having 3 parameters 1 for each log
+    resetLogs();
 
     try {
       for (Map.Entry<Path, String> path : paths.entrySet()) {
-        // File exists validation
-        File file = new File(path.getValue());
-        if (!file.exists() || file.isDirectory()) {
-          throw new Exception("Invalid Log Path");
-        }
-
+        // Validation
+        validatePath(path.getValue());  // Validate file exists
+        validateLogFormat(path.getKey(), path.getValue()); // Validate file contains valid data
         // Setup file reader
-        Scanner reader = new Scanner(file);
+        Scanner reader = new Scanner(new File(path.getValue()));
         String[] line;
 
         while (reader.hasNextLine()) {
@@ -60,7 +63,7 @@ public class Data {
 
           // Process Log to new record and add to list
           switch (path.getKey()) {
-            case Impression -> logs.impressionLogs.add(
+            case Impression -> impressionLogs.add(
                 new Impression(
                     line[0],
                     line[1],
@@ -71,14 +74,14 @@ public class Data {
                     Float.parseFloat(line[6])
                 )
             );
-            case Click -> logs.clickLogs.add(
+            case Click -> clickLogs.add(
                 new Click(
                     line[0],
                     line[1],
                     Float.parseFloat(line[2])
                 )
             );
-            case Server -> logs.serverLogs.add(
+            case Server -> serverLogs.add(
                 new Server(
                     line[0],
                     line[1],
@@ -94,20 +97,54 @@ public class Data {
       }
     } catch (Exception e) {
       logger.error(String.format("Log ingest failed Reason: %s", e.getMessage()));
-      logs = new Logs();
+      resetLogs();
 
       return false;
     }
+
+    logsLoaded = true;
     return true;
   }
 
   /**
-   * This is used to request data from the data object.
+   * This is used to validate that a path leads to a valid log file.
    *
-   * @return returns requested data.
+   * @param path path to file
    */
-  public Logs request() {
-    return logs;
+  private  void validatePath(String path) throws Exception {
+    throw new Exception("Invalid Log Path");
   }
 
+
+  /**
+   * This is used to validate that a log file has the correct number of rows and populated with valid data.
+   *
+   * @param type type of log
+   * @param file path to file
+   */
+  private  void validateLogFormat(Path type, String file) throws Exception {
+    throw new Exception("Invalid Log Format");
+  }
+
+  /**
+   * This is used to clear the stored logs to add new data or to remove inconsistencies
+   */
+  private  void resetLogs() {
+    impressionLogs = new ArrayList<>();
+    clickLogs = new ArrayList<>();
+    serverLogs = new ArrayList<>();
+    logsLoaded = false;
+  }
+
+  /**
+   * This is used to request data from the data object.
+   * @return returns requested data.
+   */
+  public  Logs request() { // TODO: Correct data format as return type
+    // TODO: Create super log
+      logs.impressionLogs = impressionLogs;
+      logs.clickLogs = clickLogs;
+      logs.serverLogs = serverLogs;
+    return logs;
+  }
 }

@@ -16,10 +16,7 @@ public class DataTest {
     public void ingestTest(){
         HashMap<Path, String> pathsTest = new HashMap<>();
         Assert.assertSame("test ingest",true,data.ingest(pathsTest));
-        Assert.assertNotNull(data.request(Path.Impression));
-        Assert.assertNotNull(data.request(Path.Click));
-        Assert.assertNotNull(data.request(Path.Server));
-
+        Assert.assertNotNull(data.request());
     }
     @Test
     public void validatePathTest(){
@@ -35,9 +32,10 @@ public class DataTest {
     }
     @Test
     public void requestTest(){
-        Assert.assertNotNull(data.request(Path.Impression));
-        Assert.assertNotNull(data.request(Path.Click));
-        Assert.assertNotNull(data.request(Path.Server));
+        Assert.assertNotNull(data.request());
+        Assert.assertNotNull(data.request().getClickLogs());
+        Assert.assertNotNull(data.request().getImpressionLogs());
+        Assert.assertNotNull(data.request().getServerLogs());
     }
 }
 
