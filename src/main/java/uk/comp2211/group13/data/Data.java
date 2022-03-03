@@ -36,7 +36,7 @@ public class Data {
   public boolean ingest(HashMap<Path, String> paths) {
     logs = new Logs();
 
-    if (paths.containsKey(Path.Impression) && paths.containsKey(Path.Click) && paths.containsKey(Path.Server)) {
+    if (!paths.containsKey(Path.Impression) || !paths.containsKey(Path.Click) || !paths.containsKey(Path.Server)) {
       logger.error("Log ingest failed since there is a lack of paths");
 
       return false;
@@ -53,6 +53,8 @@ public class Data {
         // Setup file reader
         Scanner reader = new Scanner(file);
         String[] line;
+
+        reader.nextLine(); // Ignore csv header
 
         while (reader.hasNextLine()) {
           line = reader.nextLine().split(",");
