@@ -13,12 +13,16 @@ public class Metrics {
 
 
     private static final Logger logger = LogManager.getLogger(Metrics.class);
+    private Data data = ;
+
 
     //TODO: must look into which Data object we'll be referring to. I think it should be referenced from the one
     // determined by the UI
 
     //FOR NOW: I instantiate a new Data object until we see how to settle the above to do.
-    private Data data = new Data();
+    public Metrics(Data data) {
+        this.data=data;
+    }
 
     /**
      * Getter for the Click-through-rate (CTR)
