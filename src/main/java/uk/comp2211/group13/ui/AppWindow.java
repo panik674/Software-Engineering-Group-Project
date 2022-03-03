@@ -11,6 +11,7 @@ import uk.comp2211.group13.App;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.scenes.BaseScene;
+import uk.comp2211.group13.scenes.WelcomeScene;
 
 // The code here has been taken from our last year Programming II Coursework
 /**
@@ -79,14 +80,15 @@ public class AppWindow {
 
     logger.info("Initialised AppWindow loading start screen");
 
-    // Go to start screen
+    // Go to welcome screen
+    welcomeScreen();
   }
 
   /**
    * Display start screen
    */
-  public void startScreen() {
-    //loadScene(new Scene()); TODO: Create MenuScene
+  public void welcomeScreen() {
+    loadScene(new WelcomeScene(this));
   }
 
   /**
