@@ -47,6 +47,11 @@ public abstract class BaseScene {
   }
 
   /**
+   * This method add listeners for the required keyboard and mouse events
+   */
+  public abstract void events();
+
+  /**
    * Get the JavaFX scene contained inside.
    *
    * @return JavaFX scene

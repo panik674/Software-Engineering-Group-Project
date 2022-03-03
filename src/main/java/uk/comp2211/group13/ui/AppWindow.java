@@ -118,6 +118,13 @@ public class AppWindow {
   }
 
   /**
+   * Exit the programme
+   */
+  public void exit() {
+    App.getInstance().shutdown();
+  }
+
+  /**
    * Get the current scene being displayed.
    *
    * @return scene
