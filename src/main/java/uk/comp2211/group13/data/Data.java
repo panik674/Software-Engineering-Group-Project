@@ -8,15 +8,13 @@ import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * This class is used to ingest, store and reply to request about the data stores in the various logs.
  */
 public class Data {
+
 
   private static final Logger logger = LogManager.getLogger(Data.class);
 
@@ -109,5 +107,38 @@ public class Data {
   public Logs request() {
     return logs;
   }
+
+  public int getClicks(){
+    int clicks = logs.clickLogs.size();
+    return clicks;
+  }
+
+  public int getImpressions(){
+    int impressions = logs.impressionLogs.size();
+    return impressions;
+  }
+
+  public int getConversions(){
+    ArrayList<Server> server = logs.serverLogs;
+    int sum = 0;
+    for (int i = 0; i < server.size(); i++) {
+      if(server.get(i).conversion().equals("Yes")){
+        sum ++;
+      }
+    }
+    return sum;
+  }
+
+//  public int
+
+  public float getClickCost() {
+    ArrayList<Click> clicks = logs.clickLogs;
+    float sum =0 ;
+    for (int i = 0; i < clicks.size(); i++) {
+      sum += clicks.get(i).cost();
+    }
+    return sum;
+  }
+
 
 }
