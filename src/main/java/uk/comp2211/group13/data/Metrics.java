@@ -63,13 +63,13 @@ public class Metrics {
    *
    * @return cost-per-acquisition
    */
-  /**
+
   public float costAcquisition() {
     int acquisitions = data.getConversions();
 
-    return totalCost / acquisitions;
+    return totalCost() / acquisitions;
   }
-   */
+
 
   /**
    * Getter for Cost-Per-Click metric (CPC)
@@ -97,9 +97,10 @@ public class Metrics {
     return cost / impressions * 1000;
   }
 
-  // TODO: URGENT NEEDS TO BE FIXED ASAP: Change to function or listener for on data object update.
-  //  If log data changes this won't update and data object may not be assigned on time of execution.
-  // private float totalCost = data.getImpressionCost() + data.getClickCost();
+
+   private float totalCost () {
+    return data.getImpressionCost() + data.getClickCost();
+   }
 
   // TODO: Add java docs
   public int impressions() {
@@ -117,11 +118,5 @@ public class Metrics {
   public int bounces() {
     return data.getBounces();
   }
-
-  /**
-  public float totalCost() {
-    return totalCost;
-  }
-  */
 
 }
