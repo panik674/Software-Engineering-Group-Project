@@ -20,6 +20,7 @@ public class WelcomeScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
     private StackPane welcomePane;
+    private RadioButton radioButton;
 
     /**
      * Creates a new scene.
@@ -76,7 +77,7 @@ public class WelcomeScene extends BaseScene {
         hbox.setPadding(new Insets(10, 10, 10, 10));
         hbox.setSpacing(10);
 
-        RadioButton radioButton = new RadioButton();
+        radioButton = new RadioButton();
         hbox.getChildren().add(radioButton);
         Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
         hbox.getChildren().add(termsText);
@@ -91,6 +92,8 @@ public class WelcomeScene extends BaseScene {
     }
 
     public void fileLoader(MouseEvent event) {
-        System.out.println("Test");
+        if (radioButton.isSelected()) {
+            System.out.println("Test");
+        }
     }
 }
