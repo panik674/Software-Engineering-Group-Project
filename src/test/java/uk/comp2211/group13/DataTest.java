@@ -33,9 +33,9 @@ public class DataTest {
     @Test
     public void requestTest(){
         Assert.assertNotNull(data.request());
-        Assert.assertNotNull(data.request().getClickLogs());
-        Assert.assertNotNull(data.request().getImpressionLogs());
-        Assert.assertNotNull(data.request().getServerLogs());
+        Assert.assertNotNull(data.request().clickLogs);
+        Assert.assertNotNull(data.request().impressionLogs);
+        Assert.assertNotNull(data.request().serverLogs);
     }
 }
 
