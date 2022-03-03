@@ -31,6 +31,7 @@ public class AppPane extends StackPane {
 
     /**
      * Create a new scalable AppPane with the given drawing width and height.
+     *
      * @param width width
      * @param height height
      */

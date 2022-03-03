@@ -10,4 +10,19 @@ public class Logs {
   public ArrayList<Impression> impressionLogs = new ArrayList<>();
   public ArrayList<Click> clickLogs = new ArrayList<>();
   public ArrayList<Server> serverLogs = new ArrayList<>();
+  /* get the impression logs data
+  * */
+  public ArrayList<Impression> getImpressionLogs(){
+      return impressionLogs;
+  }
+    /* get the click logs data
+     * */
+  public ArrayList<Click> getClickLogs() {
+      return clickLogs;
+  }
+    /* get the server logs data
+     * */
+  public ArrayList<Server>getServerLogs(){
+      return serverLogs;
+  }
 }
