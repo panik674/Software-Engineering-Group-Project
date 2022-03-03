@@ -8,6 +8,9 @@ import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 
 /**
@@ -108,6 +111,11 @@ public class Data {
     return logs;
   }
 
+
+  /**
+   * Following methods are used to access raw metrics
+   * @return returns the requested metric
+   */
   public int getClicks(){
     int clicks = logs.clickLogs.size();
     return clicks;
@@ -116,6 +124,46 @@ public class Data {
   public int getImpressions(){
     int impressions = logs.impressionLogs.size();
     return impressions;
+  }
+
+  /**
+   * Getter for bounces. Defined as staying on the website for less than a minute or visiting only one page
+   * @return
+   */
+  //TODO: Advise somebody about the exception handling same on the difDate
+  public int getBounces(){
+    int sum = 0;
+    ArrayList<Server> server = logs.serverLogs;
+    try {
+      for (int i = 0; i < server.size(); i++) {
+        String start = server.get(i).entryDate();
+        String finish = server.get(i).exitDate();
+        long hours = difDate(start, finish);
+        int pages = server.get(i).pages();
+        if ((hours <= 1) || pages == 1) sum++;
+      }
+      return sum;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return sum;
+  }
+
+  /**
+   * Helper function to find difference in minutes
+   */
+  private long difDate(String start, String end) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    try {
+      Date d1 = sdf.parse(start);
+      Date d2 = sdf.parse(end);
+      long difTime = d2.getTime() - d1.getTime();
+      long difHours = (difTime / (1000 * 60 ));
+      return difHours;
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return -1;
   }
 
   public int getConversions(){
@@ -129,13 +177,31 @@ public class Data {
     return sum;
   }
 
-//  public int
+  public int getUniques(){
+    ArrayList<Click> clicks = logs.clickLogs;
+    int sum = 0;
+    HashSet<String> ids = new HashSet<>();
+    for (int i = 0; i < clicks.size(); i++) {
+      ids.add(clicks.get(i).id());
+    }
+    return ids.size();
+  }
+
 
   public float getClickCost() {
     ArrayList<Click> clicks = logs.clickLogs;
     float sum =0 ;
     for (int i = 0; i < clicks.size(); i++) {
       sum += clicks.get(i).cost();
+    }
+    return sum;
+  }
+
+  public float getImpressionCost() {
+    ArrayList<Impression> impressions = logs.impressionLogs;
+    float sum  = 0;
+    for (int i = 0; i < impressions.size(); i++) {
+      sum += impressions.get(i).cost();
     }
     return sum;
   }
