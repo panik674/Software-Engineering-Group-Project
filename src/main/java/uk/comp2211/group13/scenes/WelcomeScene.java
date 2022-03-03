@@ -1,9 +1,14 @@
 package uk.comp2211.group13.scenes;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,8 +60,24 @@ public class WelcomeScene extends BaseScene {
         Text appTitle = new Text("Welcome to 'Witty Name' App");
         mainPane.setCenter(appTitle);
 
+        VBox vbox = new VBox();
+        mainPane.setBottom(vbox);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.setSpacing(10);
+
         Button loadButton = new Button("Load Data");
-        mainPane.setBottom(loadButton);
+        vbox.getChildren().add(loadButton);
+        HBox hbox  = new HBox();
+        vbox.getChildren().add(hbox);
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setPadding(new Insets(10, 10, 10, 10));
+        hbox.setSpacing(10);
+
+        RadioButton radioButton = new RadioButton();
+        hbox.getChildren().add(radioButton);
+        Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
+        hbox.getChildren().add(termsText);
     }
 
     @Override
