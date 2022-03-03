@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -68,6 +69,7 @@ public class WelcomeScene extends BaseScene {
 
         Button loadButton = new Button("Load Data");
         vbox.getChildren().add(loadButton);
+        loadButton.setOnMouseClicked(this::fileLoader);
         HBox hbox  = new HBox();
         vbox.getChildren().add(hbox);
         hbox.setAlignment(Pos.CENTER);
@@ -86,5 +88,9 @@ public class WelcomeScene extends BaseScene {
             if (e.getCode() != KeyCode.ESCAPE) return;
             appWindow.exit();
         });
+    }
+
+    public void fileLoader(MouseEvent event) {
+        System.out.println("Test");
     }
 }
