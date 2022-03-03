@@ -1,4 +1,4 @@
-package uk.comp2211.group13.ui;
+package uk.comp2211.group13;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -7,7 +7,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.comp2211.group13.App;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.scenes.BaseScene;

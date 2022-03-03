@@ -1,6 +1,6 @@
 package uk.comp2211.group13.scenes;
 
-import uk.comp2211.group13.ui.AppWindow;
+import uk.comp2211.group13.AppWindow;
 
 public class WelcomeScene extends BaseScene {
 
