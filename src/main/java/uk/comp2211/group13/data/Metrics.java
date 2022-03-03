@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Metrics {
 
-  private static final Logger logger = LogManager.getLogger(Metrics.class);
+  private static final Logger logger = LogManager.getLogger(Metrics.class); // TODO: Check if logger is needed?
   private Data data;
 
   //TODO: must look into which Data object we'll be referring to. I think it should be referenced from the one

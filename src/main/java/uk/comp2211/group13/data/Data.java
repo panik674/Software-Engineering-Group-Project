@@ -17,7 +17,6 @@ import java.util.*;
  */
 public class Data {
 
-
   private static final Logger logger = LogManager.getLogger(Data.class);
 
   /**
@@ -109,7 +108,6 @@ public class Data {
   public Logs request() {
     return logs;
   }
-
 
   /**
    * Following methods are used to access raw metrics
