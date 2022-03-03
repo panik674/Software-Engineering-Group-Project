@@ -10,7 +10,6 @@ import uk.comp2211.group13.enums.Path;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
 import java.util.*;
 
 /**
@@ -28,14 +27,14 @@ public class Data {
 
   /**
    * This is used to ingest data into the data object from the various logs.
-   *
+   * <p>
    * If this returns false, an error message will be logged and the stored logs are cleared
    * If this returns true, it has successfully loaded the logs
    *
    * @param paths this is a dictionary with the key as type of log and String as the path to the file.
    * @return boolean value for ingest success
    */
-  public boolean ingest(HashMap<Path, String> paths) { // TODO: May be worth thinking about better validation or having 3 parameters 1 for each log
+  public boolean ingest(HashMap<Path, String> paths) {
     logs = new Logs();
 
     if (paths.containsKey(Path.Impression) && paths.containsKey(Path.Click) && paths.containsKey(Path.Server)) {
@@ -103,7 +102,7 @@ public class Data {
   }
 
   /**
-   * This is used to request data from the data object.
+   * This is used to request all log data from the data object.
    *
    * @return returns requested data.
    */
@@ -114,95 +113,106 @@ public class Data {
 
   /**
    * Following methods are used to access raw metrics
+   *
    * @return returns the requested metric
    */
-  public int getClicks(){
-    int clicks = logs.clickLogs.size();
-    return clicks;
+  public int getClicks() {
+    return logs.clickLogs.size();
   }
 
-  public int getImpressions(){
-    int impressions = logs.impressionLogs.size();
-    return impressions;
+  public int getImpressions() {
+    return logs.impressionLogs.size();
   }
 
   /**
    * Getter for bounces. Defined as staying on the website for less than a minute or visiting only one page
-   * @return
+   *
+   * @return Total number of bounces in logs
    */
-  //TODO: Advise somebody about the exception handling same on the difDate
-  public int getBounces(){
+  // TODO: Advise somebody about the exception handling same on the difDate
+  public int getBounces() {
     int sum = 0;
-    ArrayList<Server> server = logs.serverLogs;
+
     try {
-      for (int i = 0; i < server.size(); i++) {
-        String start = server.get(i).entryDate();
-        String finish = server.get(i).exitDate();
+      for (Server value : logs.serverLogs) {
+        String start = value.entryDate();
+        String finish = value.exitDate();
+
         long hours = difDate(start, finish);
-        int pages = server.get(i).pages();
+        int pages = value.pages();
         if ((hours <= 1) || pages == 1) sum++;
       }
       return sum;
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
     }
-    return sum;
+    return sum; // TODO: Can we look into better error handling rather than return an incorrect value (ie, -1 for error or something)
   }
 
   /**
-   * Helper function to find difference in minutes
+   * Helper function for getBounces() to find difference in minutes
+   *
+   * @param start start date
+   * @param end   end date
+   * @return difference in ??? TODO: Time spanning?
    */
   private long difDate(String start, String end) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     try {
       Date d1 = sdf.parse(start);
       Date d2 = sdf.parse(end);
       long difTime = d2.getTime() - d1.getTime();
-      long difHours = (difTime / (1000 * 60 ));
-      return difHours;
+      return (difTime / (1000 * 60));
+
     } catch (ParseException e) {
       e.printStackTrace();
     }
+
     return -1;
   }
 
-  public int getConversions(){
-    ArrayList<Server> server = logs.serverLogs;
+  // TODO: Add java doc
+  public int getConversions() {
     int sum = 0;
-    for (int i = 0; i < server.size(); i++) {
-      if(server.get(i).conversion().equals("Yes")){
-        sum ++;
-      }
+
+    for (Server value : logs.serverLogs) {
+      if (value.conversion()) sum++;
     }
+
     return sum;
   }
 
-  public int getUniques(){
-    ArrayList<Click> clicks = logs.clickLogs;
-    int sum = 0;
+  // TODO: Add java doc
+  public int getUniques() {
     HashSet<String> ids = new HashSet<>();
-    for (int i = 0; i < clicks.size(); i++) {
-      ids.add(clicks.get(i).id());
+
+    for (Click click : logs.clickLogs) {
+      ids.add(click.id());
     }
+
     return ids.size();
   }
 
-
+  // TODO: Add java doc
   public float getClickCost() {
-    ArrayList<Click> clicks = logs.clickLogs;
-    float sum =0 ;
-    for (int i = 0; i < clicks.size(); i++) {
-      sum += clicks.get(i).cost();
+    float sum = 0;
+
+    for (Click click : logs.clickLogs) {
+      sum += click.cost();
     }
+
     return sum;
   }
 
+  // TODO: Add java doc
   public float getImpressionCost() {
-    ArrayList<Impression> impressions = logs.impressionLogs;
-    float sum  = 0;
-    for (int i = 0; i < impressions.size(); i++) {
-      sum += impressions.get(i).cost();
+    float sum = 0;
+
+    for (Impression impression : logs.impressionLogs) {
+      sum += impression.cost();
     }
+
     return sum;
   }
 
