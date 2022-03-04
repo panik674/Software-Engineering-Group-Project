@@ -16,8 +16,8 @@ public class App extends Application {
   /**
    * Base resolution width and height
    */
-  private final int width = 800;
-  private final int height = 600;
+  private final int width = 1000;
+  private final int height = 711;
 
   /**
    * This stores the instance of the app, so we can return it with getInstance()
