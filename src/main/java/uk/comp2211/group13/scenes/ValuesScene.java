@@ -6,6 +6,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.component.ValueBlock;
 import uk.comp2211.group13.component.ValueCanvas;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
@@ -51,9 +52,9 @@ public class ValuesScene extends BaseScene {
         var mainPane = new BorderPane();
         valuesPane.getChildren().add(mainPane);
 
-        Text text = new Text("Values goes here");
-        ValueCanvas valueCanvas = new ValueCanvas();
-        mainPane.setCenter(valueCanvas);
+        //Text text = new Text("Values goes here");
+        ValueBlock valueBlock = new ValueBlock("Number of impressions", "0k"); //TODO: Add binding
+        mainPane.setCenter(valueBlock);
     }
 
     @Override
