@@ -15,17 +15,17 @@ public class DataTest {
 
     public void ingest(){
         HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click,"src/test/java/resources/2_week_campaign_2/click_log.csv");
-        pathsTest.put(Path.Impression,"src/test/java/resources/2_week_campaign_2/impression_log.csv");
-        pathsTest.put(Path.Server,"src/test/java/resources/2_week_campaign_2/server_log.csv");
+        pathsTest.put(Path.Click,"src/test/java/uk/comp2211/group13/click_log.csv");
+        pathsTest.put(Path.Impression,"src/test/java/uk/comp2211/group13/impression_log.csv");
+        pathsTest.put(Path.Server,"src/test/java/uk/comp2211/group13/server_log.csv");
         data.ingest(pathsTest);
     }
     @Test
     public void ingestTest(){
         HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click,"src/test/java/resources/2_week_campaign_2/click_log.csv");
-        pathsTest.put(Path.Impression,"src/test/java/resources/2_week_campaign_2/impression_log.csv");
-        pathsTest.put(Path.Server,"src/test/java/resources/2_week_campaign_2/server_log.csv");
+        pathsTest.put(Path.Click,"src/test/java/uk/comp2211/group13/click_log.csv");
+        pathsTest.put(Path.Impression,"src/test/java/uk/comp2211/group13/impression_log.csv");
+        pathsTest.put(Path.Server,"src/test/java/uk/comp2211/group13/server_log.csv");
         Assert.assertSame("test ingest",true,data.ingest(pathsTest));
         Assert.assertNotNull(logs.serverLogs);
         Assert.assertNotNull(logs.clickLogs);
