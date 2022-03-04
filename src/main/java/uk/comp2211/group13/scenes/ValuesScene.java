@@ -6,8 +6,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.component.ValueBlock;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
+
+import java.util.List;
 
 public class ValuesScene extends BaseScene {
 
@@ -51,7 +54,8 @@ public class ValuesScene extends BaseScene {
         valuesPane.getChildren().add(mainPane);
 
         Text text = new Text("Values goes here");
-        mainPane.setCenter(text);
+        ValueBlock valueBlock = new ValueBlock();
+        mainPane.setCenter(valueBlock);
     }
 
     @Override
