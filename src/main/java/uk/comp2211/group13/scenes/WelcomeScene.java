@@ -17,14 +17,18 @@ import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.ui.AppWindow;
 import uk.comp2211.group13.ui.AppPane;
 
+import javax.swing.*;
 import java.io.File;
+import java.util.List;
 
 public class WelcomeScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
 
     private StackPane welcomePane;
+    private VBox vbox;
     private RadioButton radioButton;
+    private Text error;
 
     /**
      * Creates a new scene.
@@ -66,7 +70,7 @@ public class WelcomeScene extends BaseScene {
         Text appTitle = new Text("Welcome to 'Witty Name' App");
         mainPane.setCenter(appTitle);
 
-        VBox vbox = new VBox();
+        vbox = new VBox();
         mainPane.setBottom(vbox);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(10, 10, 10, 10));
@@ -101,15 +105,22 @@ public class WelcomeScene extends BaseScene {
     public void fileLoader(MouseEvent event) {
         try {
             if (radioButton.isSelected()) {
+                vbox.getChildren().remove(error);
                 // create a File chooser
-                FileChooser fil_chooser = new FileChooser();
+                FileChooser fileChooser = new FileChooser();
                 // get the file selected
-                File file = fil_chooser.showOpenDialog(appWindow.getStage());
+                List <File> files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
 
-                if (file != null) {
-
-                    System.out.println(file.getAbsolutePath()
-                            + "  selected");
+                if (files.size() == 3) {
+                    for (File file : files) {
+                        if (file != null) {
+                            System.out.println(file.getAbsolutePath()
+                                    + "  selected");
+                        }
+                    }
+                } else {
+                    error = new Text("Please select exactly three files!");
+                    vbox.getChildren().add(error);
                 }
             }
         } catch (Exception e) {
