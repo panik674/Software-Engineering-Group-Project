@@ -6,16 +6,14 @@ import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
+public class ValueCanvas extends Canvas {
 
-public class ValueBlock extends Canvas {
-
-    private static final Logger logger = LogManager.getLogger(ValueBlock.class);
+    private static final Logger logger = LogManager.getLogger(ValueCanvas.class);
 
     private final double width;
     private final double height;
 
-    public ValueBlock () {
+    public ValueCanvas() {
         width = 190;
         height = 120;
 
