@@ -116,6 +116,7 @@ public class WelcomeScene extends BaseScene {
                         if (file != null) {
                             System.out.println(file.getAbsolutePath()
                                     + "  selected");
+                            appWindow.valuesScreen();
                         }
                     }
                 } else {

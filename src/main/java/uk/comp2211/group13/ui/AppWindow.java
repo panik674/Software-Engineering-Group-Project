@@ -11,6 +11,7 @@ import uk.comp2211.group13.App;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.scenes.BaseScene;
+import uk.comp2211.group13.scenes.ValuesScene;
 import uk.comp2211.group13.scenes.WelcomeScene;
 
 // The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
@@ -89,6 +90,13 @@ public class AppWindow {
    */
   public void welcomeScreen() {
     loadScene(new WelcomeScene(this));
+  }
+
+  /**
+   * Display values screen
+   */
+  public void valuesScreen() {
+    loadScene(new ValuesScene(this));
   }
 
   /**
