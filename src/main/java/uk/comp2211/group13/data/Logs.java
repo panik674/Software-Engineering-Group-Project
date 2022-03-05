@@ -80,12 +80,12 @@ public class Logs {
    * @param end   end date
    * @return difference in seconds
    */
-  private long difDate(String start, String end) throws ParseException {
+  private long difDate(Date start, String end) throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    Date d1 = sdf.parse(start);
-    Date d2 = sdf.parse(end);
-    long difTime = d2.getTime() - d1.getTime();
+    Date time = sdf.parse(end);
+    long difTime = time.getTime() - start.getTime();
+
     return (difTime / (1000));
   }
 

@@ -46,7 +46,8 @@ public class Metrics {
       case Impressions -> data.size();
       case Clicks -> data.size();
       case Unique -> data.size();
-      case Bounces -> data.size();
+      case BouncePage -> data.size();
+      case BounceVisit -> data.size();
       case Conversions -> data.size();
       case TotalCost -> data.size();
       case CTR -> data.size();
@@ -57,6 +58,28 @@ public class Metrics {
     }
 
     return data;
+  }
+
+  // TODO: Add java docs
+  public int impressions(Logs logs) {
+
+    return data.request().getImpressions();
+  }
+
+  public int clicks() {
+    return data.request().getClicks();
+  }
+
+  public int uniques() {
+    return data.request().getUniques();
+  }
+
+  public int bouncePage() {
+    return data.request().getBouncePage();
+  }
+
+  public int bounceVisit() {
+    return data.request().getBounceVisit();
   }
 
   /**
@@ -169,27 +192,6 @@ public class Metrics {
     int impressions = logs.getImpressions();
 
     return cost / impressions * 1000;
-  }
-
-  // TODO: Add java docs
-  public int impressions() {
-    return data.request().getImpressions();
-  }
-
-  public int clicks() {
-    return data.request().getClicks();
-  }
-
-  public int uniques() {
-    return data.request().getUniques();
-  }
-
-  public int bouncePage() {
-    return data.request().getBouncePage();
-  }
-
-  public int bounceVisit() {
-    return data.request().getBounceVisit();
   }
 
 }

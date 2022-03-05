@@ -36,6 +36,8 @@ public class Data {
    * @return boolean value for ingest success
    */
   public boolean ingest(HashMap<Path, String> paths) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     logs = new Logs();
 
     // Checks all 3 log paths have been entered
@@ -79,7 +81,7 @@ public class Data {
           switch (path.getKey()) {
             case Impression -> logs.impressionLogs.add(
                 new Impression(
-                    line[0],
+                    sdf.parse(line[0]),
                     line[1],
                     line[2],
                     line[3],
@@ -90,14 +92,14 @@ public class Data {
             );
             case Click -> logs.clickLogs.add(
                 new Click(
-                    line[0],
+                    sdf.parse(line[0]),
                     line[1],
                     Float.parseFloat(line[2])
                 )
             );
             case Server -> logs.serverLogs.add(
                 new Server(
-                    line[0],
+                    sdf.parse(line[0]),
                     line[1],
                     line[2],
                     Integer.parseInt(line[3]),
@@ -126,4 +128,4 @@ public class Data {
   public Logs request() {
     return logs;
   }
-  }
+}
