@@ -1,10 +1,20 @@
 package uk.comp2211.group13.data;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.data.log.Click;
+import uk.comp2211.group13.data.log.Impression;
+import uk.comp2211.group13.data.log.Server;
+import uk.comp2211.group13.enums.Filter;
+import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is used to calculate and retrieve the requested metrics.
@@ -24,7 +34,7 @@ public class Metrics {
   // determined by the UI
 
   /**
-   * This is used to add data to the metric object
+   * Class constructor. Initialises the Data variable, with the one specified form the user
    *
    * @param data data object
    */
@@ -38,100 +48,142 @@ public class Metrics {
    * @param metric metric to request
    * @return metric data
    */
-  public HashMap<Data, Float> request(Metric metric) {
-    Logs logs = data.request();
-    HashMap<Data, Float> data = new HashMap<>();
+  //TODO: Add increment granularity in Sprint 2.
+  public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) {
+    HashMap<Date, Float> table = new HashMap<>();
 
-    switch (metric) {
-      case Impressions -> data.size();
-      case Clicks -> data.size();
-      case Unique -> data.size();
-      case BouncePage -> data.size();
-      case BounceVisit -> data.size();
-      case Conversions -> data.size();
-      case TotalCost -> data.size();
-      case CTR -> data.size();
-      case CPA -> data.size();
-      case CPC -> data.size();
-      case CPM -> data.size();
-      case BounceRate -> data.size();
+    Granularity granularity = Granularity.Day;
+    try {
+      Date d1 = Utility.string2Date(startDate);
+      Date d2 = Utility.string2Date(endDate);
+    } catch (ParseException e) {
+      logger.error("Invalid date used for request.");
+      return table;
     }
 
-    return data;
+    // Get timeLogs
+    HashMap<Filter, String> filters = new HashMap<>();
+    filters.put(Filter.StartDatetime, startDate);
+    filters.put(Filter.EndDatetime, endDate);
+    Logs masterLog = data.request(filters);
+
+    HashMap<Date, Logs> timeLogs = getGranularity(masterLog, granularity);
+
+    for (Map.Entry<Date, Logs> timeLog : timeLogs.entrySet()) {
+      switch (metric) {
+        case Impressions -> table.put(timeLog.getKey(), (float) impressions(timeLog.getValue()));
+        case Clicks -> table.put(timeLog.getKey(), (float) clicks(timeLog.getValue()));
+        case Unique -> table.put(timeLog.getKey(), (float) uniques(timeLog.getValue()));
+        case BouncePage -> table.put(timeLog.getKey(), (float) bouncePage(timeLog.getValue()));
+        case BounceVisit -> table.put(timeLog.getKey(), (float) bounceVisit(timeLog.getValue()));
+        case Conversions -> table.put(timeLog.getKey(), conversionRate(timeLog.getValue()));
+        case TotalCost -> table.put(timeLog.getKey(), totalCost(timeLog.getValue()));
+        case CTR -> table.put(timeLog.getKey(), clickRate(timeLog.getValue()));
+        case CPA -> table.put(timeLog.getKey(), costAcquisition(timeLog.getValue()));
+        case CPC -> table.put(timeLog.getKey(), costClick(timeLog.getValue()));
+        case CPM -> table.put(timeLog.getKey(), costThousand(timeLog.getValue()));
+        case BounceRatePage -> table.put(timeLog.getKey(), bounceRatePage(timeLog.getValue()));
+        case BounceRateVisit -> table.put(timeLog.getKey(), bounceRateVisit(timeLog.getValue()));
+      }
+    }
+
+    return table;
   }
 
-  // TODO: Add java docs
+  /**
+   * This function it used to split a Logs object into multiple chunks based on time granularity
+   *
+   * @param masterLog   log with all logs in
+   * @param granularity size to create chunks of
+   * @return chunked logs
+   */
+  private HashMap<Date, Logs> getGranularity(Logs masterLog, Granularity granularity) {
+    HashMap<Date, Logs> timeLogs = new HashMap<>();
+
+    // Granulate impression logs
+    for (Impression impression : masterLog.impressionLogs) {
+      Date key = DateUtils.truncate(impression.date(), granularity.getCalendar());
+
+      if (!timeLogs.containsKey(key)) {
+        timeLogs.put(key, new Logs());
+      }
+
+      timeLogs.get(key).impressionLogs.add(impression);
+    }
+
+    // Granulate click logs
+    for (Click click : masterLog.clickLogs) {
+      Date key = DateUtils.truncate(click.date(), granularity.getCalendar());
+
+      if (!timeLogs.containsKey(key)) {
+        timeLogs.put(key, new Logs());
+      }
+
+      timeLogs.get(key).clickLogs.add(click);
+    }
+
+    // Granulate server logs
+    for (Server server : masterLog.serverLogs) {
+      Date key = DateUtils.truncate(server.entryDate(), granularity.getCalendar());
+
+      if (!timeLogs.containsKey(key)) {
+        timeLogs.put(key, new Logs());
+      }
+
+      timeLogs.get(key).serverLogs.add(server);
+    }
+
+    return timeLogs;
+  }
+
+  /**
+   * Pass through function for the number of impressions
+   *
+   * @param logs: Log object for which the accumulation happens
+   * @return number of impressions
+   */
   public int impressions(Logs logs) {
-
-    return data.request().getImpressions();
-  }
-
-  public int clicks() {
-    return data.request().getClicks();
-  }
-
-  public int uniques() {
-    return data.request().getUniques();
-  }
-
-  public int bouncePage() {
-    return data.request().getBouncePage();
-  }
-
-  public int bounceVisit() {
-    return data.request().getBounceVisit();
+    return logs.getImpressions();
   }
 
   /**
-   * This is a helper function to combine impression and click cost.
+   * Pass through function for the number of clicks
    *
-   * @return Total cost of impressions and clicks
+   * @param logs: Log object for which the accumulation happens
+   * @return number of clicks
    */
-  private float totalCost() {
-    Logs logs = data.request();
-    return logs.getImpressionCost() + logs.getClickCost();
+  public int clicks(Logs logs) {
+    return logs.getClicks();
   }
 
   /**
-   * Getter for the Click-through-rate (CTR)
+   * Pass through function for the number of uniques
    *
-   * @return click-through rate
+   * @param logs: Log object for which the accumulation happens
+   * @return number of uniques
    */
-  public float clickRate() {
-    Logs logs = data.request();
-
-    int clicks = logs.getClicks();
-    int impressions = logs.getImpressions();
-
-    return impressions / clicks;
+  public int uniques(Logs logs) {
+    return logs.getUniques();
   }
 
   /**
-   * Getter for the bounce rate. Defined as visiting only one page.
+   * Pass through function for the number of bounces - Page number definition
    *
-   * @return bounce rate
+   * @param logs: Log object for which the accumulation happens
+   * @return number of bounces
    */
-  public float bounceRatePage() {
-    Logs logs = data.request();
-
-    int clicks = logs.getClicks();
-    int bounce = logs.getBouncePage();
-
-    return bounce / clicks;
+  public int bouncePage(Logs logs) {
+    return logs.getBouncePage();
   }
 
   /**
-   * Getter for the bounce rate. Defined as staying on the website for less than a minute.
+   * Pass through function for the number of bounces - Visit duration definition
    *
-   * @return bounce rate
+   * @param logs: Log object for which the accumulation happens
+   * @return number of bounces
    */
-  public float bounceRateVisit() {
-    Logs logs = data.request();
-
-    int clicks = logs.getClicks();
-    int bounce = logs.getBounceVisit();
-
-    return bounce / clicks;
+  public int bounceVisit(Logs logs) {
+    return logs.getBounceVisit();
   }
 
   /**
@@ -139,13 +191,35 @@ public class Metrics {
    *
    * @return conversion rate
    */
-  public float conversionRate() {
-    Logs logs = data.request();
+  public float conversionRate(Logs logs) {
 
-    int conversions = logs.getConversions();
+    float conversions = logs.getConversions();
     int clicks = logs.getClicks();
 
     return conversions / clicks;
+  }
+
+  /**
+   * This is a helper function to combine impression and click cost.
+   *
+   * @return Total cost of impressions and clicks
+   */
+  private float totalCost(Logs logs) {
+    return logs.getImpressionCost() + logs.getClickCost();
+  }
+
+
+  /**
+   * Getter for the Click-through-rate (CTR)
+   *
+   * @return click-through rate
+   */
+  public float clickRate(Logs logs) {
+
+    float clicks = logs.getClicks();
+    int impressions = logs.getImpressions();
+
+    return impressions / clicks;
   }
 
   /**
@@ -154,13 +228,11 @@ public class Metrics {
    *
    * @return cost-per-acquisition
    */
-
-  public float costAcquisition() {
-    Logs logs = data.request();
+  public float costAcquisition(Logs logs) {
 
     int acquisitions = logs.getConversions();
 
-    return totalCost() / acquisitions;
+    return totalCost(logs) / acquisitions;
   }
 
 
@@ -170,8 +242,7 @@ public class Metrics {
    *
    * @return Cost per click
    */
-  public float costClick() {
-    Logs logs = data.request();
+  public float costClick(Logs logs) {
 
     float cost = logs.getClickCost();
     int clicks = logs.getClicks();
@@ -185,13 +256,37 @@ public class Metrics {
    *
    * @return Cost per thousand impressions.
    */
-  public float costThousand() {
-    Logs logs = data.request();
+  public float costThousand(Logs logs) {
 
     float cost = logs.getImpressionCost();
     int impressions = logs.getImpressions();
 
     return cost / impressions * 1000;
+  }
+
+  /**
+   * Getter for the bounce rate. Defined as visiting only one page.
+   *
+   * @return bounce rate
+   */
+  public float bounceRatePage(Logs logs) {
+
+    float clicks = logs.getClicks();
+    int bounce = logs.getBouncePage();
+
+    return bounce / clicks;
+  }
+
+  /**
+   * Getter for the bounce rate. Defined as staying on the website for less than a minute.
+   *
+   * @return bounce rate
+   */
+  public float bounceRateVisit(Logs logs) {
+    float clicks = logs.getClicks();
+    int bounce = logs.getBounceVisit();
+
+    return bounce / clicks;
   }
 
 }

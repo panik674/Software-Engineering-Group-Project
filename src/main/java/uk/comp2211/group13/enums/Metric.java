@@ -15,5 +15,6 @@ public enum Metric {
   CPA,
   CPC,
   CPM,
-  BounceRate
+  BounceRateVisit,
+  BounceRatePage
 }

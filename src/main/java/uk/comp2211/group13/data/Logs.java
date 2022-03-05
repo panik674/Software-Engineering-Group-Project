@@ -2,12 +2,12 @@ package uk.comp2211.group13.data;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.data.log.Click;
 import uk.comp2211.group13.data.log.Impression;
 import uk.comp2211.group13.data.log.Server;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -15,9 +15,15 @@ import java.util.HashSet;
 public class Logs {
   private static final Logger logger = LogManager.getLogger(Logs.class);
 
-  public final ArrayList<Impression> impressionLogs;
-  public final ArrayList<Click> clickLogs;
-  public final ArrayList<Server> serverLogs;
+  public ArrayList<Impression> impressionLogs;
+  public ArrayList<Click> clickLogs;
+  public ArrayList<Server> serverLogs;
+
+  public Logs() {
+    this.impressionLogs = new ArrayList<>();
+    this.clickLogs = new ArrayList<>();
+    this.serverLogs = new ArrayList<>();
+  }
 
   public Logs(ArrayList<Impression> impressionLogs, ArrayList<Click> clickLogs, ArrayList<Server> serverLogs) {
     this.impressionLogs = impressionLogs;
@@ -59,7 +65,7 @@ public class Logs {
   }
 
   /**
-   * Getter for bounces. Defined as staying on the website for less than a minute
+   * Getter for bounces. Defined as staying on the website for less than 15 seconds
    *
    * @return Total number of bounces in logs
    */
@@ -72,7 +78,7 @@ public class Logs {
         if (seconds <= 15) sum++;
 
       } catch (Exception e) {
-        logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
+        logger.warn(String.format("Bounce total request failed Reason: %s", e.getMessage()));
       }
     }
     return sum;
@@ -81,15 +87,11 @@ public class Logs {
   /**
    * Helper function for getBounceVisit() to find difference in seconds
    *
-   * @param start start date
    * @param end   end date
    * @return difference in seconds
    */
-  private long difDate(String start, String end) throws ParseException {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    Date d1 = sdf.parse(start);
-    Date d2 = sdf.parse(end);
+  private long difDate(Date d1, String end) throws ParseException {
+    Date d2 = Utility.string2Date(end);
     long difTime = d2.getTime() - d1.getTime();
 
     return (difTime / (1000));
