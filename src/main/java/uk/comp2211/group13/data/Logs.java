@@ -2,12 +2,12 @@ package uk.comp2211.group13.data;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.data.log.Click;
 import uk.comp2211.group13.data.log.Impression;
 import uk.comp2211.group13.data.log.Server;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -86,10 +86,8 @@ public class Logs {
    * @return difference in seconds
    */
   private long difDate(String start, String end) throws ParseException {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    Date d1 = sdf.parse(start);
-    Date d2 = sdf.parse(end);
+    Date d1 = Utility.string2Date(start);
+    Date d2 = Utility.string2Date(end);
     long difTime = d2.getTime() - d1.getTime();
 
     return (difTime / (1000));
