@@ -39,7 +39,7 @@ public class ValuesScene extends BaseScene {
      */
     @Override
     public void initialise() {
-        logger.info("Initialising Welcome Scene");
+        logger.info("Initialising Value Scene");
         events();
     }
 
