@@ -15,9 +15,15 @@ import java.util.HashSet;
 public class Logs {
   private static final Logger logger = LogManager.getLogger(Logs.class);
 
-  public final ArrayList<Impression> impressionLogs;
-  public final ArrayList<Click> clickLogs;
-  public final ArrayList<Server> serverLogs;
+  public ArrayList<Impression> impressionLogs;
+  public ArrayList<Click> clickLogs;
+  public ArrayList<Server> serverLogs;
+
+  public Logs() {
+    this.impressionLogs = new ArrayList<>();
+    this.clickLogs = new ArrayList<>();
+    this.serverLogs = new ArrayList<>();
+  }
 
   public Logs(ArrayList<Impression> impressionLogs, ArrayList<Click> clickLogs, ArrayList<Server> serverLogs) {
     this.impressionLogs = impressionLogs;
@@ -72,7 +78,7 @@ public class Logs {
         if (seconds <= 15) sum++;
 
       } catch (Exception e) {
-        logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
+        logger.warn(String.format("Bounce total request failed Reason: %s", e.getMessage()));
       }
     }
     return sum;

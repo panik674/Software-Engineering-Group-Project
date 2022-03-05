@@ -3,6 +3,7 @@ package uk.comp2211.group13.data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
@@ -47,12 +48,17 @@ public class Metrics {
     long increment = 1000*60*60*24;
     Date d1 = Utility.string2Date(startDate);
     Date d2 = Utility.string2Date(endDate);
+
     //specify whether we want to have a <Date, Float> or a <String, Float> HashMap
     HashMap<Date, Float> table = new HashMap<>();
 
     for (long i = d1.getTime(); i < d2.getTime()-increment; i += increment) {
       //request should return the log object for the dates from i to i+increment
-      Logs log = data.request(startDate, endDate);
+      HashMap<Filter, String> filters = new HashMap<>();
+      filters.put(Filter.StartDatetime, startDate);
+      filters.put(Filter.EndDatetime, endDate);
+
+      Logs log = data.request(filters);
       Date idx = new Date(i);
       Utility.date2String(idx);
       switch (metric) {

@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class DataTest {
     private Data data = new Data();
-    private Logs logs = new Logs(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    private Logs logs = new Logs();
 
     public void ingest(){
         HashMap<Path, String> pathsTest = new HashMap<>();
