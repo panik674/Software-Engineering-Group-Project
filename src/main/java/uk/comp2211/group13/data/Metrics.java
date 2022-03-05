@@ -1,13 +1,20 @@
 package uk.comp2211.group13.data;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.data.log.Click;
+import uk.comp2211.group13.data.log.Impression;
+import uk.comp2211.group13.data.log.Server;
+import uk.comp2211.group13.enums.Filter;
+import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is used to calculate and retrieve the requested metrics.
@@ -141,6 +148,7 @@ public class Metrics {
 
   /**
    * Pass through function for the number of clicks
+   *
    * @param logs: Log object for which the accumulation happens
    * @return number of clicks
    */
@@ -150,6 +158,7 @@ public class Metrics {
 
   /**
    * Pass through function for the number of uniques
+   *
    * @param logs: Log object for which the accumulation happens
    * @return number of uniques
    */
@@ -159,6 +168,7 @@ public class Metrics {
 
   /**
    * Pass through function for the number of bounces - Page number definition
+   *
    * @param logs: Log object for which the accumulation happens
    * @return number of bounces
    */
@@ -168,6 +178,7 @@ public class Metrics {
 
   /**
    * Pass through function for the number of bounces - Visit duration definition
+   *
    * @param logs: Log object for which the accumulation happens
    * @return number of bounces
    */
