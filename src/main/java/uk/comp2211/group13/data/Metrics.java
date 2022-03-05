@@ -193,7 +193,7 @@ public class Metrics {
    */
   public float conversionRate(Logs logs) {
 
-    int conversions = logs.getConversions();
+    float conversions = logs.getConversions();
     int clicks = logs.getClicks();
 
     return conversions / clicks;
@@ -216,7 +216,7 @@ public class Metrics {
    */
   public float clickRate(Logs logs) {
 
-    int clicks = logs.getClicks();
+    float clicks = logs.getClicks();
     int impressions = logs.getImpressions();
 
     return impressions / clicks;
@@ -271,7 +271,7 @@ public class Metrics {
    */
   public float bounceRatePage(Logs logs) {
 
-    int clicks = logs.getClicks();
+    float clicks = logs.getClicks();
     int bounce = logs.getBouncePage();
 
     return bounce / clicks;
@@ -283,7 +283,7 @@ public class Metrics {
    * @return bounce rate
    */
   public float bounceRateVisit(Logs logs) {
-    int clicks = logs.getClicks();
+    float clicks = logs.getClicks();
     int bounce = logs.getBounceVisit();
 
     return bounce / clicks;
