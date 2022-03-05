@@ -125,28 +125,39 @@ public class Data {
   }
 
   /**
-   * Getter for bounces. Defined as staying on the website for less than a minute or visiting only one page
+   * Getter for bounces. Defined as visiting only one page
    *
    * @return Total number of bounces in logs
    */
-  // TODO: Advise somebody about the exception handling same on the difDate
-  public int getBounces() {
+  public int getBouncePage() {
+    int sum = 0;
+
+    for (Server value : logs.serverLogs) {
+        if (value.pages() <= 1) sum++;
+    }
+
+    return sum;
+  }
+
+  /**
+   * Getter for bounces. Defined as staying on the website for less than a minute
+   *
+   * @return Total number of bounces in logs
+   */
+  public int getBounceVisit() {
     int sum = 0;
 
     try {
       for (Server value : logs.serverLogs) {
-        String start = value.entryDate();
-        String finish = value.exitDate();
-
-        long hours = difDate(start, finish);
-        int pages = value.pages();
-        if ((hours <= 1) || pages == 1) sum++;
+        long seconds = difDate(value.entryDate(), value.exitDate());
+        if (seconds <= 15) sum++;
       }
-      return sum;
+
     } catch (Exception e) {
       logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
     }
-    return sum; // TODO: Can we look into better error handling rather than return an incorrect value (ie, -1 for error or something)
+
+    return sum;
   }
 
   /**
@@ -154,22 +165,15 @@ public class Data {
    *
    * @param start start date
    * @param end   end date
-   * @return difference in ??? TODO: Time spanning?
+   * @return difference in seconds
    */
-  private long difDate(String start, String end) {
+  private long difDate(String start, String end) throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    try {
-      Date d1 = sdf.parse(start);
-      Date d2 = sdf.parse(end);
-      long difTime = d2.getTime() - d1.getTime();
-      return (difTime / (1000 * 60));
-
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-
-    return -1;
+    Date d1 = sdf.parse(start);
+    Date d2 = sdf.parse(end);
+    long difTime = d2.getTime() - d1.getTime();
+    return (difTime / (1000));
   }
 
   // TODO: Add java doc
