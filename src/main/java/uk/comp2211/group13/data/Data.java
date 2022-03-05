@@ -8,8 +8,6 @@ import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -123,7 +121,9 @@ public class Data {
    *
    * @return returns requested data.
    */
-  public Logs request() {
+  public Logs request(String startDate, String endDate) {
+
+
     return logs;
   }
 }

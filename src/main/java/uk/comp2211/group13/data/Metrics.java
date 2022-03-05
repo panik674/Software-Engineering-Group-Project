@@ -2,10 +2,10 @@ package uk.comp2211.group13.data;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -44,18 +44,17 @@ public class Metrics {
   //TODO: Add increment granularity in Sprint 2.
   public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) throws ParseException {
 
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     long increment = 1000*60*60*24;
-    Date d1 = sdf.parse(startDate);
-    Date d2 = sdf.parse(endDate);
+    Date d1 = Utility.string2Date(startDate);
+    Date d2 = Utility.string2Date(endDate);
     //specify whether we want to have a <Date, Float> or a <String, Float> HashMap
     HashMap<Date, Float> table = new HashMap<>();
 
     for (long i = d1.getTime(); i < d2.getTime()-increment; i += increment) {
       //request should return the log object for the dates from i to i+increment
-      Logs log = data.request();
+      Logs log = data.request(startDate, endDate);
       Date idx = new Date(i);
-      sdf.format(idx);
+      Utility.date2String(idx);
       switch (metric) {
         case Impressions -> table.put(idx, (float) impressions(log));
         case Clicks -> table.put(idx, (float) clicks(log));
