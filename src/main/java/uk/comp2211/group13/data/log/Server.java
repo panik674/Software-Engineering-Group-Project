@@ -1,12 +1,10 @@
 package uk.comp2211.group13.data.log;
 
-import java.util.Date;
-
 /**
  * This record is used to store a row of the server log.
  */
 public record Server(
-    Date entryDate,
+    String entryDate,
     String id,
     String exitDate,
     Integer pages,
