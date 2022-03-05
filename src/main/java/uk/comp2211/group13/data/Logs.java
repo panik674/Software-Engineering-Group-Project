@@ -59,7 +59,7 @@ public class Logs {
   }
 
   /**
-   * Getter for bounces. Defined as staying on the website for less than a minute
+   * Getter for bounces. Defined as staying on the website for less than 15 seconds
    *
    * @return Total number of bounces in logs
    */

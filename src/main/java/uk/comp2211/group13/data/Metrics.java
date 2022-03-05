@@ -4,6 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.enums.Metric;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -38,48 +41,60 @@ public class Metrics {
    * @param metric metric to request
    * @return metric data
    */
-  public HashMap<Data, Float> request(Metric metric) {
-    Logs logs = data.request();
-    HashMap<Data, Float> data = new HashMap<>();
+  //TODO: Add increment granularity in Sprint 2.
+  public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) throws ParseException {
 
-    switch (metric) {
-      case Impressions -> data.size();
-      case Clicks -> data.size();
-      case Unique -> data.size();
-      case BouncePage -> data.size();
-      case BounceVisit -> data.size();
-      case Conversions -> data.size();
-      case TotalCost -> data.size();
-      case CTR -> data.size();
-      case CPA -> data.size();
-      case CPC -> data.size();
-      case CPM -> data.size();
-      case BounceRate -> data.size();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    long increment = 1000*60*60*24;
+    Date d1 = sdf.parse(startDate);
+    Date d2 = sdf.parse(endDate);
+    //specify whether we want to have a <Date, Float> or a <String, Float> HashMap
+    HashMap<Date, Float> table = new HashMap<>();
+
+    for (long i = d1.getTime(); i < d2.getTime()-increment; i += increment) {
+      //request should return the log object for the dates from i to i+increment
+      Logs log = data.request();
+      Date idx = new Date(i);
+      sdf.format(idx);
+      switch (metric) {
+        case Impressions -> table.put(idx, (float) impressions(log));
+        case Clicks -> table.put(idx, (float) clicks(log));
+        case Unique -> table.put(idx, (float) uniques(log));
+        case BouncePage -> table.put(idx, (float) bouncePage(log));
+        case BounceVisit -> table.put(idx, (float) bounceVisit(log));
+        case Conversions -> table.put(idx, conversionRate(log));
+        case TotalCost -> table.put(idx, totalCost(log));
+        case CTR -> table.put(idx, clickRate(log));
+        case CPA -> table.put(idx, costAcquisition(log));
+        case CPC -> table.put(idx, costClick(log));
+        case CPM -> table.put(idx, costThousand(log));
+        case BounceRatePage -> table.put(idx, bounceRatePage(log));
+        case BounceRateVisit -> table.put(idx, bounceRateVisit(log));
+      }
     }
 
-    return data;
+    return table;
   }
 
   // TODO: Add java docs
   public int impressions(Logs logs) {
-
-    return data.request().getImpressions();
+    return logs.getImpressions();
   }
 
-  public int clicks() {
-    return data.request().getClicks();
+  public int clicks(Logs logs) {
+    return logs.getClicks();
   }
 
-  public int uniques() {
-    return data.request().getUniques();
+  public int uniques(Logs logs) {
+    return logs.getUniques();
   }
 
-  public int bouncePage() {
-    return data.request().getBouncePage();
+  public int bouncePage(Logs logs) {
+    return logs.getBouncePage();
   }
 
-  public int bounceVisit() {
-    return data.request().getBounceVisit();
+  public int bounceVisit(Logs logs) {
+    return logs.getBounceVisit();
   }
 
   /**
@@ -87,8 +102,7 @@ public class Metrics {
    *
    * @return Total cost of impressions and clicks
    */
-  private float totalCost() {
-    Logs logs = data.request();
+  private float totalCost(Logs logs) {
     return logs.getImpressionCost() + logs.getClickCost();
   }
 
@@ -97,8 +111,8 @@ public class Metrics {
    *
    * @return click-through rate
    */
-  public float clickRate() {
-    Logs logs = data.request();
+  //:TODO:Change tests to reflect logs granularity.
+  public float clickRate(Logs logs) {
 
     int clicks = logs.getClicks();
     int impressions = logs.getImpressions();
@@ -111,8 +125,8 @@ public class Metrics {
    *
    * @return bounce rate
    */
-  public float bounceRatePage() {
-    Logs logs = data.request();
+  //:TODO:Change tests to reflect logs granularity.
+  public float bounceRatePage(Logs logs) {
 
     int clicks = logs.getClicks();
     int bounce = logs.getBouncePage();
@@ -125,9 +139,7 @@ public class Metrics {
    *
    * @return bounce rate
    */
-  public float bounceRateVisit() {
-    Logs logs = data.request();
-
+  public float bounceRateVisit(Logs logs) {
     int clicks = logs.getClicks();
     int bounce = logs.getBounceVisit();
 
@@ -139,8 +151,8 @@ public class Metrics {
    *
    * @return conversion rate
    */
-  public float conversionRate() {
-    Logs logs = data.request();
+  //:TODO:Change tests to reflect logs granularity.
+  public float conversionRate(Logs logs) {
 
     int conversions = logs.getConversions();
     int clicks = logs.getClicks();
@@ -154,13 +166,12 @@ public class Metrics {
    *
    * @return cost-per-acquisition
    */
-
-  public float costAcquisition() {
-    Logs logs = data.request();
+  //:TODO:Change tests to reflect logs granularity.
+  public float costAcquisition(Logs logs) {
 
     int acquisitions = logs.getConversions();
 
-    return totalCost() / acquisitions;
+    return totalCost(logs) / acquisitions;
   }
 
 
@@ -170,8 +181,8 @@ public class Metrics {
    *
    * @return Cost per click
    */
-  public float costClick() {
-    Logs logs = data.request();
+  //:TODO:Change tests to reflect logs granularity.
+  public float costClick(Logs logs) {
 
     float cost = logs.getClickCost();
     int clicks = logs.getClicks();
@@ -185,8 +196,8 @@ public class Metrics {
    *
    * @return Cost per thousand impressions.
    */
-  public float costThousand() {
-    Logs logs = data.request();
+  //:TODO:Change tests to reflect logs granularity.
+  public float costThousand(Logs logs) {
 
     float cost = logs.getImpressionCost();
     int impressions = logs.getImpressions();
