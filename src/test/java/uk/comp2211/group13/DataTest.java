@@ -59,14 +59,14 @@ public class DataTest {
     @Test
     public void getBounceVisitTest(){
         ingest();
-        int resultFor2_week = 1;
+        int resultFor2_week = 5095;
         Assert.assertNotNull(logs.getBounceVisit());
         Assert.assertEquals(resultFor2_week,logs.getBounceVisit());
 
     }
     @Test
     public void getBouncePagTest(){
-        int result = 0;
+        int result = 8665;
         Assert.assertNotNull(logs.getBouncePage());
         Assert.assertEquals(result,logs.getBouncePage());
     }
