@@ -87,12 +87,10 @@ public class Logs {
   /**
    * Helper function for getBounceVisit() to find difference in seconds
    *
-   * @param start start date
    * @param end   end date
    * @return difference in seconds
    */
-  private long difDate(String start, String end) throws ParseException {
-    Date d1 = Utility.string2Date(start);
+  private long difDate(Date d1, String end) throws ParseException {
     Date d2 = Utility.string2Date(end);
     long difTime = d2.getTime() - d1.getTime();
 

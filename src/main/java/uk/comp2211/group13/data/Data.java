@@ -7,6 +7,7 @@ import uk.comp2211.group13.data.log.Click;
 import uk.comp2211.group13.data.log.Impression;
 import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Filter;
+import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public class Data {
           switch (path.getKey()) {
             case Impression -> logs.impressionLogs.add(
                 new Impression(
-                    line[0],
+                    Utility.string2Date(line[0]),
                     line[1],
                     line[2],
                     line[3],
@@ -92,14 +93,14 @@ public class Data {
             );
             case Click -> logs.clickLogs.add(
                 new Click(
-                    line[0],
+                    Utility.string2Date(line[0]),
                     line[1],
                     Float.parseFloat(line[2])
                 )
             );
             case Server -> logs.serverLogs.add(
                 new Server(
-                    line[0],
+                    Utility.string2Date(line[0]),
                     line[1],
                     line[2],
                     Integer.parseInt(line[3]),
@@ -121,37 +122,8 @@ public class Data {
     return true;
   }
 
-  public static void main(String[] args) {
-    long t1 = System.nanoTime();
-    Data data = new Data();
-
-    HashMap<Path, String> paths = new HashMap<Path, String>();
-    paths.put(Path.Impression, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\impression_log.csv");
-    paths.put(Path.Click, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\click_log.csv");
-    paths.put(Path.Server, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\server_log.csv");
-
-    data.ingest(paths);
-    long t2 = System.nanoTime();
-
-    for (int i = 0; i < 336; i++) {
-      System.out.println("Time:" + i);
-      HashMap<Filter, String> filters = new HashMap<>();
-      filters.put(Filter.StartDatetime, "2015-01-01 12:00:00");
-      filters.put(Filter.EndDatetime, "2015-01-01 13:00:00");
-
-      Logs logs = data.request(filters);
-    }
-    long t3 = System.nanoTime();
-
-    long d1 = (t2 - t1);
-    long d2 = (t3 - t2);
-
-    System.out.println(d1);
-    System.out.println(d2);
-  }
-
   /**
-   * This is used to request all log data from the data object.
+   * This is used to request filtered log data from the data object.
    *
    * @param filters this is a list of applied filters
    * @return returns requested data.
@@ -159,15 +131,17 @@ public class Data {
   public Logs request(HashMap<Filter, String> filters) {
     Logs output = new Logs();
 
-    boolean enableDataRange = false;
+    // Init date range values
+    boolean enableDataRange = false; // Used to quickly check if date range is being used
     Date startDate = null;
     Date endDate = null;
 
     if (filters.size() == 0) {
+      // No filters return all
       return logs;
 
     } else {
-      try {
+      try { // Set up date range
         if (filters.containsKey(Filter.StartDatetime) && filters.containsKey(Filter.EndDatetime)) {
           startDate = Utility.string2Date(filters.get(Filter.StartDatetime));
           endDate = Utility.string2Date(filters.get(Filter.EndDatetime));
@@ -177,38 +151,23 @@ public class Data {
         logger.error("Unable to complete request due to invalid dates");
       }
 
-      // Create impressions list
+      // Filter impressions list
       for (Impression impression : logs.impressionLogs) {
-        try { // Check date range is being filtered and check record against date range
-          if (enableDataRange && !withinDate(startDate, endDate, Utility.string2Date(impression.date()))) continue;
-        } catch (ParseException e) {
-          logger.error(String.format("Skipping impression record %s due to invalid date", impression.id()));
-          continue;
-        }
+        if (enableDataRange && !withinDate(startDate, endDate, impression.date())) continue;
 
         output.impressionLogs.add(impression);
       }
 
-      // Create impressions list
+      // Filter impressions list
       for (Click click : logs.clickLogs) {
-        try { // Check date range is being filtered and check record against date range
-          if (enableDataRange && !withinDate(startDate, endDate, Utility.string2Date(click.date()))) continue;
-        } catch (ParseException e) {
-          logger.error(String.format("Skipping click record %s due to invalid date", click.id()));
-          continue;
-        }
+        if (enableDataRange && !withinDate(startDate, endDate, click.date())) continue;
 
         output.clickLogs.add(click);
       }
 
-      // Create impressions list
+      // Filter impressions list
       for (Server server : logs.serverLogs) {
-        try { // Check date range is being filtered and check record against date range
-          if (enableDataRange && !withinDate(startDate, endDate, Utility.string2Date(server.entryDate()))) continue;
-        } catch (ParseException e) {
-          logger.error(String.format("Skipping server record %s due to invalid date", server.id()));
-          continue;
-        }
+        if (enableDataRange && !withinDate(startDate, endDate, server.entryDate())) continue;
 
         output.serverLogs.add(server);
       }
@@ -221,8 +180,8 @@ public class Data {
   /**
    * This is a helper function to determine if a date is within a range.
    *
-   * @param start start of range
-   * @param end end of range
+   * @param start  start of range
+   * @param end    end of range
    * @param target date to check
    * @return true if in range
    */

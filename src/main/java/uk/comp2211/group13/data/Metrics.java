@@ -1,14 +1,22 @@
 package uk.comp2211.group13.data;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.data.log.Click;
+import uk.comp2211.group13.data.log.Impression;
+import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Filter;
+import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is used to calculate and retrieve the requested metrics.
@@ -28,7 +36,7 @@ public class Metrics {
   // determined by the UI
 
   /**
-   * This is used to add data to the metric object
+   * Class constructor. Initialises the Data variable, with the one specified form the user
    *
    * @param data data object
    */
@@ -38,66 +46,136 @@ public class Metrics {
 
   /**
    * This can be used to request metric data.
+   * <p>
+   * This will poll Data object for a filtered masterLog, which it will then granulate and apply the metric to.
    *
    * @param metric metric to request
    * @return metric data
    */
   //TODO: Add increment granularity in Sprint 2.
   public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) throws ParseException {
-
-    long increment = 1000*60*60*24;
+    Granularity granularity = Granularity.Day;
     Date d1 = Utility.string2Date(startDate);
     Date d2 = Utility.string2Date(endDate);
 
-    //specify whether we want to have a <Date, Float> or a <String, Float> HashMap
     HashMap<Date, Float> table = new HashMap<>();
 
-    for (long i = d1.getTime(); i < d2.getTime()-increment; i += increment) {
-      //request should return the log object for the dates from i to i+increment
-      HashMap<Filter, String> filters = new HashMap<>();
-      filters.put(Filter.StartDatetime, startDate);
-      filters.put(Filter.EndDatetime, endDate);
+    // Get timeLogs
+    HashMap<Filter, String> filters = new HashMap<>();
+    filters.put(Filter.StartDatetime, startDate);
+    filters.put(Filter.EndDatetime, endDate);
+    Logs masterLog = data.request(filters);
 
-      Logs log = data.request(filters);
-      Date idx = new Date(i);
-      Utility.date2String(idx);
+    HashMap<Date, Logs> timeLogs = getGranularity(masterLog, granularity);
+
+    for (Map.Entry<Date, Logs> timeLog : timeLogs.entrySet()) {
       switch (metric) {
-        case Impressions -> table.put(idx, (float) impressions(log));
-        case Clicks -> table.put(idx, (float) clicks(log));
-        case Unique -> table.put(idx, (float) uniques(log));
-        case BouncePage -> table.put(idx, (float) bouncePage(log));
-        case BounceVisit -> table.put(idx, (float) bounceVisit(log));
-        case Conversions -> table.put(idx, conversionRate(log));
-        case TotalCost -> table.put(idx, totalCost(log));
-        case CTR -> table.put(idx, clickRate(log));
-        case CPA -> table.put(idx, costAcquisition(log));
-        case CPC -> table.put(idx, costClick(log));
-        case CPM -> table.put(idx, costThousand(log));
-        case BounceRatePage -> table.put(idx, bounceRatePage(log));
-        case BounceRateVisit -> table.put(idx, bounceRateVisit(log));
+        case Impressions -> table.put(timeLog.getKey(), (float) impressions(timeLog.getValue()));
+        case Clicks -> table.put(timeLog.getKey(), (float) clicks(timeLog.getValue()));
+        case Unique -> table.put(timeLog.getKey(), (float) uniques(timeLog.getValue()));
+        case BouncePage -> table.put(timeLog.getKey(), (float) bouncePage(timeLog.getValue()));
+        case BounceVisit -> table.put(timeLog.getKey(), (float) bounceVisit(timeLog.getValue()));
+        case Conversions -> table.put(timeLog.getKey(), conversionRate(timeLog.getValue()));
+        case TotalCost -> table.put(timeLog.getKey(), totalCost(timeLog.getValue()));
+        case CTR -> table.put(timeLog.getKey(), clickRate(timeLog.getValue()));
+        case CPA -> table.put(timeLog.getKey(), costAcquisition(timeLog.getValue()));
+        case CPC -> table.put(timeLog.getKey(), costClick(timeLog.getValue()));
+        case CPM -> table.put(timeLog.getKey(), costThousand(timeLog.getValue()));
+        case BounceRatePage -> table.put(timeLog.getKey(), bounceRatePage(timeLog.getValue()));
+        case BounceRateVisit -> table.put(timeLog.getKey(), bounceRateVisit(timeLog.getValue()));
       }
     }
 
     return table;
   }
 
-  // TODO: Add java docs
+  /**
+   * This function it used to split a Logs object into multiple chunks based on time granularity
+   *
+   * @param masterLog   log with all logs in
+   * @param granularity size to create chunks of
+   * @return chunked logs
+   */
+  public HashMap<Date, Logs> getGranularity(Logs masterLog, Granularity granularity) {
+    HashMap<Date, Logs> timeLogs = new HashMap<>();
+
+    // Granulate impression logs
+    for (Impression impression : masterLog.impressionLogs) {
+      Date key = DateUtils.truncate(impression.date(), granularity.getCalendar());
+
+      if (!timeLogs.containsKey(key)) {
+        timeLogs.put(key, new Logs());
+      }
+
+      timeLogs.get(key).impressionLogs.add(impression);
+    }
+
+    // Granulate click logs
+    for (Click click : masterLog.clickLogs) {
+      Date key = DateUtils.truncate(click.date(), granularity.getCalendar());
+
+      if (!timeLogs.containsKey(key)) {
+        timeLogs.put(key, new Logs());
+      }
+
+      timeLogs.get(key).clickLogs.add(click);
+    }
+
+    // Granulate server logs
+    for (Server server : masterLog.serverLogs) {
+      Date key = DateUtils.truncate(server.entryDate(), granularity.getCalendar());
+
+      if (!timeLogs.containsKey(key)) {
+        timeLogs.put(key, new Logs());
+      }
+
+      timeLogs.get(key).serverLogs.add(server);
+    }
+
+    return timeLogs;
+  }
+
+  /**
+   * Pass through function for impressions from Data. Used for the U.I.'s convenience.
+   *
+   * @return Number of impressions
+   */
   public int impressions(Logs logs) {
     return logs.getImpressions();
   }
 
+  /**
+   * Pass through function for clicks form Data. Used for the U.I.'s convenience.
+   *
+   * @return Number of Clicks
+   */
   public int clicks(Logs logs) {
     return logs.getClicks();
   }
 
+  /**
+   * Pass through function for Unique ID's from Data. Used for the U.I's convenience.
+   *
+   * @return Number of Unique users over the campaign.
+   */
   public int uniques(Logs logs) {
     return logs.getUniques();
   }
 
+  /**
+   * Pass through function for page bounces form Data. Used for the U.I's convenience.
+   *
+   * @return Number of Bounces.
+   */
   public int bouncePage(Logs logs) {
     return logs.getBouncePage();
   }
 
+  /**
+   * Pass through function for visit bounces form Data. Used for the U.I's convenience.
+   *
+   * @return Number of Bounces.
+   */
   public int bounceVisit(Logs logs) {
     return logs.getBounceVisit();
   }
@@ -156,7 +234,6 @@ public class Metrics {
    *
    * @return conversion rate
    */
-  //:TODO:Change tests to reflect logs granularity.
   public float conversionRate(Logs logs) {
 
     int conversions = logs.getConversions();
@@ -171,7 +248,6 @@ public class Metrics {
    *
    * @return cost-per-acquisition
    */
-  //:TODO:Change tests to reflect logs granularity.
   public float costAcquisition(Logs logs) {
 
     int acquisitions = logs.getConversions();
@@ -186,7 +262,6 @@ public class Metrics {
    *
    * @return Cost per click
    */
-  //:TODO:Change tests to reflect logs granularity.
   public float costClick(Logs logs) {
 
     float cost = logs.getClickCost();
@@ -201,7 +276,6 @@ public class Metrics {
    *
    * @return Cost per thousand impressions.
    */
-  //:TODO:Change tests to reflect logs granularity.
   public float costThousand(Logs logs) {
 
     float cost = logs.getImpressionCost();
