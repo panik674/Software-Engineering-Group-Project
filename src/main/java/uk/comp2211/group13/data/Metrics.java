@@ -1,20 +1,13 @@
 package uk.comp2211.group13.data;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
-import uk.comp2211.group13.data.log.Click;
-import uk.comp2211.group13.data.log.Impression;
-import uk.comp2211.group13.data.log.Server;
-import uk.comp2211.group13.enums.Filter;
-import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This is used to calculate and retrieve the requested metrics.
@@ -44,8 +37,6 @@ public class Metrics {
 
   /**
    * This can be used to request metric data.
-   * <p>
-   * This will poll Data object for a filtered masterLog, which it will then granulate and apply the metric to.
    *
    * @param metric metric to request
    * @return metric data
@@ -139,45 +130,46 @@ public class Metrics {
   }
 
   /**
-   * Pass through function for impressions from Data. Used for the U.I.'s convenience.
+   * Pass through function for the number of impressions
    *
-   * @return Number of impressions
+   * @param logs: Log object for which the accumulation happens
+   * @return number of impressions
    */
   public int impressions(Logs logs) {
     return logs.getImpressions();
   }
 
   /**
-   * Pass through function for clicks form Data. Used for the U.I.'s convenience.
-   *
-   * @return Number of Clicks
+   * Pass through function for the number of clicks
+   * @param logs: Log object for which the accumulation happens
+   * @return number of clicks
    */
   public int clicks(Logs logs) {
     return logs.getClicks();
   }
 
   /**
-   * Pass through function for Unique ID's from Data. Used for the U.I's convenience.
-   *
-   * @return Number of Unique users over the campaign.
+   * Pass through function for the number of uniques
+   * @param logs: Log object for which the accumulation happens
+   * @return number of uniques
    */
   public int uniques(Logs logs) {
     return logs.getUniques();
   }
 
   /**
-   * Pass through function for page bounces form Data. Used for the U.I's convenience.
-   *
-   * @return Number of Bounces.
+   * Pass through function for the number of bounces - Page number definition
+   * @param logs: Log object for which the accumulation happens
+   * @return number of bounces
    */
   public int bouncePage(Logs logs) {
     return logs.getBouncePage();
   }
 
   /**
-   * Pass through function for visit bounces form Data. Used for the U.I's convenience.
-   *
-   * @return Number of Bounces.
+   * Pass through function for the number of bounces - Visit duration definition
+   * @param logs: Log object for which the accumulation happens
+   * @return number of bounces
    */
   public int bounceVisit(Logs logs) {
     return logs.getBounceVisit();
