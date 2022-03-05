@@ -39,7 +39,24 @@ public class Metrics {
    * @return metric data
    */
   public HashMap<Data, Float> request(Metric metric) {
-    return new HashMap<>();
+    Logs logs = data.request();
+    HashMap<Data, Float> data = new HashMap<>();
+
+    switch (metric) {
+      case Impressions -> data.size();
+      case Clicks -> data.size();
+      case Unique -> data.size();
+      case Bounces -> data.size();
+      case Conversions -> data.size();
+      case TotalCost -> data.size();
+      case CTR -> data.size();
+      case CPA -> data.size();
+      case CPC -> data.size();
+      case CPM -> data.size();
+      case BounceRate -> data.size();
+    }
+
+    return data;
   }
 
   /**
