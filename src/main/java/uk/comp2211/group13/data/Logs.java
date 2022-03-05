@@ -83,7 +83,7 @@ public class Logs {
   private long difDate(String start, String end) throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    Date d1 = sdf.parse(end);
+    Date d1 = sdf.parse(start);
     Date d2 = sdf.parse(end);
     long difTime = d2.getTime() - d1.getTime();
 
