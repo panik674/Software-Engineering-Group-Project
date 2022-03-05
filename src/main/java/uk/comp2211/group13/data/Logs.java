@@ -66,7 +66,6 @@ public class Logs {
         long seconds = difDate(value.entryDate(), value.exitDate());
         if (seconds <= 15) sum++;
 
-
       } catch (Exception e) {
         logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
       }
