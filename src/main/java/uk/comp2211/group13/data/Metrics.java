@@ -2,6 +2,9 @@ package uk.comp2211.group13.data;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.enums.Metric;
+
+import java.util.HashMap;
 
 /**
  * This is used to calculate and retrieve the requested metrics.
@@ -15,14 +18,28 @@ public class Metrics {
   /**
    * This stores the data class given by the AppWindow
    */
-  private Data data;
+  private final Data data;
 
   //TODO: must look into which Data object we'll be referring to. I think it should be referenced from the one
   // determined by the UI
 
-  // TODO: Add java doc
+  /**
+   * This is used to add data to the metric object
+   *
+   * @param data data object
+   */
   public Metrics(Data data) {
     this.data = data;
+  }
+
+  /**
+   * This can be used to request metric data.
+   *
+   * @param metric metric to request
+   * @return metric data
+   */
+  public HashMap<Data, Float> request(Metric metric) {
+    return new HashMap<>();
   }
 
   /**
