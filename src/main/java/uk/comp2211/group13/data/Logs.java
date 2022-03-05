@@ -61,16 +61,16 @@ public class Logs {
   public int getBounceVisit() {
     int sum = 0;
 
-    try {
-      for (Server value : serverLogs) {
+    for (Server value : serverLogs) {
+      try {
         long seconds = difDate(value.entryDate(), value.exitDate());
         if (seconds <= 15) sum++;
+
+
+      } catch (Exception e) {
+        logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
       }
-
-    } catch (Exception e) {
-      logger.error(String.format("Bounce total request failed Reason: %s", e.getMessage()));
     }
-
     return sum;
   }
 
