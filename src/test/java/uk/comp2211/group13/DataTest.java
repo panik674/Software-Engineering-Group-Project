@@ -7,11 +7,12 @@ import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.enums.Path;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataTest {
     private Data data = new Data();
-    private Logs logs = new Logs();
+    private Logs logs = new Logs(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
     public void ingest(){
         HashMap<Path, String> pathsTest = new HashMap<>();
@@ -19,9 +20,7 @@ public class DataTest {
         pathsTest.put(Path.Impression,"src/test/java/uk/comp2211/group13/impression_log.csv");
         pathsTest.put(Path.Server,"src/test/java/uk/comp2211/group13/server_log.csv");
         data.ingest(pathsTest);
-        logs.impressionLogs = data.request().impressionLogs;
-        logs.clickLogs = data.request().clickLogs;
-        logs.serverLogs = data.request().serverLogs;
+        logs = data.request();
     }
     @Test
     public void ingestTest(){
@@ -66,7 +65,6 @@ public class DataTest {
     }
     @Test
     public void getBouncePagTest(){
-        ingest();
         int result = 8665;
         Assert.assertNotNull(logs.getBouncePage());
         Assert.assertEquals(result,logs.getBouncePage());

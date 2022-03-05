@@ -15,10 +15,15 @@ import java.util.HashSet;
 public class Logs {
   private static final Logger logger = LogManager.getLogger(Logs.class);
 
+  public final ArrayList<Impression> impressionLogs;
+  public final ArrayList<Click> clickLogs;
+  public final ArrayList<Server> serverLogs;
 
-  public ArrayList<Impression> impressionLogs = new ArrayList<>();
-  public ArrayList<Click> clickLogs = new ArrayList<>();
-  public ArrayList<Server> serverLogs = new ArrayList<>();
+  public Logs(ArrayList<Impression> impressionLogs, ArrayList<Click> clickLogs, ArrayList<Server> serverLogs) {
+    this.impressionLogs = impressionLogs;
+    this.clickLogs = clickLogs;
+    this.serverLogs = serverLogs;
+  }
 
   /**
    * This is used to quickly get the number of clicks
@@ -86,6 +91,7 @@ public class Logs {
     Date d1 = sdf.parse(start);
     Date d2 = sdf.parse(end);
     long difTime = d2.getTime() - d1.getTime();
+
     return (difTime / (1000));
   }
 

@@ -22,7 +22,7 @@ public class Data {
   /**
    * These store the logs we ingest
    */
-  private Logs logs = new Logs();
+  private Logs logs = new Logs(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());;
 
   /**
    * This is used to ingest data into the data object from the various logs.
@@ -36,7 +36,7 @@ public class Data {
    * @return boolean value for ingest success
    */
   public boolean ingest(HashMap<Path, String> paths) {
-    logs = new Logs();
+    logs = new Logs(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());;
 
     // Checks all 3 log paths have been entered
     if (!paths.containsKey(Path.Impression) || !paths.containsKey(Path.Click) || !paths.containsKey(Path.Server)) {
@@ -111,7 +111,7 @@ public class Data {
       }
     } catch (Exception e) {
       logger.error(String.format("Log ingest failed Reason: %s", e.getMessage()));
-      logs = new Logs();
+      logs = new Logs(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());;
 
       return false;
     }
@@ -126,4 +126,4 @@ public class Data {
   public Logs request() {
     return logs;
   }
-  }
+}

@@ -2,6 +2,9 @@ package uk.comp2211.group13.data;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.enums.Metric;
+
+import java.util.HashMap;
 
 /**
  * This is used to calculate and retrieve the requested metrics.
@@ -15,14 +18,68 @@ public class Metrics {
   /**
    * This stores the data class given by the AppWindow
    */
-  private Data data;
+  private final Data data;
 
   //TODO: must look into which Data object we'll be referring to. I think it should be referenced from the one
   // determined by the UI
 
-  // TODO: Add java doc
+  /**
+   * This is used to add data to the metric object
+   *
+   * @param data data object
+   */
   public Metrics(Data data) {
     this.data = data;
+  }
+
+  /**
+   * This can be used to request metric data.
+   *
+   * @param metric metric to request
+   * @return metric data
+   */
+  public HashMap<Data, Float> request(Metric metric) {
+    Logs logs = data.request();
+    HashMap<Data, Float> data = new HashMap<>();
+
+    switch (metric) {
+      case Impressions -> data.size();
+      case Clicks -> data.size();
+      case Unique -> data.size();
+      case BouncePage -> data.size();
+      case BounceVisit -> data.size();
+      case Conversions -> data.size();
+      case TotalCost -> data.size();
+      case CTR -> data.size();
+      case CPA -> data.size();
+      case CPC -> data.size();
+      case CPM -> data.size();
+      case BounceRate -> data.size();
+    }
+
+    return data;
+  }
+
+  // TODO: Add java docs
+  public int impressions(Logs logs) {
+
+    return data.request().getImpressions();
+  }
+
+  public int clicks() {
+    return data.request().getClicks();
+  }
+
+  public int uniques() {
+    return data.request().getUniques();
+  }
+
+  public int bouncePage() {
+    return data.request().getBouncePage();
+  }
+
+  public int bounceVisit() {
+    return data.request().getBounceVisit();
   }
 
   /**
@@ -135,27 +192,6 @@ public class Metrics {
     int impressions = logs.getImpressions();
 
     return cost / impressions * 1000;
-  }
-
-  // TODO: Add java docs
-  public int impressions() {
-    return data.request().getImpressions();
-  }
-
-  public int clicks() {
-    return data.request().getClicks();
-  }
-
-  public int uniques() {
-    return data.request().getUniques();
-  }
-
-  public int bouncePage() {
-    return data.request().getBouncePage();
-  }
-
-  public int bounceVisit() {
-    return data.request().getBounceVisit();
   }
 
 }
