@@ -12,8 +12,6 @@ import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,12 +51,17 @@ public class Metrics {
    * @return metric data
    */
   //TODO: Add increment granularity in Sprint 2.
-  public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) throws ParseException {
-    Granularity granularity = Granularity.Day;
-    Date d1 = Utility.string2Date(startDate);
-    Date d2 = Utility.string2Date(endDate);
-
+  public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) {
     HashMap<Date, Float> table = new HashMap<>();
+
+    Granularity granularity = Granularity.Day;
+    try {
+      Date d1 = Utility.string2Date(startDate);
+      Date d2 = Utility.string2Date(endDate);
+    } catch (ParseException e) {
+      logger.error("Invalid date used for request.");
+      return table;
+    }
 
     // Get timeLogs
     HashMap<Filter, String> filters = new HashMap<>();
@@ -181,55 +184,6 @@ public class Metrics {
   }
 
   /**
-   * This is a helper function to combine impression and click cost.
-   *
-   * @return Total cost of impressions and clicks
-   */
-  private float totalCost(Logs logs) {
-    return logs.getImpressionCost() + logs.getClickCost();
-  }
-
-  /**
-   * Getter for the Click-through-rate (CTR)
-   *
-   * @return click-through rate
-   */
-  //:TODO:Change tests to reflect logs granularity.
-  public float clickRate(Logs logs) {
-
-    int clicks = logs.getClicks();
-    int impressions = logs.getImpressions();
-
-    return impressions / clicks;
-  }
-
-  /**
-   * Getter for the bounce rate. Defined as visiting only one page.
-   *
-   * @return bounce rate
-   */
-  //:TODO:Change tests to reflect logs granularity.
-  public float bounceRatePage(Logs logs) {
-
-    int clicks = logs.getClicks();
-    int bounce = logs.getBouncePage();
-
-    return bounce / clicks;
-  }
-
-  /**
-   * Getter for the bounce rate. Defined as staying on the website for less than a minute.
-   *
-   * @return bounce rate
-   */
-  public float bounceRateVisit(Logs logs) {
-    int clicks = logs.getClicks();
-    int bounce = logs.getBounceVisit();
-
-    return bounce / clicks;
-  }
-
-  /**
    * Getter for the conversion rate
    *
    * @return conversion rate
@@ -240,6 +194,29 @@ public class Metrics {
     int clicks = logs.getClicks();
 
     return conversions / clicks;
+  }
+
+  /**
+   * This is a helper function to combine impression and click cost.
+   *
+   * @return Total cost of impressions and clicks
+   */
+  private float totalCost(Logs logs) {
+    return logs.getImpressionCost() + logs.getClickCost();
+  }
+
+
+  /**
+   * Getter for the Click-through-rate (CTR)
+   *
+   * @return click-through rate
+   */
+  public float clickRate(Logs logs) {
+
+    int clicks = logs.getClicks();
+    int impressions = logs.getImpressions();
+
+    return impressions / clicks;
   }
 
   /**
@@ -282,6 +259,31 @@ public class Metrics {
     int impressions = logs.getImpressions();
 
     return cost / impressions * 1000;
+  }
+
+  /**
+   * Getter for the bounce rate. Defined as visiting only one page.
+   *
+   * @return bounce rate
+   */
+  public float bounceRatePage(Logs logs) {
+
+    int clicks = logs.getClicks();
+    int bounce = logs.getBouncePage();
+
+    return bounce / clicks;
+  }
+
+  /**
+   * Getter for the bounce rate. Defined as staying on the website for less than a minute.
+   *
+   * @return bounce rate
+   */
+  public float bounceRateVisit(Logs logs) {
+    int clicks = logs.getClicks();
+    int bounce = logs.getBounceVisit();
+
+    return bounce / clicks;
   }
 
 }

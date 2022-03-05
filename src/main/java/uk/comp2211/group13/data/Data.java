@@ -7,7 +7,6 @@ import uk.comp2211.group13.data.log.Click;
 import uk.comp2211.group13.data.log.Impression;
 import uk.comp2211.group13.data.log.Server;
 import uk.comp2211.group13.enums.Filter;
-import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
