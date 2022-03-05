@@ -65,6 +65,7 @@ public class DataTest {
     }
     @Test
     public void getBouncePagTest(){
+        ingest();
         int result = 8665;
         Assert.assertNotNull(logs.getBouncePage());
         Assert.assertEquals(result,logs.getBouncePage());
