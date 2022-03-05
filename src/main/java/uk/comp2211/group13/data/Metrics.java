@@ -76,23 +76,47 @@ public class Metrics {
     return table;
   }
 
-  // TODO: Add java docs
+  /**
+   * Pass through function for the number of impressions
+   * @param logs: Log object for which the accumulation happens
+   * @return number of impressions
+   */
   public int impressions(Logs logs) {
     return logs.getImpressions();
   }
 
+  /**
+   * Pass through function for the number of clicks
+   * @param logs: Log object for which the accumulation happens
+   * @return number of clicks
+   */
   public int clicks(Logs logs) {
     return logs.getClicks();
   }
 
+  /**
+   * Pass through function for the number of uniques
+   * @param logs: Log object for which the accumulation happens
+   * @return number of uniques
+   */
   public int uniques(Logs logs) {
     return logs.getUniques();
   }
 
+  /**
+   * Pass through function for the number of bounces - Page number definition
+   * @param logs: Log object for which the accumulation happens
+   * @return number of bounces
+   */
   public int bouncePage(Logs logs) {
     return logs.getBouncePage();
   }
 
+  /**
+   * Pass through function for the number of bounces - Visit duration definition
+   * @param logs: Log object for which the accumulation happens
+   * @return number of bounces
+   */
   public int bounceVisit(Logs logs) {
     return logs.getBounceVisit();
   }
