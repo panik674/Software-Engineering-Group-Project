@@ -56,7 +56,7 @@ public class DataTest {
     @Test
     public void getBounceTest(){
         ingest();
-        int resultFor2_week = 7826;
+        int resultFor2_week = 15247;
         Assert.assertNotNull(data.getBounces());
         Assert.assertEquals(resultFor2_week,data.getBounces());
 
