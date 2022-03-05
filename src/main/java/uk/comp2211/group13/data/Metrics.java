@@ -97,7 +97,7 @@ public class Metrics {
    * @param granularity size to create chunks of
    * @return chunked logs
    */
-  public HashMap<Date, Logs> getGranularity(Logs masterLog, Granularity granularity) {
+  private HashMap<Date, Logs> getGranularity(Logs masterLog, Granularity granularity) {
     HashMap<Date, Logs> timeLogs = new HashMap<>();
 
     // Granulate impression logs
