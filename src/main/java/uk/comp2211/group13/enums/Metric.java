@@ -11,6 +11,7 @@ public enum Metric {
   BounceVisit,
   Conversions,
   TotalCost,
+  ClickCost,
   CTR,
   CPA,
   CPC,

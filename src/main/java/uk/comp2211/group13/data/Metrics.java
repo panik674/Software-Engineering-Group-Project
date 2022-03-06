@@ -78,6 +78,7 @@ public class Metrics {
         case BounceVisit -> table.put(timeLog.getKey(), (float) bounceVisit(timeLog.getValue()));
         case Conversions -> table.put(timeLog.getKey(), conversionRate(timeLog.getValue()));
         case TotalCost -> table.put(timeLog.getKey(), totalCost(timeLog.getValue()));
+        case ClickCost -> table.put(timeLog.getKey(), timeLog.getValue().getClickCost());
         case CTR -> table.put(timeLog.getKey(), clickRate(timeLog.getValue()));
         case CPA -> table.put(timeLog.getKey(), costAcquisition(timeLog.getValue()));
         case CPC -> table.put(timeLog.getKey(), costClick(timeLog.getValue()));
@@ -207,7 +208,6 @@ public class Metrics {
   private float totalCost(Logs logs) {
     return logs.getImpressionCost() + logs.getClickCost();
   }
-
 
   /**
    * Getter for the Click-through-rate (CTR)
