@@ -82,11 +82,7 @@ public class HistogramScene extends BaseScene {
 
         histogram(vbox);
 
-
-
-
-
-
+        System.out.println(appWindow.getMetrics().request(Metric.Impressions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day));
     }
 
     @Override

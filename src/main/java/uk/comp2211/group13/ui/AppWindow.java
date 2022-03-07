@@ -10,7 +10,10 @@ import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.App;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
+import uk.comp2211.group13.enums.Path;
 import uk.comp2211.group13.scenes.*;
+
+import java.util.HashMap;
 
 // The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
 /**
@@ -82,9 +85,13 @@ public class AppWindow {
     // Go to welcome screen
     welcomeScreen();
 
+    HashMap<Path, String> paths = new HashMap<Path, String>();
+    paths.put(Path.Impression, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\impression_log.csv");
+    paths.put(Path.Click, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\click_log.csv");
+    paths.put(Path.Server, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\server_log.csv");
+    this.data.ingest(paths);
+
     histogramScreen();
-
-
   }
 
   /**
