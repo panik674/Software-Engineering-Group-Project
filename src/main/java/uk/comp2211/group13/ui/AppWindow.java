@@ -86,12 +86,12 @@ public class AppWindow {
     welcomeScreen();
 
     HashMap<Path, String> paths = new HashMap<Path, String>();
-    paths.put(Path.Impression, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\impression_log.csv");
-    paths.put(Path.Click, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\click_log.csv");
-    paths.put(Path.Server, "C:\\Users\\thoma\\Downloads\\2_week_campaign_2\\server_log.csv");
+    paths.put(Path.Impression, "C:\\Users\\kpani\\Downloads\\logs\\impression_log.csv");
+    paths.put(Path.Click, "C:\\Users\\kpani\\Downloads\\logs\\click_log.csv");
+    paths.put(Path.Server, "C:\\Users\\kpani\\Downloads\\logs\\server_log.csv");
     this.data.ingest(paths);
 
-    histogramScreen();
+    graphingScreen();
   }
 
   /**

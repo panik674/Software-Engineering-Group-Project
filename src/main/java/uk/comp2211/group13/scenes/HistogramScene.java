@@ -26,13 +26,16 @@ import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Metric;
 
 import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HistogramScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
 
     private StackPane graphingPane;
-    private LineChart lineChart;
+    private HashMap <Date,Float>  ClickCosts = appWindow.getMetrics().request(Metric.ClickCost, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
     /**
      * Creates a new scene.
      *
@@ -82,7 +85,8 @@ public class HistogramScene extends BaseScene {
 
         histogram(vbox);
 
-        System.out.println(appWindow.getMetrics().request(Metric.Impressions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day));
+
+        System.out.println(ClickCosts);
     }
 
     @Override
@@ -97,14 +101,18 @@ public class HistogramScene extends BaseScene {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Dates");
-        yAxis.setLabel("Click Costs");
+        yAxis.setLabel("Click Costs (£)");
 
         BarChart<String,Number> barChart = new BarChart<>(xAxis,yAxis);
         barChart.setTitle("Histogram to show Click Costs Distribution");
         barChart.setCategoryGap(0);
         barChart.setBarGap(0);
         XYChart.Series dataValues = new XYChart.Series();
+        for (Map.Entry<Date, Float> entry : ClickCosts.entrySet()) {
+            dataValues.getData().add(new XYChart.Data(entry.getKey().toString(),entry.getValue()));
+        }
         barChart.getData().add(dataValues);
+        dataValues.setName("Click Costs");
         vertBox.getChildren().add(barChart);
     }
 
