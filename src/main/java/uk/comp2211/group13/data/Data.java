@@ -39,7 +39,6 @@ public class Data {
    */
   public boolean ingest(HashMap<Path, String> paths) {
     logs = new Logs();
-    ;
 
     // Checks all 3 log paths have been entered
     if (!paths.containsKey(Path.Impression) || !paths.containsKey(Path.Click) || !paths.containsKey(Path.Server)) {
@@ -115,7 +114,6 @@ public class Data {
     } catch (Exception e) {
       logger.error(String.format("Log ingest failed Reason: %s", e.getMessage()));
       logs = new Logs();
-      ;
 
       return false;
     }
@@ -134,7 +132,7 @@ public class Data {
       return null;
     }
 
-    String line = "";
+    String line;
 
     // Setup file reader
     try {
@@ -146,7 +144,6 @@ public class Data {
     }
 
     // Basic file validation
-    boolean validFlag;
     switch (line) {
       case "Date,ID,Gender,Age,Income,Context,Impression Cost" -> {
         return Path.Impression;
