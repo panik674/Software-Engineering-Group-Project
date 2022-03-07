@@ -27,6 +27,7 @@ public class GraphingScene extends BaseScene {
 
     private StackPane graphingPane;
     private LineChart lineChart;
+
     private HashMap<Date, Float> Clicks = appWindow.getMetrics().request(Metric.Clicks, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
     private HashMap<Date, Float> Impressions = appWindow.getMetrics().request(Metric.Impressions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
     private HashMap<Date, Float> Uniques = appWindow.getMetrics().request(Metric.Unique, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
@@ -90,55 +91,55 @@ public class GraphingScene extends BaseScene {
 
 
         String [] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Number of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
-        ComboBox metricBox = new ComboBox(FXCollections.observableArrayList(metrics));
+        ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
         metricBox.setValue(metrics [0]);
         vbox.getChildren().add(metricBox);
 
-        ComboBox filterBox = new ComboBox();
+        ComboBox<String> filterBox = new ComboBox<>();
         filterBox.setValue("Choose a Filter");
         vbox.getChildren().add(filterBox);
 
-        metricGraph(vbox, (String) metricBox.getValue(), Clicks);
+        metricGraph(vbox, metricBox.getValue(), Clicks);
         metricBox.setOnAction(e -> {
             vbox.getChildren().remove(lineChart);
             if ("Number of Clicks".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Clicks);
+                metricGraph(vbox, metricBox.getValue(), Clicks);
             }
             else if ("Number of Impressions".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Impressions);
+                metricGraph(vbox, metricBox.getValue(), Impressions);
             }
             else if ("Number of Uniques".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Uniques);
+                metricGraph(vbox, metricBox.getValue(), Uniques);
             }
             else if ("Number of Bounce Pages".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), BouncePage);
+                metricGraph(vbox, metricBox.getValue(), BouncePage);
             }
             else if ("Number of Bounce Visits".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), BounceVisit);
+                metricGraph(vbox, metricBox.getValue(), BounceVisit);
             }
             else if ("Number of Conversions".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Conversions);
+                metricGraph(vbox, metricBox.getValue(), Conversions);
             }
             else if ("Total Costs".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), TotalCost);
+                metricGraph(vbox, metricBox.getValue(), TotalCost);
             }
             else if ("CTR".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CTR);
+                metricGraph(vbox, metricBox.getValue(), CTR);
             }
             else if ("CPA".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CPA);
+                metricGraph(vbox, metricBox.getValue(), CPA);
             }
             else if ("CPC".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CPC);
+                metricGraph(vbox, metricBox.getValue(), CPC);
             }
             else if ("CPM".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CPM);
+                metricGraph(vbox, metricBox.getValue(), CPM);
             }
             else if ("Bounce Visit Rate".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), BounceRateVisit);
+                metricGraph(vbox, metricBox.getValue(), BounceRateVisit);
             }
             else {
-                metricGraph(vbox, (String) metricBox.getValue(), BounceRatePage);
+                metricGraph(vbox, metricBox.getValue(), BounceRatePage);
             }
 
         });

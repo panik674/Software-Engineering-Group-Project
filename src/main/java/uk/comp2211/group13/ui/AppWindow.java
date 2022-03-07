@@ -84,14 +84,6 @@ public class AppWindow {
 
     // Go to welcome screen
     welcomeScreen();
-
-    HashMap<Path, String> paths = new HashMap<Path, String>();
-    paths.put(Path.Impression, "C:\\Users\\kpani\\Downloads\\logs\\impression_log.csv");
-    paths.put(Path.Click, "C:\\Users\\kpani\\Downloads\\logs\\click_log.csv");
-    paths.put(Path.Server, "C:\\Users\\kpani\\Downloads\\logs\\server_log.csv");
-    this.data.ingest(paths);
-
-    graphingScreen();
   }
 
   /**
