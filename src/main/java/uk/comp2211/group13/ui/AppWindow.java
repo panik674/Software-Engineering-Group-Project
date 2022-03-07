@@ -10,9 +10,7 @@ import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.App;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
-import uk.comp2211.group13.scenes.BaseScene;
-import uk.comp2211.group13.scenes.ValuesScene;
-import uk.comp2211.group13.scenes.WelcomeScene;
+import uk.comp2211.group13.scenes.*;
 
 // The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
 /**
@@ -83,6 +81,10 @@ public class AppWindow {
 
     // Go to welcome screen
     welcomeScreen();
+
+    histogramScreen();
+
+
   }
 
   /**
@@ -90,6 +92,14 @@ public class AppWindow {
    */
   public void welcomeScreen() {
     loadScene(new WelcomeScene(this));
+  }
+
+  public void graphingScreen(){
+    loadScene(new GraphingScene(this));
+  }
+
+  public void histogramScreen() {
+    loadScene(new HistogramScene(this));
   }
 
   /**
