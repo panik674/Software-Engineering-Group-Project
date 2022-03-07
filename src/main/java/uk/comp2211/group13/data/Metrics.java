@@ -49,17 +49,8 @@ public class Metrics {
    * @return metric data
    */
   //TODO: Add increment granularity in Sprint 2.
-  public HashMap<Date, Float> request(Metric metric, String startDate, String endDate) {
+  public HashMap<Date, Float> request(Metric metric, String startDate, String endDate, Granularity granularity) {
     HashMap<Date, Float> table = new HashMap<>();
-
-    Granularity granularity = Granularity.Day;
-    try {
-      Date d1 = Utility.string2Date(startDate);
-      Date d2 = Utility.string2Date(endDate);
-    } catch (ParseException e) {
-      logger.error("Invalid date used for request.");
-      return table;
-    }
 
     // Get timeLogs
     HashMap<Filter, String> filters = new HashMap<>();
@@ -67,24 +58,50 @@ public class Metrics {
     filters.put(Filter.EndDatetime, endDate);
     Logs masterLog = data.request(filters);
 
-    HashMap<Date, Logs> timeLogs = getGranularity(masterLog, granularity);
+    if (granularity != Granularity.None) {
+      HashMap<Date, Logs> timeLogs = getGranularity(masterLog, granularity);
 
-    for (Map.Entry<Date, Logs> timeLog : timeLogs.entrySet()) {
-      switch (metric) {
-        case Impressions -> table.put(timeLog.getKey(), (float) impressions(timeLog.getValue()));
-        case Clicks -> table.put(timeLog.getKey(), (float) clicks(timeLog.getValue()));
-        case Unique -> table.put(timeLog.getKey(), (float) uniques(timeLog.getValue()));
-        case BouncePage -> table.put(timeLog.getKey(), (float) bouncePage(timeLog.getValue()));
-        case BounceVisit -> table.put(timeLog.getKey(), (float) bounceVisit(timeLog.getValue()));
-        case Conversions -> table.put(timeLog.getKey(), conversionRate(timeLog.getValue()));
-        case TotalCost -> table.put(timeLog.getKey(), totalCost(timeLog.getValue()));
-        case ClickCost -> table.put(timeLog.getKey(), timeLog.getValue().getClickCost());
-        case CTR -> table.put(timeLog.getKey(), clickRate(timeLog.getValue()));
-        case CPA -> table.put(timeLog.getKey(), costAcquisition(timeLog.getValue()));
-        case CPC -> table.put(timeLog.getKey(), costClick(timeLog.getValue()));
-        case CPM -> table.put(timeLog.getKey(), costThousand(timeLog.getValue()));
-        case BounceRatePage -> table.put(timeLog.getKey(), bounceRatePage(timeLog.getValue()));
-        case BounceRateVisit -> table.put(timeLog.getKey(), bounceRateVisit(timeLog.getValue()));
+      for (Map.Entry<Date, Logs> timeLog : timeLogs.entrySet()) {
+        switch (metric) {
+          case Impressions -> table.put(timeLog.getKey(), (float) impressions(timeLog.getValue()));
+          case Clicks -> table.put(timeLog.getKey(), (float) clicks(timeLog.getValue()));
+          case Unique -> table.put(timeLog.getKey(), (float) uniques(timeLog.getValue()));
+          case BouncePage -> table.put(timeLog.getKey(), (float) bouncePage(timeLog.getValue()));
+          case BounceVisit -> table.put(timeLog.getKey(), (float) bounceVisit(timeLog.getValue()));
+          case Conversions -> table.put(timeLog.getKey(), conversionRate(timeLog.getValue()));
+          case TotalCost -> table.put(timeLog.getKey(), totalCost(timeLog.getValue()));
+          case ClickCost -> table.put(timeLog.getKey(), timeLog.getValue().getClickCost());
+          case CTR -> table.put(timeLog.getKey(), clickRate(timeLog.getValue()));
+          case CPA -> table.put(timeLog.getKey(), costAcquisition(timeLog.getValue()));
+          case CPC -> table.put(timeLog.getKey(), costClick(timeLog.getValue()));
+          case CPM -> table.put(timeLog.getKey(), costThousand(timeLog.getValue()));
+          case BounceRatePage -> table.put(timeLog.getKey(), bounceRatePage(timeLog.getValue()));
+          case BounceRateVisit -> table.put(timeLog.getKey(), bounceRateVisit(timeLog.getValue()));
+        }
+      }
+    } else { // Ignore granularity
+      try {
+        Date d1 = Utility.string2Date(startDate);
+
+        switch (metric) {
+          case Impressions -> table.put(d1, (float) impressions(masterLog));
+          case Clicks -> table.put(d1, (float) clicks(masterLog));
+          case Unique -> table.put(d1, (float) uniques(masterLog));
+          case BouncePage -> table.put(d1, (float) bouncePage(masterLog));
+          case BounceVisit -> table.put(d1, (float) bounceVisit(masterLog));
+          case Conversions -> table.put(d1, conversionRate(masterLog));
+          case TotalCost -> table.put(d1, totalCost(masterLog));
+          case ClickCost -> table.put(d1, masterLog.getClickCost());
+          case CTR -> table.put(d1, clickRate(masterLog));
+          case CPA -> table.put(d1, costAcquisition(masterLog));
+          case CPC -> table.put(d1, costClick(masterLog));
+          case CPM -> table.put(d1, costThousand(masterLog));
+          case BounceRatePage -> table.put(d1, bounceRatePage(masterLog));
+          case BounceRateVisit -> table.put(d1, bounceRateVisit(masterLog));
+        }
+      } catch (ParseException e) {
+        logger.error("Invalid date used for request.");
+        return table;
       }
     }
 

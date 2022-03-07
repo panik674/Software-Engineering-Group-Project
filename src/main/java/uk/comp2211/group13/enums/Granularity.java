@@ -6,6 +6,7 @@ import java.util.Calendar;
  * This enum is used to state granularity
  */
 public enum Granularity {
+  None,
   Second,
   Minute,
   Hour,
@@ -19,11 +20,12 @@ public enum Granularity {
   public int getValue() {
     int out;
     switch (this) {
+      case None -> out = 0;
       case Second -> out = 1000;
       case Minute -> out = 1000 * 60;
       case Hour -> out = 1000 * 60 * 60;
       case Day -> out = 1000 * 60 * 60 * 24;
-      default -> out = 0;
+      default -> out = -1;
     }
 
     return out;
@@ -37,11 +39,12 @@ public enum Granularity {
   public int getCalendar() {
     int out;
     switch (this) {
+      case None -> out = 0;
       case Second -> out = Calendar.SECOND;
       case Minute -> out = Calendar.MINUTE;
       case Hour -> out = Calendar.HOUR;
       case Day -> out = Calendar.DAY_OF_MONTH;
-      default -> out = 0;
+      default -> out = -1;
     }
 
     return out;
