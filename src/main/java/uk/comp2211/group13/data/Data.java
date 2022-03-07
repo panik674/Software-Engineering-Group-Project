@@ -10,6 +10,7 @@ import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Path;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -119,6 +120,48 @@ public class Data {
       return false;
     }
     return true;
+  }
+
+  /**
+   * This is a temporary function until sprint 2 where we merge it with ingest()
+   *
+   * @param path string path of file to estimate path of
+   * @return Path type
+   */
+  public Path estimateLogType(String path) {
+    File file = new File(path);
+    if (!file.exists() || file.isDirectory()) {
+      return null;
+    }
+
+    String line = "";
+
+    // Setup file reader
+    try {
+      Scanner reader = new Scanner(file);
+      line = reader.nextLine();
+      reader.close();
+    } catch (FileNotFoundException e) {
+      return null;
+    }
+
+    // Basic file validation
+    boolean validFlag;
+    switch (line) {
+      case "Date,ID,Gender,Age,Income,Context,Impression Cost" -> {
+        return Path.Impression;
+      }
+      case "Date,ID,Click Cost" -> {
+        return Path.Click;
+      }
+      case "Entry Date,ID,Exit Date,Pages Viewed,Conversion" -> {
+        return Path.Server;
+      }
+
+      default -> {
+        return null;
+      }
+    }
   }
 
   /**
