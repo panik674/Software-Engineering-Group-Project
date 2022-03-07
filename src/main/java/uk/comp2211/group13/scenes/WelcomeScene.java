@@ -14,11 +14,13 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.enums.Path;
 import uk.comp2211.group13.ui.AppWindow;
 import uk.comp2211.group13.ui.AppPane;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 public class WelcomeScene extends BaseScene {
@@ -105,6 +107,7 @@ public class WelcomeScene extends BaseScene {
     public void fileLoader(MouseEvent event) {
         try {
             if (radioButton.isSelected()) {
+                HashMap<Path, String> hashMap = new HashMap<>();
                 vbox.getChildren().remove(error);
                 // create a File chooser
                 FileChooser fileChooser = new FileChooser();
@@ -114,10 +117,14 @@ public class WelcomeScene extends BaseScene {
                 if (files.size() == 3) {
                     for (File file : files) {
                         if (file != null) {
-                            System.out.println(file.getAbsolutePath()
-                                    + "  selected");
-                            appWindow.valuesScreen();
+                            hashMap.put(appWindow.getData().estimateLogType(file.getAbsolutePath()), file.getAbsolutePath());
                         }
+                    }
+                    if (appWindow.getData().ingest(hashMap)) {
+                        appWindow.valuesScreen();
+                    } else {
+                        error = new Text("Please select the correct formats of the file");
+                        vbox.getChildren().add(error);
                     }
                 } else {
                     error = new Text("Please select exactly three files!");
