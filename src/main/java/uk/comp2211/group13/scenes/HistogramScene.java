@@ -80,8 +80,30 @@ public class HistogramScene extends BaseScene {
         vbox.setSpacing(30);
         mainPane.setTop(vbox);
 
-        Text appTitle = new Text("Welcome to 'Witty Name' App");
-        vbox.getChildren().add(appTitle);
+        //Text appTitle = new Text("Welcome to 'Witty Name' App");
+        HBox hBox = new HBox();
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.getChildren().add(hBox);
+
+        Button valuesButton = new Button("Metrics Values");
+        hBox.getChildren().add(valuesButton);
+        valuesButton.setOnMouseClicked(this::changeScene);
+
+        Button chartsButton = new Button("Metrics Charts");
+        chartsButton.setStyle("-fx-background-color: #01ffff");
+        hBox.getChildren().add(chartsButton);
+
+        HBox hBoxCharts = new HBox();
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.getChildren().add(hBoxCharts);
+
+        Button graphingButton = new Button("Graph");
+        hBoxCharts.getChildren().add(graphingButton);
+        graphingButton.setOnMouseClicked(this::changeChart);
+
+        Button histogramButton = new Button("Histogram");
+        histogramButton.setStyle("-fx-background-color: #01ffff");
+        hBoxCharts.getChildren().add(histogramButton);
 
         histogram(vbox);
 
@@ -93,7 +115,7 @@ public class HistogramScene extends BaseScene {
     public void events() {
         scene.setOnKeyPressed((e) -> {
             if (e.getCode() != KeyCode.ESCAPE) return;
-            appWindow.exit();
+            appWindow.welcomeScreen();
         });
     }
 
@@ -116,6 +138,13 @@ public class HistogramScene extends BaseScene {
         vertBox.getChildren().add(barChart);
     }
 
+    private void changeScene (MouseEvent mouseEvent) {
+        appWindow.valuesScreen();
+    }
+
+    private void changeChart (MouseEvent mouseEvent) {
+        appWindow.graphingScreen();
+    }
 
 
 }

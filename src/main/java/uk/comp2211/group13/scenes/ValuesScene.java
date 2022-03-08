@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,7 +81,18 @@ public class ValuesScene extends BaseScene {
         valuesPane.getChildren().add(mainPane);
 
 
-        //Text text = new Text("Values goes here");
+        HBox hBox = new HBox();
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        mainPane.setTop(hBox);
+
+        Button valuesButton = new Button("Metrics Values");
+        valuesButton.setStyle("-fx-background-color: #01ffff");
+        hBox.getChildren().add(valuesButton);
+
+        Button chartsButton = new Button("Metrics Charts");
+        hBox.getChildren().add(chartsButton);
+        chartsButton.setOnMouseClicked(this::changeScene);
+
 
         vBox = new VBox();
         mainPane.setCenter(vBox);
@@ -183,5 +195,9 @@ public class ValuesScene extends BaseScene {
             pAndVToggle_2.setText("Visits");
             bR_Block.setValue(requestValue((Metric.BounceRatePage)));
         }
+    }
+
+    private void changeScene (MouseEvent mouseEvent) {
+        appWindow.graphingScreen();
     }
 }

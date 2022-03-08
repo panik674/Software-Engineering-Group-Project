@@ -4,9 +4,12 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -85,9 +88,30 @@ public class GraphingScene extends BaseScene {
         vbox.setSpacing(30);
         mainPane.setTop(vbox);
 
-        Text appTitle = new Text("Welcome to 'Witty Name' App");
-        vbox.getChildren().add(appTitle);
+        //Text appTitle = new Text("Welcome to 'Witty Name' App");
+        HBox hBox = new HBox();
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.getChildren().add(hBox);
 
+        Button valuesButton = new Button("Metrics Values");
+        hBox.getChildren().add(valuesButton);
+        valuesButton.setOnMouseClicked(this::changeScene);
+
+        Button chartsButton = new Button("Metrics Charts");
+        chartsButton.setStyle("-fx-background-color: #01ffff");
+        hBox.getChildren().add(chartsButton);
+
+        HBox hBoxCharts = new HBox();
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.getChildren().add(hBoxCharts);
+
+        Button graphingButton = new Button("Graph");
+        graphingButton.setStyle("-fx-background-color: #01ffff");
+        hBoxCharts.getChildren().add(graphingButton);
+
+        Button histogramButton = new Button("Histogram");
+        hBoxCharts.getChildren().add(histogramButton);
+        histogramButton.setOnMouseClicked(this::changeChart);
 
 
         String [] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Number of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
@@ -150,9 +174,10 @@ public class GraphingScene extends BaseScene {
     public void events() {
         scene.setOnKeyPressed((e) -> {
             if (e.getCode() != KeyCode.ESCAPE) return;
-            appWindow.exit();
+            appWindow.welcomeScreen();
         });
     }
+
     public void metricGraph(VBox vertBox, String metricLabel, HashMap<Date, Float> metric){
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
@@ -172,6 +197,12 @@ public class GraphingScene extends BaseScene {
 
     }
 
+    private void changeScene (MouseEvent mouseEvent) {
+        appWindow.valuesScreen();
+    }
 
+    private void changeChart (MouseEvent mouseEvent) {
+        appWindow.histogramScreen();
+    }
 
 }

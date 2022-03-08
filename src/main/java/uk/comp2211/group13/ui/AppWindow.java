@@ -93,19 +93,25 @@ public class AppWindow {
     loadScene(new WelcomeScene(this));
   }
 
-  public void graphingScreen(){
-    loadScene(new GraphingScene(this));
-  }
-
-  public void histogramScreen() {
-    loadScene(new HistogramScene(this));
-  }
-
   /**
    * Display values screen
    */
   public void valuesScreen() {
     loadScene(new ValuesScene(this));
+  }
+
+  /**
+   * Display graphs screen
+   */
+  public void graphingScreen(){
+    loadScene(new GraphingScene(this));
+  }
+
+  /**
+   * Display histogram screen
+   */
+  public void histogramScreen() {
+    loadScene(new HistogramScene(this));
   }
 
   /**
