@@ -6,10 +6,13 @@ import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Filter;
+import uk.comp2211.group13.enums.Granularity;
+import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.enums.Path;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class MetricsTest {
@@ -26,12 +29,8 @@ public class MetricsTest {
   }
   public void requestForTest(){
       HashMap<Filter,String> filter = new HashMap<>();
-      filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-      filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-      filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-      filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-      filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
-      filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
+      filter.put(Filter.StartDatetime,"2015-01-01 12:00:00");
+      filter.put(Filter.EndDatetime,"2015-01-15 12:00:00");
       logs =data.request(filter);
   }
 
@@ -43,7 +42,6 @@ public class MetricsTest {
     Assert.assertNotNull(metrics.clickRate(logs));
     Assert.assertEquals(BigDecimal.valueOf(result), BigDecimal.valueOf(metrics.clickRate(logs)));
   }
-
   @Test
   public void bounceRatePageTest() {
     ingest();
@@ -92,18 +90,16 @@ public class MetricsTest {
   @Test
   public void totalCastTest() {
     ingest();
+    requestForTest();
     double result = 118097.8125;
-      HashMap<Filter,String> filter = new HashMap<>();
-      filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-      filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-      filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-      filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-      filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
-      filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
-      logs =data.request(filter);
-    Logs logs = data.request(filter);
-
-    Assert.assertNotNull(data.request(filter).getImpressionCost() + data.request(filter).getClickCost());
-    Assert.assertEquals(BigDecimal.valueOf(result), BigDecimal.valueOf(data.request(filter).getImpressionCost() + data.request(filter).getClickCost()));
+    Assert.assertNotNull(logs.getImpressionCost() + logs.getClickCost());
+    Assert.assertEquals(BigDecimal.valueOf(result), BigDecimal.valueOf(logs.getImpressionCost() + logs.getClickCost()));
+  }
+  @Test
+  public void requestTest(){
+    ingest();
+    requestForTest();
+    HashMap<Date,Logs> timelogs = new HashMap<>();
+    Assert.assertNotNull(metrics.request(Metric.BouncePage,"2015-01-01 12:00:00","2015-01-15 12:00:00",Granularity.Second));
   }
 }

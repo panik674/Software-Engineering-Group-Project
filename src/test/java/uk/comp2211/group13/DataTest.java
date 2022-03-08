@@ -38,17 +38,19 @@ public class DataTest {
     public void requestTest(){
         ingest();
         HashMap<Filter,String> filter = new HashMap<>();
-        filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-        filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-        filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-        filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-        filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
-        filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
+        filter.put(Filter.StartDatetime,"2015-01-01 12:00:00");
+        filter.put(Filter.EndDatetime,"2015-01-15 12:00:00");
         logs =data.request(filter);
         Assert.assertNotNull(data.request(filter));
         Assert.assertNotNull(data.request(filter).clickLogs);
         Assert.assertNotNull(data.request(filter).impressionLogs);
         Assert.assertNotNull(data.request(filter).serverLogs);
+    }
+    @Test
+    public void estimateLogTypeTest(){
+        Assert.assertEquals(Path.Impression,data.estimateLogType("src/test/java/uk/comp2211/group13/impression_log.csv"));
+        Assert.assertEquals(Path.Click,data.estimateLogType("src/test/java/uk/comp2211/group13/click_log.csv"));
+        Assert.assertEquals(Path.Server,data.estimateLogType("src/test/java/uk/comp2211/group13/server_log.csv"));
     }
 }
 
