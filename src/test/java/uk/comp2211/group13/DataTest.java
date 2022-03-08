@@ -1,10 +1,9 @@
 package uk.comp2211.group13;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import uk.comp2211.group13.data.Data;
-import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Path;
 import java.util.HashMap;
