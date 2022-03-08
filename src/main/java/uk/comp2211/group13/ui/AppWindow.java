@@ -15,7 +15,7 @@ import uk.comp2211.group13.scenes.*;
 
 import java.util.HashMap;
 
-// The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
+// This code has been inspired by code from COMP 1206's TetrECS
 /**
  * The AppWindow is the single window for the app where everything takes place. To move between screens in the program,
  * we simply change the scene.
