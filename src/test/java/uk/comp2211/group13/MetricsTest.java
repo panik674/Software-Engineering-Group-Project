@@ -1,8 +1,8 @@
 package uk.comp2211.group13;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
+import org.junit.Test;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.data.Metrics;
@@ -18,7 +18,7 @@ public class MetricsTest {
     private Metrics metrics;
     private Logs logs;
 
-    @BeforeEach
+    @Before
     public void setupData() {
         Data data = new Data();
 
