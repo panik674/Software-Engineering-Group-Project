@@ -17,9 +17,7 @@ import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppWindow;
 import uk.comp2211.group13.ui.AppPane;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class GraphingScene extends BaseScene {
 
@@ -27,19 +25,9 @@ public class GraphingScene extends BaseScene {
 
     private StackPane graphingPane;
     private LineChart lineChart;
-    private HashMap<Date, Float> Clicks = appWindow.getMetrics().request(Metric.Clicks, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> Impressions = appWindow.getMetrics().request(Metric.Impressions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> Uniques = appWindow.getMetrics().request(Metric.Unique, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> BouncePage = appWindow.getMetrics().request(Metric.BouncePage, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> BounceVisit = appWindow.getMetrics().request(Metric.BounceVisit, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> Conversions = appWindow.getMetrics().request(Metric.Conversions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> TotalCost = appWindow.getMetrics().request(Metric.TotalCost, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> CTR = appWindow.getMetrics().request(Metric.CTR, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> CPA = appWindow.getMetrics().request(Metric.CPA, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> CPC = appWindow.getMetrics().request(Metric.CPC, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> CPM = appWindow.getMetrics().request(Metric.CPM, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> BounceRateVisit = appWindow.getMetrics().request(Metric.BounceRateVisit, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
-    private HashMap<Date, Float> BounceRatePage = appWindow.getMetrics().request(Metric.BounceRatePage, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+    private HashMap<Date, Float> metric;
+
+
     /**
      * Creates a new scene.
      *
@@ -60,91 +48,114 @@ public class GraphingScene extends BaseScene {
     }
 
     /**
-     * Build the Welcome window
+     * Build the Graphing window
      */
     @Override
     public void build() {
         logger.info("Building " + this.getClass().getName());
 
+        //Building the root pane
         root = new AppPane(appWindow.getWidth(),appWindow.getHeight());
 
+        //Building the stackPane to hold a BorderPane
         graphingPane = new StackPane();
         graphingPane.setMaxWidth(appWindow.getWidth());
         graphingPane.setMaxHeight(appWindow.getHeight());
-
         root.getChildren().add(graphingPane);
 
-        var mainPane = new BorderPane();
-
+        //Building the BorderPane to hold a VBox
+        BorderPane mainPane = new BorderPane();
         graphingPane.getChildren().add(mainPane);
 
+        //Building the VBox which will contain the main UI elements
         VBox vbox = new VBox();
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(10, 10, 10, 10));
         vbox.setSpacing(30);
         mainPane.setTop(vbox);
 
+        //Creating a Text widget for the graphing scene's title
         Text appTitle = new Text("Welcome to 'Witty Name' App");
         vbox.getChildren().add(appTitle);
 
-
-
+        //Creating a ComboBox widget which will allow the user to choose which metric graph to display
         String [] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Number of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
         ComboBox metricBox = new ComboBox(FXCollections.observableArrayList(metrics));
         metricBox.setValue(metrics [0]);
         vbox.getChildren().add(metricBox);
 
+        //Creating a ComboBox widget which will allow the user to apply filters to the metric graphs in a future prototype
         ComboBox filterBox = new ComboBox();
         filterBox.setValue("Choose a Filter");
         vbox.getChildren().add(filterBox);
 
-        metricGraph(vbox, (String) metricBox.getValue(), Clicks);
+        //Setting the default metric graph to the "Clicks" metric. The data is requested and is then parsed to the metricGraph method
+        metric = appWindow.getMetrics().request(Metric.Clicks, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+        metricGraph(vbox, (String) metricBox.getValue(), metric);
+
+        //Adding an action the metric ComboBox which removes the current graph from the VBox and adds a new one in its place with the selected metric's data requested and plotted
         metricBox.setOnAction(e -> {
             vbox.getChildren().remove(lineChart);
             if ("Number of Clicks".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Clicks);
+                metric = appWindow.getMetrics().request(Metric.Clicks, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Number of Impressions".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Impressions);
+                metric = appWindow.getMetrics().request(Metric.Impressions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Number of Uniques".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Uniques);
+                metric = appWindow.getMetrics().request(Metric.Unique, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Number of Bounce Pages".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), BouncePage);
+                metric = appWindow.getMetrics().request(Metric.BouncePage, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Number of Bounce Visits".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), BounceVisit);
+                metric = appWindow.getMetrics().request(Metric.BounceVisit, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Number of Conversions".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), Conversions);
+                metric = appWindow.getMetrics().request(Metric.Conversions, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Total Costs".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), TotalCost);
+                metric = appWindow.getMetrics().request(Metric.TotalCost, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("CTR".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CTR);
+                metric = appWindow.getMetrics().request(Metric.CTR, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("CPA".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CPA);
+                metric = appWindow.getMetrics().request(Metric.CPA, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("CPC".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CPC);
+                metric = appWindow.getMetrics().request(Metric.CPC, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("CPM".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), CPM);
+                metric = appWindow.getMetrics().request(Metric.CPM, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else if ("Bounce Visit Rate".equals(metricBox.getValue())) {
-                metricGraph(vbox, (String) metricBox.getValue(), BounceRateVisit);
+                metric = appWindow.getMetrics().request(Metric.BounceRateVisit, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
             else {
-                metricGraph(vbox, (String) metricBox.getValue(), BounceRatePage);
+                metric = appWindow.getMetrics().request(Metric.BounceRatePage, "2015-01-01 12:00:00", "2015-01-14 12:00:00" , Granularity.Day);
+                metricGraph(vbox, (String) metricBox.getValue(), metric);
             }
 
         });
 
     }
 
+    /**
+     * Method to bind exit action to the esc key
+     */
     @Override
     public void events() {
         scene.setOnKeyPressed((e) -> {
@@ -152,20 +163,36 @@ public class GraphingScene extends BaseScene {
             appWindow.exit();
         });
     }
-    public void metricGraph(VBox vertBox, String metricLabel, HashMap<Date, Float> metric){
+
+    /**
+     * Method to plot a graph for a given metric
+     * @param vertBox - VBox in which the graph is placed in
+     * @param metricLabel - Label for the y-axis
+     * @param metricToPlot - Metric data
+     */
+    public void metricGraph(VBox vertBox, String metricLabel, HashMap<Date, Float> metricToPlot){
+        //Setting up the x and y axes and labelling them accordingly
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel(metricLabel);
 
+        //Building the line chart widget
         lineChart = new LineChart(xAxis, yAxis);
         lineChart.setTitle("Graph to show " + metricLabel);
         vertBox.getChildren().add(lineChart);
 
+        //A Chart series is created here which will hold the data values to be plotted
         XYChart.Series dataValues = new XYChart.Series();
         dataValues.setName("Will be a filter in future");
-        for (Map.Entry<Date, Float> entry : metric.entrySet()) {
-            dataValues.getData().add(new XYChart.Data(entry.getKey().toString(),entry.getValue()));
+
+        //Here a list is created to store the Dates corresponding to the metric value which is then sorted into chronological order
+        List<Date> dates = new ArrayList<Date>(metricToPlot.keySet());
+        Collections.sort(dates);
+
+        //Iterating through the list of dates and adding the date along with its corresponding metric value to the chart series and then adding the series to the graph
+        for (Date i : dates) {
+            dataValues.getData().add(new XYChart.Data(i.toString(),metricToPlot.get(i)));
         }
         lineChart.getData().add(dataValues);
 
