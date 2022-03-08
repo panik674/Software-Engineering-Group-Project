@@ -1,54 +1,115 @@
 package uk.comp2211.group13;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import uk.comp2211.group13.data.Data;
-import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Path;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataTest {
-    private Data data = new Data();
-    private Logs logs = new Logs(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    private Data data;
 
-    public void ingest(){
+    @Before
+    public void setupData() {
+        data = new Data();
+    }
+
+    /**
+     * This will test that we can successfully ingest data under the correct conditions.
+     */
+    @Test
+    public void ingestSuccessfulTest() {
         HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click,"src/test/java/uk/comp2211/group13/click_log.csv");
-        pathsTest.put(Path.Impression,"src/test/java/uk/comp2211/group13/impression_log.csv");
-        pathsTest.put(Path.Server,"src/test/java/uk/comp2211/group13/server_log.csv");
+        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+
+        boolean result = data.ingest(pathsTest);
+
+        Assert.assertSame("Test Successful Ingest", true, result);
+    }
+
+    /**
+     * This will test if ingest will fail if we are missing a log
+     */
+    @Test
+    public void ingestMissingFileTest() {
+        HashMap<Path, String> pathsTest = new HashMap<>();
+        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+
+        boolean result = data.ingest(pathsTest);
+
+        Assert.assertSame("Test missing path Ingest", false, result);
+    }
+
+    /**
+     * This will test if ingest will fail if a file contains invalid data
+     */
+    @Test
+    public void ingestInvalidFormatTest() {
+        HashMap<Path, String> pathsTest = new HashMap<>();
+        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/invalid.csv");
+
+        boolean result = data.ingest(pathsTest);
+
+        Assert.assertSame("Test invalid data file Ingest", false, result);
+    }
+
+    /**
+     * This will test if ingest will fail if a file contains diffrent log data
+     */
+    @Test
+    public void ingestWrongFormatTest() {
+        HashMap<Path, String> pathsTest = new HashMap<>();
+        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+
+        boolean result = data.ingest(pathsTest);
+
+        Assert.assertSame("Test wrong data file Ingest", false, result);
+    }
+
+    /**
+     * This tests that data will return a logs object on request
+     */
+    @Test
+    public void requestTest() {
+        HashMap<Path, String> pathsTest = new HashMap<>();
+        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
         data.ingest(pathsTest);
+
+        HashMap<Filter, String> filter = new HashMap<>();
+
+        Assert.assertNotNull(data.request(filter));
     }
 
+    /**
+     * This tests that log type estimations are correct
+     */
     @Test
-    public void ingestTest(){
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click,"src/test/java/uk/comp2211/group13/click_log.csv");
-        pathsTest.put(Path.Impression,"src/test/java/uk/comp2211/group13/impression_log.csv");
-        pathsTest.put(Path.Server,"src/test/java/uk/comp2211/group13/server_log.csv");
-        Assert.assertSame("test ingest",true,data.ingest(pathsTest));
-        Assert.assertNotNull(logs.serverLogs);
-        Assert.assertNotNull(logs.clickLogs);
-        Assert.assertNotNull(logs.impressionLogs);
-    }
-    @Test
-    public void requestTest(){
-        ingest();
-        HashMap<Filter,String> filter = new HashMap<>();
-        filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-        filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/click_log.csv");
-        filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-        filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/impression_log.csv");
-        filter.put(Filter.EndDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
-        filter.put(Filter.StartDatetime,"src/test/java/uk/comp2211/group13/server_log.csv");
-        logs =data.request(filter);
-        Assert.assertNotNull(data.request(filter));
-        Assert.assertNotNull(data.request(filter).clickLogs);
-        Assert.assertNotNull(data.request(filter).impressionLogs);
-        Assert.assertNotNull(data.request(filter).serverLogs);
+    public void estimateLogTypeTest() {
+        Assert.assertEquals(
+                Path.Impression,
+                data.estimateLogType("src/test/java/uk/comp2211/group13/testdata/impression_log.csv")
+        );
+
+        Assert.assertEquals(
+                Path.Click,
+                data.estimateLogType("src/test/java/uk/comp2211/group13/testdata/click_log.csv")
+        );
+
+        Assert.assertEquals(
+                Path.Server,
+                data.estimateLogType("src/test/java/uk/comp2211/group13/testdata/server_log.csv")
+        );
     }
 }
 

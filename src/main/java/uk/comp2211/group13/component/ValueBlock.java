@@ -16,6 +16,9 @@ public class ValueBlock extends StackPane {
     private String valueName;
     private String value;
 
+    private VBox vBox;
+    private Text valueText;
+
     public ValueBlock(String valueName, String value) { // TODO: Probably the values display need to be done with binding
         logger.info("Building " + this.getClass().getName());
 
@@ -33,7 +36,7 @@ public class ValueBlock extends StackPane {
         ValueCanvas valueCanvas = new ValueCanvas();
         getChildren().add(valueCanvas);
 
-        VBox vBox = new VBox();
+        vBox = new VBox();
         getChildren().add(vBox);
         vBox.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(10, 10, 10, 10));
@@ -42,7 +45,7 @@ public class ValueBlock extends StackPane {
         Text nameText = new Text(valueName);
         vBox.getChildren().add(nameText);
 
-        Text valueText = new Text("0k"); //TODO: Add binding
+        valueText = new Text(value); //TODO: Add binding
         vBox.getChildren().add(valueText);
 
         ChoiceBox <String> filtersChoices = new ChoiceBox<>();
@@ -53,5 +56,14 @@ public class ValueBlock extends StackPane {
         filtersChoices.getItems().add("Filter2");
 
         vBox.getChildren().add(filtersChoices);
+    }
+
+    public VBox getVBox() {
+        return vBox;
+    }
+
+    public void setValue (String string) {
+        this.value = string;
+        valueText.setText(value);
     }
 }

@@ -15,7 +15,7 @@ import uk.comp2211.group13.scenes.*;
 
 import java.util.HashMap;
 
-// The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
+// This code has been inspired by code from COMP 1206's TetrECS
 /**
  * The AppWindow is the single window for the app where everything takes place. To move between screens in the program,
  * we simply change the scene.
@@ -84,14 +84,6 @@ public class AppWindow {
 
     // Go to welcome screen
     welcomeScreen();
-
-    HashMap<Path, String> paths = new HashMap<Path, String>();
-    paths.put(Path.Impression, "C:\\Users\\kpani\\Downloads\\logs\\impression_log.csv");
-    paths.put(Path.Click, "C:\\Users\\kpani\\Downloads\\logs\\click_log.csv");
-    paths.put(Path.Server, "C:\\Users\\kpani\\Downloads\\logs\\server_log.csv");
-    this.data.ingest(paths);
-
-    graphingScreen();
   }
 
   /**
@@ -101,19 +93,25 @@ public class AppWindow {
     loadScene(new WelcomeScene(this));
   }
 
-  public void graphingScreen(){
-    loadScene(new GraphingScene(this));
-  }
-
-  public void histogramScreen() {
-    loadScene(new HistogramScene(this));
-  }
-
   /**
    * Display values screen
    */
   public void valuesScreen() {
     loadScene(new ValuesScene(this));
+  }
+
+  /**
+   * Display graphs screen
+   */
+  public void graphingScreen(){
+    loadScene(new GraphingScene(this));
+  }
+
+  /**
+   * Display histogram screen
+   */
+  public void histogramScreen() {
+    loadScene(new HistogramScene(this));
   }
 
   /**

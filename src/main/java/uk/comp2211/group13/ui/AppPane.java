@@ -7,7 +7,7 @@ import javafx.scene.transform.Translate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// The code here has been taken from our last year Programming II Coursework TODO: Do we want to declare this?
+// This code has been inspired by code from COMP 1206's TetrECS
 /**
  * The App Pane is a special pane which will scale anything inside it to the screen and maintain the aspect ratio.
  *
@@ -17,9 +17,7 @@ import org.apache.logging.log4j.Logger;
  *
  * It uses the width and height given which should match the main window size. This will be the base drawing resolution,
  * but will be scaled up or down as the window is resized.
- *
  */
-
 public class AppPane extends StackPane {
 
     private static final Logger logger = LogManager.getLogger(AppPane.class);
