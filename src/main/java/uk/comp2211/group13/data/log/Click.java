@@ -10,4 +10,5 @@ public record Click(
     Date date,
     String id,
     Float cost
-) {}
+) {
+}

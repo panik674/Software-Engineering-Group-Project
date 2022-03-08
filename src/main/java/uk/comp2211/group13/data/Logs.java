@@ -25,12 +25,6 @@ public class Logs {
     this.serverLogs = new ArrayList<>();
   }
 
-  public Logs(ArrayList<Impression> impressionLogs, ArrayList<Click> clickLogs, ArrayList<Server> serverLogs) {
-    this.impressionLogs = impressionLogs;
-    this.clickLogs = clickLogs;
-    this.serverLogs = serverLogs;
-  }
-
   /**
    * This is used to quickly get the number of clicks
    *
@@ -87,7 +81,7 @@ public class Logs {
   /**
    * Helper function for getBounceVisit() to find difference in seconds
    *
-   * @param end   end date
+   * @param end end date
    * @return difference in seconds
    */
   private long difDate(Date d1, String end) throws ParseException {

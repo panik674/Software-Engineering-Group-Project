@@ -10,16 +10,18 @@ import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.App;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
-import uk.comp2211.group13.enums.Path;
-import uk.comp2211.group13.scenes.*;
-
-import java.util.HashMap;
+import uk.comp2211.group13.scenes.BaseScene;
+import uk.comp2211.group13.scenes.GraphingScene;
+import uk.comp2211.group13.scenes.HistogramScene;
+import uk.comp2211.group13.scenes.ValuesScene;
+import uk.comp2211.group13.scenes.WelcomeScene;
 
 // This code has been inspired by code from COMP 1206's TetrECS
+
 /**
  * The AppWindow is the single window for the app where everything takes place. To move between screens in the program,
  * we simply change the scene.
- *
+ * <p>
  * The AppWindow has methods to launch each of the different parts of the app by switching scenes.
  */
 
@@ -61,8 +63,8 @@ public class AppWindow {
   /**
    * Creates a new AppWindow using the given stage using the specified width and height.
    *
-   * @param stage stage
-   * @param width window width
+   * @param stage  stage
+   * @param width  window width
    * @param height window height
    */
   public AppWindow(Stage stage, int width, int height) {
@@ -103,7 +105,7 @@ public class AppWindow {
   /**
    * Display graphs screen
    */
-  public void graphingScreen(){
+  public void graphingScreen() {
     loadScene(new GraphingScene(this));
   }
 
