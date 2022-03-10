@@ -40,10 +40,16 @@ public class Data {
    * If this returns false, an error message will be logged and the stored logs are cleared
    * If this returns true, it has successfully loaded the logs
    *
-   * @param paths this is a dictionary with the key as type of log and String as the path to the file.
+   * @param stringPaths this is a list of Strings as the paths to the log files.
    * @return boolean value for ingest success
    */
-  public boolean ingest(HashMap<Path, String> paths) {
+  public boolean ingest(ArrayList<String> stringPaths) {
+    HashMap<Path, String> paths = new HashMap<>();
+
+    for (String stringPath : stringPaths) {
+      paths.put(estimateLogType(stringPath), stringPath);
+    }
+
     logs = new Logs();
 
     // Checks all 3 log paths have been entered
