@@ -19,6 +19,7 @@ import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class WelcomeScene extends BaseScene {
   public void fileLoader(MouseEvent event) {
     try {
       if (radioButton.isSelected()) {
-        HashMap<Path, String> hashMap = new HashMap<>();
+        ArrayList<String> stringPaths = new ArrayList<>();
         vbox.getChildren().remove(error);
         // create a File chooser
         FileChooser fileChooser = new FileChooser();
@@ -116,10 +117,10 @@ public class WelcomeScene extends BaseScene {
         if (files.size() == 3) {
           for (File file : files) {
             if (file != null) {
-              hashMap.put(appWindow.getData().estimateLogType(file.getAbsolutePath()), file.getAbsolutePath());
+              stringPaths.add(file.getAbsolutePath());
             }
           }
-          if (appWindow.getData().ingest(hashMap)) {
+          if (appWindow.getData().ingest(stringPaths)) {
             appWindow.valuesScreen();
           } else {
             error = new Text("Please select the correct formats of the file");

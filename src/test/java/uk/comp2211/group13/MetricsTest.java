@@ -12,6 +12,7 @@ import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.enums.Path;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MetricsTest {
@@ -22,10 +23,10 @@ public class MetricsTest {
     public void setupData() {
         Data data = new Data();
 
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
-        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
         data.ingest(pathsTest);
 
         metrics = new Metrics(data);
