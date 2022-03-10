@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class Logs {
   private static final Logger logger = LogManager.getLogger(Logs.class);
@@ -72,7 +73,9 @@ public class Logs {
         if (seconds <= 15) sum++;
 
       } catch (Exception e) {
-        logger.warn(String.format("Bounce total request failed Reason: %s", e.getMessage()));
+        if (!Objects.equals(e.getMessage(), "Unparseable date: \"n/a\"")) {
+          logger.warn(String.format("Bounce total request failed Reason: %s", e.getMessage()));
+        }
       }
     }
     return sum;
