@@ -30,9 +30,6 @@ public class Metrics {
    */
   private final Data data;
 
-  //TODO: must look into which Data object we'll be referring to. I think it should be referenced from the one
-  // determined by the UI
-
   /**
    * Class constructor. Initialises the Data variable, with the one specified form the user
    *

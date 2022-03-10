@@ -169,7 +169,7 @@ public class ValuesScene extends BaseScene {
               Granularity.None
           )
       ).get(
-          Utility.string2Date("2015-01-01 12:00:00")
+          appWindow.getData().getMinDate()
       );
     } catch (Exception e) {
       System.out.println(e);
