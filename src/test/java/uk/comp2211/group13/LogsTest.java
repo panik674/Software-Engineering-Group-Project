@@ -25,10 +25,8 @@ public class LogsTest {
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
         data.ingest(pathsTest);
 
-        HashMap<Filter, String> filter = new HashMap<>();
-        filter.put(Filter.StartDatetime, "2015-01-01 12:00:00");
-        filter.put(Filter.EndDatetime, "2015-01-15 12:00:00");
-        logs = data.request(filter);
+        HashMap<Filter, String[]> filter = new HashMap<>();
+        logs = data.request(data.getMinDate(), data.getMaxDate(), filter);
     }
 
     @Test

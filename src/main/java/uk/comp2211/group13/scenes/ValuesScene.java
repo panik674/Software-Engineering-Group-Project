@@ -18,6 +18,8 @@ import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
+import java.util.HashMap;
+
 public class ValuesScene extends BaseScene {
 
   private static final Logger logger = LogManager.getLogger(ValuesScene.class);
@@ -158,7 +160,17 @@ public class ValuesScene extends BaseScene {
     try {
 
       // For know we are assuming that the data will be given will just be on this range. To be improved on Sprint 2
-      value = (appWindow.getMetrics().request(metric, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.None)).get(Utility.string2Date("2015-01-01 12:00:00"));
+      value = (
+          appWindow.getMetrics().request(
+              metric,
+              appWindow.getData().getMinDate(),
+              appWindow.getData().getMaxDate(),
+              new HashMap<>(),
+              Granularity.None
+          )
+      ).get(
+          Utility.string2Date("2015-01-01 12:00:00")
+      );
     } catch (Exception e) {
       System.out.println(e);
     }

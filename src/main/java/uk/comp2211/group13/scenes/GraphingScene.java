@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppWindow;
@@ -114,62 +115,62 @@ public class GraphingScene extends BaseScene {
     vbox.getChildren().add(filterBox);
 
     //Setting the default metric graph to the "Clicks" metric. The data is requested and is then parsed to the metricGraph method
-    metric = appWindow.getMetrics().request(Metric.Clicks, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+    metric = appWindow.getMetrics().request(Metric.Clicks, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
     metricGraph(vbox, metricBox.getValue(), metric);
 
     //Adding an action the metric ComboBox which removes the current graph from the VBox and adds a new one in its place with the selected metric's data requested and plotted
     metricBox.setOnAction(e -> {
       vbox.getChildren().remove(lineChart);
       if ("Number of Clicks".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Clicks, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.Clicks, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Impressions".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Impressions, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.Impressions, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Uniques".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Unique, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.Unique, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Bounce Pages".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.BouncePage, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.BouncePage, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Bounce Visits".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.BounceVisit, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.BounceVisit, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Conversions".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Conversions, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.Conversions, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Total Costs".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.TotalCost, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.TotalCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CTR".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CTR, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.CTR, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CPA".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CPA, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.CPA, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CPC".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CPC, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.CPC, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CPM".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CPM, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.CPM, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Bounce Visit Rate".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.BounceRateVisit, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.BounceRateVisit, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else {
-        metric = appWindow.getMetrics().request(Metric.BounceRatePage, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+        metric = appWindow.getMetrics().request(Metric.BounceRatePage, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
       }
 

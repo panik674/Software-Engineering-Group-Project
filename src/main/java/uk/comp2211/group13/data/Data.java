@@ -192,39 +192,44 @@ public class Data {
    * @param filters this is a list of applied filters
    * @return returns requested data.
    */
-  public Logs request(HashMap<Filter, String> filters) {
+  public Logs request(Date startDate, Date endDate, HashMap<Filter, String[]> filters) {
     Logs output = new Logs();
 
-    // Init date range values
-    boolean enableDataRange = false; // Used to quickly check if date range is being used
-    Date startDate = null;
-    Date endDate = null;
-
-    if (filters.size() == 0) {
-      // No filters return all
+    if (filters.size() == 0) { // No filters return all
       return logs;
 
     } else {
-      try { // Set up date range
-        if (filters.containsKey(Filter.StartDatetime) && filters.containsKey(Filter.EndDatetime)) {
-          startDate = Utility.string2Date(filters.get(Filter.StartDatetime));
-          endDate = Utility.string2Date(filters.get(Filter.EndDatetime));
-          enableDataRange = true;
-        }
-      } catch (ParseException e) {
-        logger.error("Unable to complete request due to invalid dates");
-      }
+      // Used to quickly check if date range is being used
+      boolean enableDataRange = startDate != null && endDate != null;
+      ArrayList<String> validIDs = new ArrayList<>();
 
       // Filter impressions list
+      impressionLoop:
       for (Impression impression : logs.impressionLogs) {
         if (enableDataRange && !withinDate(startDate, endDate, impression.date())) continue;
+        for (Map.Entry<Filter, String[]> filter : filters.entrySet()) {
+          boolean filterFlag = true;
+
+          filterFlag = switch (filter.getKey()) {
+            case Gender -> Arrays.asList(filter.getValue()).contains(impression.gender());
+            case Age -> Arrays.asList(filter.getValue()).contains(impression.age());
+            case Income -> Arrays.asList(filter.getValue()).contains(impression.income());
+            case Context -> Arrays.asList(filter.getValue()).contains(impression.context());
+            default -> true;
+          };
+
+          if (!filterFlag) continue impressionLoop;
+        }
 
         output.impressionLogs.add(impression);
+        validIDs.add(impression.id());
       }
 
       // Filter impressions list
       for (Click click : logs.clickLogs) {
         if (enableDataRange && !withinDate(startDate, endDate, click.date())) continue;
+
+        if (!validIDs.contains(click.id())) continue;
 
         output.clickLogs.add(click);
       }
@@ -232,6 +237,8 @@ public class Data {
       // Filter impressions list
       for (Server server : logs.serverLogs) {
         if (enableDataRange && !withinDate(startDate, endDate, server.entryDate())) continue;
+
+        if (!validIDs.contains(server.id())) continue;
 
         output.serverLogs.add(server);
       }
@@ -268,5 +275,57 @@ public class Data {
    */
   public Date getMaxDate() {
     return maxDate;
+  }
+
+  /**
+   * This is used to return a valid gender or null.
+   *
+   * @param gender string to check
+   * @return gender or null
+   */
+  private String validateGender(String gender) {
+    return switch (gender) {
+      case "Male", "Female" -> gender;
+      default -> null;
+    };
+  }
+
+  /**
+   * This is used to return a valid age or null.
+   *
+   * @param age string to check
+   * @return age or null
+   */
+  private String validateAge(String age) {
+    return switch (age) {
+      case "<25", "25‐34", "35‐44", "45-54", ">54" -> age;
+      default -> null;
+    };
+  }
+
+  /**
+   * This is used to return a valid income or null.
+   *
+   * @param income string to check
+   * @return income or null
+   */
+  private String validateIncome(String income) {
+    return switch (income) {
+      case "Low", "Medium", "High" -> income;
+      default -> null;
+    };
+  }
+
+  /**
+   * This is used to return a valid context or null.
+   *
+   * @param context string to check
+   * @return context or null
+   */
+  private String validateContext(String context) {
+    return switch (context) {
+      case "News", "Shopping", "Social", "Media", "Blog", "Hobbies", "Travel" -> context;
+      default -> null;
+    };
   }
 }

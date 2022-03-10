@@ -5,5 +5,9 @@ package uk.comp2211.group13.enums;
  */
 public enum Filter {
   StartDatetime,
-  EndDatetime
+  EndDatetime,
+  Gender,
+  Age,
+  Income,
+  Context
 }
