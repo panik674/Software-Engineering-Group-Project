@@ -215,7 +215,6 @@ public class Data {
             case Age -> Arrays.asList(filter.getValue()).contains(impression.age());
             case Income -> Arrays.asList(filter.getValue()).contains(impression.income());
             case Context -> Arrays.asList(filter.getValue()).contains(impression.context());
-            default -> true;
           };
 
           if (!filterFlag) continue impressionLoop;
@@ -229,7 +228,8 @@ public class Data {
       for (Click click : logs.clickLogs) {
         if (enableDataRange && !withinDate(startDate, endDate, click.date())) continue;
 
-        if (!validIDs.contains(click.id())) continue;
+        // TODO: Find way to filter click logs
+        //if (!validIDs.contains(click.id())) continue;
 
         output.clickLogs.add(click);
       }
@@ -238,7 +238,8 @@ public class Data {
       for (Server server : logs.serverLogs) {
         if (enableDataRange && !withinDate(startDate, endDate, server.entryDate())) continue;
 
-        if (!validIDs.contains(server.id())) continue;
+        // TODO: Find way to filter server logs
+        //if (!validIDs.contains(server.id())) continue;
 
         output.serverLogs.add(server);
       }
