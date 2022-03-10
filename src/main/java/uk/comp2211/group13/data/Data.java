@@ -27,6 +27,12 @@ public class Data {
   private Logs logs = new Logs();
 
   /**
+   * These store the min and max date of the currently stored master log
+   */
+  private Date maxDate = null;
+  private Date minDate = null;
+
+  /**
    * This is used to ingest data into the data object from the various logs.
    * <p>
    * This requires all 3 paths Impression, Click and Server for it to not fail.
@@ -79,17 +85,30 @@ public class Data {
 
           // Process Log to new record and add to list
           switch (path.getKey()) {
-            case Impression -> logs.impressionLogs.add(
-                new Impression(
-                    Utility.string2Date(line[0]),
-                    line[1],
-                    line[2],
-                    line[3],
-                    line[4],
-                    line[5],
-                    Float.parseFloat(line[6])
-                )
-            );
+            case Impression -> {
+              Date date = Utility.string2Date(line[0]);
+              logs.impressionLogs.add(
+                  new Impression(
+                      date,
+                      line[1],
+                      line[2],
+                      line[3],
+                      line[4],
+                      line[5],
+                      Float.parseFloat(line[6])
+                  )
+              );
+
+              // Set max and min data for the master log
+              if (minDate == null || maxDate == null) {
+                minDate = date;
+                maxDate = date;
+              }
+
+              if (minDate.after(date)) minDate = date;
+              if (maxDate.before(date)) maxDate = date;
+            }
+
             case Click -> logs.clickLogs.add(
                 new Click(
                     Utility.string2Date(line[0]),
@@ -212,7 +231,6 @@ public class Data {
       }
     }
 
-
     return output;
   }
 
@@ -226,5 +244,23 @@ public class Data {
    */
   private boolean withinDate(Date start, Date end, Date target) {
     return (target.after(start) || target.equals(start)) && target.before(end);
+  }
+
+  /**
+   * This will return the master log's min date
+   *
+   * @return min date in master log
+   */
+  public Date getMinDate() {
+    return minDate;
+  }
+
+  /**
+   * This will return the master log's max date
+   *
+   * @return max date in master log
+   */
+  public Date getMaxDate() {
+    return maxDate;
   }
 }
