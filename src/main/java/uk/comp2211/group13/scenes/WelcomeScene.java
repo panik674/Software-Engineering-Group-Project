@@ -120,7 +120,7 @@ public class WelcomeScene extends BaseScene {
               stringPaths.add(file.getAbsolutePath());
             }
           }
-          if (appWindow.getData().ingest(stringPaths)) {
+          if (appWindow.getData().ingest(stringPaths) == 0) {
             appWindow.valuesScreen();
           } else {
             error = new Text("Please select the correct formats of the file");

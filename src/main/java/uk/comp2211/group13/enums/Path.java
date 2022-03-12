@@ -6,5 +6,6 @@ package uk.comp2211.group13.enums;
 public enum Path {
   Impression,
   Click,
-  Server
+  Server,
+  Invalid
 }
