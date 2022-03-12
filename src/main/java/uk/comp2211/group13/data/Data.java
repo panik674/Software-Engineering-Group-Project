@@ -33,6 +33,25 @@ public class Data {
   private Date minDate = null;
 
   /**
+   * This will return the master log's min date
+   *
+   * @return min date in master log
+   */
+  public Date getMinDate() {
+    return minDate;
+  }
+
+  /**
+   * This will return the master log's max date
+   *
+   * @return max date in master log
+   */
+  public Date getMaxDate() {
+    return maxDate;
+  }
+
+
+  /**
    * These functions are is used to ingest data into the data object from the various logs.
    * It will validate the incoming files in this function and pass it to performIngest().
    * <p>
@@ -59,6 +78,7 @@ public class Data {
 
     return performIngest(paths);
   }
+
   public int ingest(String folder) {
     HashMap<Path, File> paths;
     try {
@@ -73,7 +93,7 @@ public class Data {
 
   /**
    * This is used to pass ingest() data from a folder rather than individual files.
-   *
+   * <p>
    * Status codes
    * 5 = This isn't a folder/exists
    *
@@ -84,7 +104,7 @@ public class Data {
     File folder = new File(folderPath);
 
     // Check path goes to folder and exists
-    if (!folder.exists() || !folder.isDirectory()){
+    if (!folder.exists() || !folder.isDirectory()) {
       throw new Exception("Unable to ingest folder that isn't a folder or non-existent");
     }
 
@@ -213,8 +233,9 @@ public class Data {
             logger.error("Ingest error has occurred, click and server log lines are not id matched");
             return 3;
           }
-        } if ((clickScanner.hasNextLine() && !serverScanner.hasNextLine())
-            || (!clickScanner.hasNextLine() && serverScanner.hasNextLine())){
+        }
+        if ((clickScanner.hasNextLine() && !serverScanner.hasNextLine())
+            || (!clickScanner.hasNextLine() && serverScanner.hasNextLine())) {
           logger.error("Ingest error has occurred, click and server log lines are not count matched");
           return 3;
         }
@@ -222,31 +243,39 @@ public class Data {
         boolean logFlag = true;
         while (logFlag) {
           if (impressionScanner.hasNextLine()) {
+            try {
+              impressionLine = impressionScanner.nextLine().split(",");
 
-            impressionLine = impressionScanner.nextLine().split(",");
+              if (click != null && Objects.equals(click.id(), impressionLine[1])) {
+                logFlag = false;
+                impression = string2Impression(impressionLine, click, server);
+              } else {
+                impression = string2Impression(impressionLine, null, null);
+              }
 
-            if (click != null && Objects.equals(click.id(), impressionLine[1])) {
-              impression = string2Impression(impressionLine, click, server);
-              logFlag = false;
-            } else {
-              impression = string2Impression(impressionLine, null, null);
+              masterLog.impressionLogs.add(impression);
+
+              // Set max and min data for the master log
+              if (minDate == null || maxDate == null) {
+                minDate = impression.date();
+                maxDate = impression.date();
+              }
+              if (minDate.after(impression.date())) minDate = impression.date();
+              if (maxDate.before(impression.date())) maxDate = impression.date();
+
+            } catch (ParseException e) {
+              throw e;
+            } catch (Exception e) {
+              logger.error("Invalid impression filter data: " + e.getMessage());
             }
 
-            masterLog.impressionLogs.add(impression);
-
-            // Set max and min data for the master log
-            if (minDate == null || maxDate == null) {
-              minDate = impression.date();
-              maxDate = impression.date();
-            }
-            if (minDate.after(impression.date())) minDate = impression.date();
-            if (maxDate.before(impression.date())) maxDate = impression.date();
           } else {
             endFlag = true;
             break;
           }
         }
 
+        // TODO: Remove???
         masterLog.clickLogs.add(click);
         masterLog.serverLogs.add(server);
 
@@ -283,15 +312,15 @@ public class Data {
    * @return return Impression
    * @throws ParseException date error
    */
-  private static Impression string2Impression(String[] line, Click click, Server server) throws ParseException {
+  private static Impression string2Impression(String[] line, Click click, Server server) throws Exception {
     return new Impression(
-        Utility.string2Date(line[0]),
-        line[1],
-        line[2],
-        line[3],
-        line[4],
-        line[5],
-        Float.parseFloat(line[6]),
+        Utility.string2Date(line[0]), // date
+        line[1], // id
+        validateGender(line[2]), // gender
+        validateAge(line[3]), // age
+        validateIncome(line[4]), // income
+        validateContext(line[5]), // context
+        Float.parseFloat(line[6]), // cost
         click,
         server
     );
@@ -306,9 +335,9 @@ public class Data {
    */
   private static Click string2Click(String[] line) throws ParseException {
     return new Click(
-        Utility.string2Date(line[0]),
-        line[1],
-        Float.parseFloat(line[2])
+        Utility.string2Date(line[0]), // date
+        line[1], // id
+        Float.parseFloat(line[2]) // cost
     );
   }
 
@@ -321,17 +350,18 @@ public class Data {
    */
   private static Server string2Server(String[] line) throws ParseException {
     return new Server(
-        Utility.string2Date(line[0]),
-        line[1],
-        line[2],
-        Integer.parseInt(line[3]),
-        Objects.equals(line[4], "Yes")
+        Utility.string2Date(line[0]), // date
+        line[1], // id
+        line[2], // exit date
+        Integer.parseInt(line[3]), // pages
+        Objects.equals(line[4], "Yes") // conversation
     );
   }
 
 
   /**
    * This is used to return an unfiltered master log
+   *
    * @return masterlog
    */
   public Logs request() {
@@ -347,53 +377,24 @@ public class Data {
   public Logs request(Date startDate, Date endDate, HashMap<Filter, String[]> filters) {
     Logs output = new Logs();
 
-    if (filters.size() == 0) { // No filters return all
-      return masterLog;
+    impressionLoop: for (Impression impression : masterLog.impressionLogs) {
+      // Check date
+      if (!withinDate(startDate, endDate, impression.date())) continue;
 
-    } else {
-      // Used to quickly check if date range is being used
-      boolean enableDataRange = startDate != null && endDate != null;
-      ArrayList<String> validIDs = new ArrayList<>();
-
-      // Filter impressions list
-      impressionLoop:
-      for (Impression impression : masterLog.impressionLogs) {
-        if (enableDataRange && !withinDate(startDate, endDate, impression.date())) continue;
-        for (Map.Entry<Filter, String[]> filter : filters.entrySet()) {
-          boolean filterFlag = true;
-
-          filterFlag = switch (filter.getKey()) {
-            case Gender -> Arrays.asList(filter.getValue()).contains(impression.gender());
-            case Age -> Arrays.asList(filter.getValue()).contains(impression.age());
-            case Income -> Arrays.asList(filter.getValue()).contains(impression.income());
-            case Context -> Arrays.asList(filter.getValue()).contains(impression.context());
-          };
-
-          if (!filterFlag) continue impressionLoop;
-        }
-
-        output.impressionLogs.add(impression);
-        validIDs.add(impression.id());
+      // Check filters match
+      for (Map.Entry<Filter, String[]> filter : filters.entrySet()) {
+        if (!switch (filter.getKey()) {
+          case Gender -> Arrays.asList(filter.getValue()).contains(impression.gender());
+          case Age -> Arrays.asList(filter.getValue()).contains(impression.age());
+          case Income -> Arrays.asList(filter.getValue()).contains(impression.income());
+          case Context -> Arrays.asList(filter.getValue()).contains(impression.context());
+        }) continue impressionLoop;
       }
 
-      // Filter impressions list
-      for (Click click : masterLog.clickLogs) {
-        if (enableDataRange && !withinDate(startDate, endDate, click.date())) continue;
-
-        // TODO: Find way to filter click logs
-        //if (!validIDs.contains(click.id())) continue;
-
-        output.clickLogs.add(click);
-      }
-
-      // Filter impressions list
-      for (Server server : masterLog.serverLogs) {
-        if (enableDataRange && !withinDate(startDate, endDate, server.entryDate())) continue;
-
-        // TODO: Find way to filter server logs
-        //if (!validIDs.contains(server.id())) continue;
-
-        output.serverLogs.add(server);
+      output.impressionLogs.add(impression);
+      if (impression.click() != null){ // TODO: Remove???
+        output.clickLogs.add(impression.click());
+        output.serverLogs.add(impression.server());
       }
     }
 
@@ -412,23 +413,6 @@ public class Data {
     return (target.after(start) || target.equals(start)) && target.before(end);
   }
 
-  /**
-   * This will return the master log's min date
-   *
-   * @return min date in master log
-   */
-  public Date getMinDate() {
-    return minDate;
-  }
-
-  /**
-   * This will return the master log's max date
-   *
-   * @return max date in master log
-   */
-  public Date getMaxDate() {
-    return maxDate;
-  }
 
   /**
    * This is used to return a valid gender or null.
@@ -436,10 +420,10 @@ public class Data {
    * @param gender string to check
    * @return gender or null
    */
-  private static String validateGender(String gender) {
+  private static String validateGender(String gender) throws Exception {
     return switch (gender) {
       case "Male", "Female" -> gender;
-      default -> null;
+      default -> throw new Exception("Invalid data");
     };
   }
 
@@ -449,10 +433,10 @@ public class Data {
    * @param age string to check
    * @return age or null
    */
-  private static String validateAge(String age) {
+  private static String validateAge(String age) throws Exception {
     return switch (age) {
-      case "<25", "25‐34", "35‐44", "45-54", ">54" -> age;
-      default -> null;
+      case "<25", "25-34", "35-44", "45-54", ">54" -> age;
+      default -> throw new Exception("Invalid data");
     };
   }
 
@@ -462,10 +446,10 @@ public class Data {
    * @param income string to check
    * @return income or null
    */
-  private static String validateIncome(String income) {
+  private static String validateIncome(String income) throws Exception {
     return switch (income) {
       case "Low", "Medium", "High" -> income;
-      default -> null;
+      default -> throw new Exception("Invalid data");
     };
   }
 
@@ -475,10 +459,10 @@ public class Data {
    * @param context string to check
    * @return context or null
    */
-  private static String validateContext(String context) {
+  private static String validateContext(String context) throws Exception {
     return switch (context) {
-      case "News", "Shopping", "Social", "Media", "Blog", "Hobbies", "Travel" -> context;
-      default -> null;
+      case "News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel" -> context;
+      default -> throw new Exception("Invalid data");
     };
   }
 }
