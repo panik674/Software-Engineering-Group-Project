@@ -2,8 +2,11 @@ import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Filter;
+import uk.comp2211.group13.enums.Granularity;
+import uk.comp2211.group13.enums.Metric;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class toms_tester {
@@ -38,10 +41,18 @@ public class toms_tester {
 
     long t2 = System.nanoTime();
 
-    Logs logs = data.request(
+    //Logs logs = data.request(
+    //    data.getMinDate(),
+    //    data.getMaxDate(),
+    //    filter
+    //);
+
+    HashMap<Date, Float> test = metrics.request(
+        Metric.Impressions,
         data.getMinDate(),
         data.getMaxDate(),
-        filter
+        filter,
+        Granularity.Year
     );
 
     long t3 = System.nanoTime();
@@ -51,9 +62,9 @@ public class toms_tester {
     Logs masterLog = data.request();
 
     System.out.println(masterLog.impressionLogs.size());
-    System.out.println(logs.impressionLogs.size());
     System.out.println(masterLog.clickLogs.size());
-    System.out.println(logs.clickLogs.size());
+
+    System.out.println(test);
 
     System.out.println("Time 1: " + d1/1000000000.00);
     System.out.println("Time 2: " + d2/1000000000.00);
