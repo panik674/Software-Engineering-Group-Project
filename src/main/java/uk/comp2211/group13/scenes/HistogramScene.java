@@ -15,11 +15,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +33,7 @@ public class HistogramScene extends BaseScene {
   private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
 
   private StackPane graphingPane;
-  private HashMap<Date, Float> ClickCosts = appWindow.getMetrics().request(Metric.ClickCost, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+  private HashMap<Date, Float> clickCosts;
 
   /**
    * Creates a new scene.
@@ -40,6 +42,14 @@ public class HistogramScene extends BaseScene {
    */
   public HistogramScene(AppWindow appWindow) {
     super(appWindow);
+
+    clickCosts = appWindow.getMetrics().request(
+        Metric.ClickCost,
+        appWindow.getData().getMinDate(),
+        appWindow.getData().getMaxDate(),
+        new HashMap<>(),
+        Granularity.Day
+    );
   }
 
   /**
@@ -143,12 +153,12 @@ public class HistogramScene extends BaseScene {
     XYChart.Series dataValues = new XYChart.Series();
 
     //Here a list is created to store the Dates corresponding to the metric value which is then sorted into chronological order
-    List<Date> dates = new ArrayList<Date>(ClickCosts.keySet());
+    List<Date> dates = new ArrayList<Date>(clickCosts.keySet());
     Collections.sort(dates);
 
     //Iterating through the list of dates and adding the date along with its corresponding Click Cost value to the chart series and then adding the series to the histogram
     for (Date i : dates) {
-      dataValues.getData().add(new XYChart.Data(i.toString(), ClickCosts.get(i)));
+      dataValues.getData().add(new XYChart.Data(i.toString(), clickCosts.get(i)));
     }
 
     //Adding the series to the chart, setting its name and adding it the parsed VBox

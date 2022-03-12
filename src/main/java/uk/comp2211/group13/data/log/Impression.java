@@ -14,6 +14,8 @@ public record Impression(
     String age,
     String income,
     String context,
-    Float cost
+    Float cost,
+    Click click,
+    Server server
 ) {
 }

@@ -88,9 +88,8 @@ public class DataTest {
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
         data.ingest(pathsTest);
 
-        HashMap<Filter, String> filter = new HashMap<>();
-
-        Assert.assertNotNull(data.request(filter));
+        HashMap<Filter, String[]> filter = new HashMap<>();
+        Assert.assertNotNull(data.request(data.getMinDate(), data.getMaxDate(), filter));
     }
 
     /**
