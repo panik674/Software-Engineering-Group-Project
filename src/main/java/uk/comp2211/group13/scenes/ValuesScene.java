@@ -3,6 +3,7 @@ package uk.comp2211.group13.scenes;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -147,6 +148,15 @@ public class ValuesScene extends BaseScene {
 
     row3 = new HBox(cPC_Block, cPM_Block, bR_Block);
     hBoxSetter(row3);
+
+    ChoiceBox<String> filtersChoices = new ChoiceBox<>();
+    filtersChoices.setValue("Select a filter");
+    filtersChoices.setMaxWidth(100);
+
+    filtersChoices.getItems().add("Filter1");
+    filtersChoices.getItems().add("Filter2");
+
+    vBox.getChildren().add(filtersChoices);
   }
 
   private void hBoxSetter(HBox row) {

@@ -2,7 +2,6 @@ package uk.comp2211.group13.component;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -47,15 +46,6 @@ public class ValueBlock extends StackPane {
 
     valueText = new Text(value); //TODO: Add binding
     vBox.getChildren().add(valueText);
-
-    ChoiceBox<String> filtersChoices = new ChoiceBox<>();
-    filtersChoices.setValue("Select a filter");
-    filtersChoices.setMaxWidth(100);
-
-    filtersChoices.getItems().add("Filter1");
-    filtersChoices.getItems().add("Filter2");
-
-    vBox.getChildren().add(filtersChoices);
   }
 
   public VBox getVBox() {
