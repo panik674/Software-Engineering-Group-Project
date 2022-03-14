@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class Logs {
   private static final Logger logger = LogManager.getLogger(Logs.class);
@@ -23,12 +24,6 @@ public class Logs {
     this.impressionLogs = new ArrayList<>();
     this.clickLogs = new ArrayList<>();
     this.serverLogs = new ArrayList<>();
-  }
-
-  public Logs(ArrayList<Impression> impressionLogs, ArrayList<Click> clickLogs, ArrayList<Server> serverLogs) {
-    this.impressionLogs = impressionLogs;
-    this.clickLogs = clickLogs;
-    this.serverLogs = serverLogs;
   }
 
   /**
@@ -78,7 +73,9 @@ public class Logs {
         if (seconds <= 15) sum++;
 
       } catch (Exception e) {
-        logger.warn(String.format("Bounce total request failed Reason: %s", e.getMessage()));
+        if (!Objects.equals(e.getMessage(), "Unparseable date: \"n/a\"")) {
+          logger.warn(String.format("Bounce total request failed Reason: %s", e.getMessage()));
+        }
       }
     }
     return sum;
@@ -87,7 +84,7 @@ public class Logs {
   /**
    * Helper function for getBounceVisit() to find difference in seconds
    *
-   * @param end   end date
+   * @param end end date
    * @return difference in seconds
    */
   private long difDate(Date d1, String end) throws ParseException {

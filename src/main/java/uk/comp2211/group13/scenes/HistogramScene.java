@@ -1,39 +1,39 @@
 package uk.comp2211.group13.scenes;
 
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.chart.*;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.comp2211.group13.data.Data;
-import uk.comp2211.group13.data.log.Impression;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.enums.Granularity;
-import uk.comp2211.group13.ui.AppWindow;
-import uk.comp2211.group13.ui.AppPane;
-import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Metric;
+import uk.comp2211.group13.ui.AppPane;
+import uk.comp2211.group13.ui.AppWindow;
 
-import java.io.File;
-import java.util.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public class HistogramScene extends BaseScene {
 
   private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
 
   private StackPane graphingPane;
-  private HashMap<Date, Float> ClickCosts = appWindow.getMetrics().request(Metric.ClickCost, "2015-01-01 12:00:00", "2015-01-14 12:00:00", Granularity.Day);
+  private HashMap<Date, Float> clickCosts;
 
   /**
    * Creates a new scene.
@@ -42,6 +42,14 @@ public class HistogramScene extends BaseScene {
    */
   public HistogramScene(AppWindow appWindow) {
     super(appWindow);
+
+    clickCosts = appWindow.getMetrics().request(
+        Metric.ClickCost,
+        appWindow.getData().getMinDate(),
+        appWindow.getData().getMaxDate(),
+        new HashMap<>(),
+        Granularity.Day
+    );
   }
 
   /**
@@ -145,12 +153,12 @@ public class HistogramScene extends BaseScene {
     XYChart.Series dataValues = new XYChart.Series();
 
     //Here a list is created to store the Dates corresponding to the metric value which is then sorted into chronological order
-    List<Date> dates = new ArrayList<Date>(ClickCosts.keySet());
+    List<Date> dates = new ArrayList<Date>(clickCosts.keySet());
     Collections.sort(dates);
 
     //Iterating through the list of dates and adding the date along with its corresponding Click Cost value to the chart series and then adding the series to the histogram
     for (Date i : dates) {
-      dataValues.getData().add(new XYChart.Data(i.toString(), ClickCosts.get(i)));
+      dataValues.getData().add(new XYChart.Data(i.toString(), clickCosts.get(i)));
     }
 
     //Adding the series to the chart, setting its name and adding it the parsed VBox

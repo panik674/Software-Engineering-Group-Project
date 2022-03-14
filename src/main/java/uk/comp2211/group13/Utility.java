@@ -37,7 +37,7 @@ public class Utility {
    * @param date string date to check
    * @return true if valid
    */
-  public static boolean validateDate(String date){
+  public static boolean validateDate(String date) {
     try {
       sdf.parse(date);
     } catch (ParseException e) {

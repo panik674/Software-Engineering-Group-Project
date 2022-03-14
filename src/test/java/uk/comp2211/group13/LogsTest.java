@@ -9,6 +9,7 @@ import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Path;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class LogsTest {
@@ -18,16 +19,14 @@ public class LogsTest {
     public void setupData() {
         Data data = new Data();
 
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
-        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
         data.ingest(pathsTest);
 
-        HashMap<Filter, String> filter = new HashMap<>();
-        filter.put(Filter.StartDatetime, "2015-01-01 12:00:00");
-        filter.put(Filter.EndDatetime, "2015-01-15 12:00:00");
-        logs = data.request(filter);
+        HashMap<Filter, String[]> filter = new HashMap<>();
+        logs = data.request(data.getMinDate(), data.getMaxDate(), filter);
     }
 
     @Test

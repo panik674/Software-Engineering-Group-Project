@@ -8,82 +8,84 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 // This code has been inspired by code from COMP 1206's TetrECS
+
 /**
  * The App Pane is a special pane which will scale anything inside it to the screen and maintain the aspect ratio.
- *
+ * <p>
  * Drawing will be scaled appropriately.
- *
+ * <p>
  * This takes the worry about the layout out and will allow the app to scale to any resolution easily.
- *
+ * <p>
  * It uses the width and height given which should match the main window size. This will be the base drawing resolution,
  * but will be scaled up or down as the window is resized.
  */
 public class AppPane extends StackPane {
 
-    private static final Logger logger = LogManager.getLogger(AppPane.class);
+  private static final Logger logger = LogManager.getLogger(AppPane.class);
 
-    private final int width;
-    private final int height;
-    private double scalar = 1;
-    private final boolean autoScale = true;
+  private final int width;
+  private final int height;
+  private double scalar = 1;
+  private final boolean autoScale = true;
 
-    /**
-     * Create a new scalable AppPane with the given drawing width and height.
-     *
-     * @param width width
-     * @param height height
-     */
-    public AppPane(int width, int height) {
-        super();
-        this.width = width;
-        this.height = height;
+  /**
+   * Create a new scalable AppPane with the given drawing width and height.
+   *
+   * @param width  width
+   * @param height height
+   */
+  public AppPane(int width, int height) {
+    super();
+    this.width = width;
+    this.height = height;
 
-        // getStyleClass().add("apppane"); //TODO: Decide if we want to use styles
-        setAlignment(Pos.TOP_LEFT);
+    // getStyleClass().add("apppane"); //TODO: Decide if we want to use styles
+    setAlignment(Pos.TOP_LEFT);
+  }
+
+  /**
+   * Update the scalar being used by this draw pane
+   *
+   * @param scalar scalar
+   */
+  protected void setScalar(double scalar) {
+    this.scalar = scalar;
+  }
+
+  /**
+   * Use a Graphics Transformation to scale everything inside this pane. Padding is added to the edges to maintain
+   * the correct aspect ratio and keep the display centred.
+   */
+  @Override
+  public void layoutChildren() {
+    super.layoutChildren();
+
+    if (!autoScale) {
+      return;
     }
 
-    /**
-     * Update the scalar being used by this draw pane
-     * @param scalar scalar
-     */
-    protected void setScalar(double scalar) {
-        this.scalar = scalar;
-    }
+    //Work out the scale factor height and width
+    var scaleFactorHeight = getHeight() / height;
+    var scaleFactorWidth = getWidth() / width;
 
-    /**
-     * Use a Graphics Transformation to scale everything inside this pane. Padding is added to the edges to maintain
-     * the correct aspect ratio and keep the display centred.
-     */
-    @Override
-    public void layoutChildren() {
-        super.layoutChildren();
+    //Work out whether to scale by width or height
+    setScalar(Math.min(scaleFactorHeight, scaleFactorWidth));
 
-        if(!autoScale) {
-            return;
-        }
+    //Set up the scale
+    Scale scale = new Scale(scalar, scalar);
 
-        //Work out the scale factor height and width
-        var scaleFactorHeight = getHeight() / height;
-        var scaleFactorWidth = getWidth() / width;
+    //Get the parent width and height
+    var parentWidth = getWidth();
+    var parentHeight = getHeight();
 
-        //Work out whether to scale by width or height
-        setScalar(Math.min(scaleFactorHeight, scaleFactorWidth));
+    //Get the padding needed on the top and left
+    var paddingLeft = (parentWidth - (width * scalar)) / 2.0;
+    var paddingTop = (parentHeight - (height * scalar)) / 2.0;
 
-        //Set up the scale
-        Scale scale = new Scale(scalar,scalar);
-
-        //Get the parent width and height
-        var parentWidth = getWidth();
-        var parentHeight = getHeight();
-
-        //Get the padding needed on the top and left
-        var paddingLeft = (parentWidth - (width * scalar)) / 2.0;
-        var paddingTop = (parentHeight - (height * scalar)) / 2.0;
-
-        //Perform the transformation
-        Translate translate = new Translate(paddingLeft, paddingTop);
-        scale.setPivotX(0);
-        scale.setPivotY(0);
-        getTransforms().setAll(translate, scale);
-    }
+    //Perform the transformation
+    Translate translate = new Translate(paddingLeft, paddingTop);
+    scale.setPivotX(0);
+    scale.setPivotY(0);
+    getTransforms().setAll(translate, scale);
+  }
 }

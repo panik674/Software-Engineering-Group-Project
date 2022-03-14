@@ -6,6 +6,8 @@ import org.junit.Test;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Path;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataTest {
@@ -21,10 +23,10 @@ public class DataTest {
      */
     @Test
     public void ingestSuccessfulTest() {
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
-        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
 
         boolean result = data.ingest(pathsTest);
 
@@ -36,9 +38,9 @@ public class DataTest {
      */
     @Test
     public void ingestMissingFileTest() {
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
 
         boolean result = data.ingest(pathsTest);
 
@@ -50,10 +52,10 @@ public class DataTest {
      */
     @Test
     public void ingestInvalidFormatTest() {
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
-        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/invalid.csv");
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/invalid.csv");
 
         boolean result = data.ingest(pathsTest);
 
@@ -64,11 +66,11 @@ public class DataTest {
      * This will test if ingest will fail if a file contains diffrent log data
      */
     @Test
-    public void ingestWrongFormatTest() {
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
-        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+    public void ingestDupeLogTest() {
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
 
         boolean result = data.ingest(pathsTest);
 
@@ -80,15 +82,14 @@ public class DataTest {
      */
     @Test
     public void requestTest() {
-        HashMap<Path, String> pathsTest = new HashMap<>();
-        pathsTest.put(Path.Click, "src/test/java/uk/comp2211/group13/testdata/click_log.csv");
-        pathsTest.put(Path.Impression, "src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
-        pathsTest.put(Path.Server, "src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
         data.ingest(pathsTest);
 
-        HashMap<Filter, String> filter = new HashMap<>();
-
-        Assert.assertNotNull(data.request(filter));
+        HashMap<Filter, String[]> filter = new HashMap<>();
+        Assert.assertNotNull(data.request(data.getMinDate(), data.getMaxDate(), filter));
     }
 
     /**

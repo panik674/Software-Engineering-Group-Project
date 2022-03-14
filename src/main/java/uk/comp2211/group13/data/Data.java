@@ -24,124 +24,161 @@ public class Data {
   /**
    * These store the logs we ingest
    */
-  private Logs logs = new Logs();
+  private Logs masterLog = new Logs();
 
   /**
-   * This is used to ingest data into the data object from the various logs.
-   * <p>
-   * This requires all 3 paths Impression, Click and Server for it to not fail.
-   * <p>
-   * If this returns false, an error message will be logged and the stored logs are cleared
-   * If this returns true, it has successfully loaded the logs
-   *
-   * @param paths this is a dictionary with the key as type of log and String as the path to the file.
-   * @return boolean value for ingest success
+   * These store the min and max date of the currently stored master log
    */
-  public boolean ingest(HashMap<Path, String> paths) {
-    logs = new Logs();
+  private Date maxDate = null;
+  private Date minDate = null;
 
-    // Checks all 3 log paths have been entered
-    if (!paths.containsKey(Path.Impression) || !paths.containsKey(Path.Click) || !paths.containsKey(Path.Server)) {
-      logger.error("Log ingest failed since there is a lack of paths");
-
-      return false;
-    }
-
-    // Try to ingest each log
-    try {
-      for (Map.Entry<Path, String> path : paths.entrySet()) {
-        // File exists validation
-        File file = new File(path.getValue());
-        if (!file.exists() || file.isDirectory()) {
-          throw new Exception("Invalid Log Path");
-        }
-
-        // Setup file reader
-        Scanner reader = new Scanner(file);
-        String[] line;
-
-        // Basic file validation
-        boolean validFlag;
-        switch (path.getKey()) {
-          case Impression -> validFlag = Objects.equals(reader.nextLine(), "Date,ID,Gender,Age,Income,Context,Impression Cost");
-          case Click -> validFlag = Objects.equals(reader.nextLine(), "Date,ID,Click Cost");
-          case Server -> validFlag = Objects.equals(reader.nextLine(), "Entry Date,ID,Exit Date,Pages Viewed,Conversion");
-          default -> validFlag = false;
-        }
-
-        if (!validFlag) {
-          throw new Exception("File failed basic validation");
-        }
-
-        // Ingest data
-        while (reader.hasNextLine()) {
-          line = reader.nextLine().split(",");
-
-          // Process Log to new record and add to list
-          switch (path.getKey()) {
-            case Impression -> logs.impressionLogs.add(
-                new Impression(
-                    Utility.string2Date(line[0]),
-                    line[1],
-                    line[2],
-                    line[3],
-                    line[4],
-                    line[5],
-                    Float.parseFloat(line[6])
-                )
-            );
-            case Click -> logs.clickLogs.add(
-                new Click(
-                    Utility.string2Date(line[0]),
-                    line[1],
-                    Float.parseFloat(line[2])
-                )
-            );
-            case Server -> logs.serverLogs.add(
-                new Server(
-                    Utility.string2Date(line[0]),
-                    line[1],
-                    line[2],
-                    Integer.parseInt(line[3]),
-                    Objects.equals(line[4], "Yes")
-                )
-            );
-          }
-        }
-
-        reader.close();
-      }
-    } catch (Exception e) {
-      logger.error(String.format("Log ingest failed Reason: %s", e.getMessage()));
-      logs = new Logs();
-
-      return false;
-    }
-    return true;
+  /**
+   * This will return the master log's min date
+   *
+   * @return min date in master log
+   */
+  public Date getMinDate() {
+    return minDate;
   }
 
   /**
-   * This is a temporary function until sprint 2 where we merge it with ingest()
+   * This will return the master log's max date
    *
-   * @param path string path of file to estimate path of
+   * @return max date in master log
+   */
+  public Date getMaxDate() {
+    return maxDate;
+  }
+
+
+  /**
+   * These functions are is used to ingest data into the data object from the various logs.
+   * It will validate the incoming files in this function and pass it to performIngest().
+   * <p>
+   * This requires all 3 paths Impression, Click and Server for it to not fail.
+   * <p>
+   * Status codes
+   * 0 = success
+   * 1 = log validation and estimation fail
+   * 2 = Scanner file not found
+   * 3 = click and server log mismatch (invalid data)
+   * 4 = invalid date format (invalid data)
+   *
+   * @param inputPaths this is a list of Strings as the paths to the log files.
+   * @return int status code
+   */
+  public int ingest(ArrayList<String> inputPaths) {
+    HashMap<Path, File> paths;
+    try {
+      paths = ingestFiles(inputPaths);
+    } catch (Exception e) {
+      logger.error("Ingest files error, reason: " + e.getMessage());
+      return 1;
+    }
+
+    return performIngest(paths);
+  }
+
+  public int ingest(String folder) {
+    HashMap<Path, File> paths;
+    try {
+      paths = ingestFolder(folder);
+    } catch (Exception e) {
+      logger.error("Ingest folder error, reason: " + e.getMessage());
+      return 1;
+    }
+
+    return performIngest(paths);
+  }
+
+  /**
+   * This is used to pass ingest() data from a folder rather than individual files.
+   * <p>
+   * Status codes
+   * 5 = This isn't a folder/exists
+   *
+   * @param folderPath path to folder containing files
+   * @return status code
+   */
+  private HashMap<Path, File> ingestFolder(String folderPath) throws Exception {
+    File folder = new File(folderPath);
+
+    // Check path goes to folder and exists
+    if (!folder.exists() || !folder.isDirectory()) {
+      throw new Exception("Unable to ingest folder that isn't a folder or non-existent");
+    }
+
+    // Get log file paths
+    HashMap<Path, File> paths = new HashMap<>();
+    for (File file : Objects.requireNonNull(folder.listFiles())) {
+      if (file.isFile()) {
+        try {
+          Path result = estimateLogType(file);
+
+          if (result != Path.Invalid) {
+            paths.put(result, file);
+          }
+        } catch (Exception ignored) {
+        }
+      }
+    }
+
+    // Checks all 3 log paths have been entered
+    if (!paths.containsKey(Path.Impression)
+        || !paths.containsKey(Path.Click)
+        || !paths.containsKey(Path.Server)
+        || paths.containsKey(Path.Invalid)) {
+      throw new Exception("Log ingest failed there are invalid logs or missing logs.");
+    }
+
+    return paths;
+  }
+
+  /**
+   * This is used to convert string paths into File and validate
+   *
+   * @param inputPaths string paths to convert into files
+   * @return Log type and file key value pair
+   */
+  private HashMap<Path, File> ingestFiles(ArrayList<String> inputPaths) throws Exception {
+    // Check number of input paths
+    if (inputPaths.size() != 3) {
+      throw new Exception("Log ingest failed since there is an invalid number of input paths.");
+    }
+
+    // Estimate path types
+    HashMap<Path, File> paths = new HashMap<>();
+    for (String inputPath : inputPaths) {
+      File file = new File(inputPath);
+      if (!file.exists() || file.isDirectory()) {
+        throw new Exception("Cannot reach/open file");
+      }
+
+      paths.put(estimateLogType(file), file);
+    }
+
+    // Checks all 3 log paths have been entered
+    if (!paths.containsKey(Path.Impression)
+        || !paths.containsKey(Path.Click)
+        || !paths.containsKey(Path.Server)
+        || paths.containsKey(Path.Invalid)) {
+      throw new Exception("Log ingest failed there are invalid logs or missing logs.");
+    }
+
+    return paths;
+  }
+
+  /**
+   * This is a helper function where we estimate the log file type based off of header line
+   *
+   * @param file file to estimate log type of
    * @return Path type
    */
-  public Path estimateLogType(String path) {
-    File file = new File(path);
-    if (!file.exists() || file.isDirectory()) {
-      return null;
-    }
-
-    String line;
-
+  private Path estimateLogType(File file) throws Exception {
     // Setup file reader
-    try {
-      Scanner reader = new Scanner(file);
-      line = reader.nextLine();
-      reader.close();
-    } catch (FileNotFoundException e) {
-      return null;
-    }
+    Scanner reader = new Scanner(file);
+    String line = reader.nextLine();
+    reader.close();
 
     // Basic file validation
     switch (line) {
@@ -156,9 +193,179 @@ public class Data {
       }
 
       default -> {
-        return null;
+        return Path.Invalid;
       }
     }
+  }
+
+  /**
+   * This function will ingest data into the master log.,
+   *
+   * @param paths paths to ingest
+   * @return status code
+   */
+  private int performIngest(HashMap<Path, File> paths) {
+    masterLog = new Logs();
+
+    //Set up scanners
+    try {
+      Scanner impressionScanner = new Scanner(paths.get(Path.Impression));
+      Scanner clickScanner = new Scanner(paths.get(Path.Click));
+      Scanner serverScanner = new Scanner(paths.get(Path.Server));
+
+      // Skip header line
+      impressionScanner.nextLine();
+      clickScanner.nextLine();
+      serverScanner.nextLine();
+
+      while (true) {
+        boolean endFlag = false;
+        String[] impressionLine;
+
+        Impression impression;
+        Click click = null;
+        Server server = null;
+        if (clickScanner.hasNextLine() && serverScanner.hasNextLine()) {
+          click = string2Click(clickScanner.nextLine().split(","));
+          server = string2Server(serverScanner.nextLine().split(","));
+
+          if (!Objects.equals(click.id(), server.id())) { //Assuming equal numbers of server and log entries
+            logger.error("Ingest error has occurred, click and server log lines are not id matched");
+            return 3;
+          }
+        }
+        if ((clickScanner.hasNextLine() && !serverScanner.hasNextLine())
+            || (!clickScanner.hasNextLine() && serverScanner.hasNextLine())) {
+          logger.error("Ingest error has occurred, click and server log lines are not count matched");
+          return 3;
+        }
+
+        boolean logFlag = true;
+        while (logFlag) {
+          if (impressionScanner.hasNextLine()) {
+            try {
+              impressionLine = impressionScanner.nextLine().split(",");
+
+              if (click != null && Objects.equals(click.id(), impressionLine[1])) {
+                logFlag = false;
+                impression = string2Impression(impressionLine, click, server);
+              } else {
+                impression = string2Impression(impressionLine, null, null);
+              }
+
+              masterLog.impressionLogs.add(impression);
+
+              // Set max and min data for the master log
+              if (minDate == null || maxDate == null) {
+                minDate = impression.date();
+                maxDate = impression.date();
+              }
+              if (minDate.after(impression.date())) minDate = impression.date();
+              if (maxDate.before(impression.date())) maxDate = impression.date();
+
+            } catch (ParseException e) {
+              throw e;
+            } catch (Exception e) {
+              logger.error("Invalid impression filter data: " + e.getMessage());
+            }
+
+          } else {
+            endFlag = true;
+            break;
+          }
+        }
+
+        // TODO: Remove???
+        masterLog.clickLogs.add(click);
+        masterLog.serverLogs.add(server);
+
+        if (endFlag) break;
+      }
+
+      // Tidy up
+      impressionScanner.close();
+      clickScanner.close();
+      serverScanner.close();
+
+      masterLog.impressionLogs.removeAll(Collections.singleton(null));
+      masterLog.clickLogs.removeAll(Collections.singleton(null));
+      masterLog.serverLogs.removeAll(Collections.singleton(null));
+
+    } catch (FileNotFoundException e) {
+      logger.error("Scanner error, reason: " + e.getMessage());
+      return 2;
+
+    } catch (ParseException e) {
+      logger.error("Date conversion error, reason: " + e.getMessage());
+      return 4;
+    }
+    return 0;
+  }
+
+
+  /**
+   * This is used to create an Impression
+   *
+   * @param line   line from csv
+   * @param click  related click log
+   * @param server related server log
+   * @return return Impression
+   * @throws ParseException date error
+   */
+  private static Impression string2Impression(String[] line, Click click, Server server) throws Exception {
+    return new Impression(
+        Utility.string2Date(line[0]), // date
+        line[1], // id
+        validateGender(line[2]), // gender
+        validateAge(line[3]), // age
+        validateIncome(line[4]), // income
+        validateContext(line[5]), // context
+        Float.parseFloat(line[6]), // cost
+        click,
+        server
+    );
+  }
+
+  /**
+   * This is used to create a Click
+   *
+   * @param line line from csv
+   * @return return Click
+   * @throws ParseException date error
+   */
+  private static Click string2Click(String[] line) throws ParseException {
+    return new Click(
+        Utility.string2Date(line[0]), // date
+        line[1], // id
+        Float.parseFloat(line[2]) // cost
+    );
+  }
+
+  /**
+   * This is used to create a Server
+   *
+   * @param line line from csv
+   * @return return Server
+   * @throws ParseException date error
+   */
+  private static Server string2Server(String[] line) throws ParseException {
+    return new Server(
+        Utility.string2Date(line[0]), // date
+        line[1], // id
+        line[2], // exit date
+        Integer.parseInt(line[3]), // pages
+        Objects.equals(line[4], "Yes") // conversation
+    );
+  }
+
+
+  /**
+   * This is used to return an unfiltered master log
+   *
+   * @return masterlog
+   */
+  public Logs request() {
+    return masterLog;
   }
 
   /**
@@ -167,51 +374,29 @@ public class Data {
    * @param filters this is a list of applied filters
    * @return returns requested data.
    */
-  public Logs request(HashMap<Filter, String> filters) {
+  public Logs request(Date startDate, Date endDate, HashMap<Filter, String[]> filters) {
     Logs output = new Logs();
 
-    // Init date range values
-    boolean enableDataRange = false; // Used to quickly check if date range is being used
-    Date startDate = null;
-    Date endDate = null;
+    impressionLoop: for (Impression impression : masterLog.impressionLogs) {
+      // Check date
+      if (!withinDate(startDate, endDate, impression.date())) continue;
 
-    if (filters.size() == 0) {
-      // No filters return all
-      return logs;
-
-    } else {
-      try { // Set up date range
-        if (filters.containsKey(Filter.StartDatetime) && filters.containsKey(Filter.EndDatetime)) {
-          startDate = Utility.string2Date(filters.get(Filter.StartDatetime));
-          endDate = Utility.string2Date(filters.get(Filter.EndDatetime));
-          enableDataRange = true;
-        }
-      } catch (ParseException e) {
-        logger.error("Unable to complete request due to invalid dates");
+      // Check filters match
+      for (Map.Entry<Filter, String[]> filter : filters.entrySet()) {
+        if (!switch (filter.getKey()) {
+          case Gender -> Arrays.asList(filter.getValue()).contains(impression.gender());
+          case Age -> Arrays.asList(filter.getValue()).contains(impression.age());
+          case Income -> Arrays.asList(filter.getValue()).contains(impression.income());
+          case Context -> Arrays.asList(filter.getValue()).contains(impression.context());
+        }) continue impressionLoop;
       }
 
-      // Filter impressions list
-      for (Impression impression : logs.impressionLogs) {
-        if (enableDataRange && !withinDate(startDate, endDate, impression.date())) continue;
-
-        output.impressionLogs.add(impression);
-      }
-
-      // Filter impressions list
-      for (Click click : logs.clickLogs) {
-        if (enableDataRange && !withinDate(startDate, endDate, click.date())) continue;
-
-        output.clickLogs.add(click);
-      }
-
-      // Filter impressions list
-      for (Server server : logs.serverLogs) {
-        if (enableDataRange && !withinDate(startDate, endDate, server.entryDate())) continue;
-
-        output.serverLogs.add(server);
+      output.impressionLogs.add(impression);
+      if (impression.click() != null){ // TODO: Remove???
+        output.clickLogs.add(impression.click());
+        output.serverLogs.add(impression.server());
       }
     }
-
 
     return output;
   }
@@ -224,7 +409,60 @@ public class Data {
    * @param target date to check
    * @return true if in range
    */
-  private boolean withinDate(Date start, Date end, Date target) {
+  private static boolean withinDate(Date start, Date end, Date target) {
     return (target.after(start) || target.equals(start)) && target.before(end);
+  }
+
+
+  /**
+   * This is used to return a valid gender or null.
+   *
+   * @param gender string to check
+   * @return gender or null
+   */
+  private static String validateGender(String gender) throws Exception {
+    return switch (gender) {
+      case "Male", "Female" -> gender;
+      default -> throw new Exception("Invalid data");
+    };
+  }
+
+  /**
+   * This is used to return a valid age or null.
+   *
+   * @param age string to check
+   * @return age or null
+   */
+  private static String validateAge(String age) throws Exception {
+    return switch (age) {
+      case "<25", "25-34", "35-44", "45-54", ">54" -> age;
+      default -> throw new Exception("Invalid data");
+    };
+  }
+
+  /**
+   * This is used to return a valid income or null.
+   *
+   * @param income string to check
+   * @return income or null
+   */
+  private static String validateIncome(String income) throws Exception {
+    return switch (income) {
+      case "Low", "Medium", "High" -> income;
+      default -> throw new Exception("Invalid data");
+    };
+  }
+
+  /**
+   * This is used to return a valid context or null.
+   *
+   * @param context string to check
+   * @return context or null
+   */
+  private static String validateContext(String context) throws Exception {
+    return switch (context) {
+      case "News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel" -> context;
+      default -> throw new Exception("Invalid data");
+    };
   }
 }

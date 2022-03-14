@@ -29,8 +29,7 @@ public class App extends Application {
    */
   private Stage stage;
 
-  public static void main( String[] args )
-  {
+  public static void main(String[] args) {
     logger.info("Starting App");
     launch();
   }
