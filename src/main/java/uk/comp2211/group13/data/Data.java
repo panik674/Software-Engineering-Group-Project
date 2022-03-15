@@ -316,10 +316,10 @@ public class Data {
     return new Impression(
         Utility.string2Date(line[0]), // date
         line[1], // id
-        validateGender(line[2]), // gender
-        validateAge(line[3]), // age
-        validateIncome(line[4]), // income
-        validateContext(line[5]), // context
+        Utility.validateGender(line[2]), // gender
+        Utility.validateAge(line[3]), // age
+        Utility.validateIncome(line[4]), // income
+        Utility.validateContext(line[5]), // context
         Float.parseFloat(line[6]), // cost
         click,
         server
@@ -411,58 +411,5 @@ public class Data {
    */
   private static boolean withinDate(Date start, Date end, Date target) {
     return (target.after(start) || target.equals(start)) && target.before(end);
-  }
-
-
-  /**
-   * This is used to return a valid gender or null.
-   *
-   * @param gender string to check
-   * @return gender or null
-   */
-  private static String validateGender(String gender) throws Exception {
-    return switch (gender) {
-      case "Male", "Female" -> gender;
-      default -> throw new Exception("Invalid data");
-    };
-  }
-
-  /**
-   * This is used to return a valid age or null.
-   *
-   * @param age string to check
-   * @return age or null
-   */
-  private static String validateAge(String age) throws Exception {
-    return switch (age) {
-      case "<25", "25-34", "35-44", "45-54", ">54" -> age;
-      default -> throw new Exception("Invalid data");
-    };
-  }
-
-  /**
-   * This is used to return a valid income or null.
-   *
-   * @param income string to check
-   * @return income or null
-   */
-  private static String validateIncome(String income) throws Exception {
-    return switch (income) {
-      case "Low", "Medium", "High" -> income;
-      default -> throw new Exception("Invalid data");
-    };
-  }
-
-  /**
-   * This is used to return a valid context or null.
-   *
-   * @param context string to check
-   * @return context or null
-   */
-  private static String validateContext(String context) throws Exception {
-    return switch (context) {
-      case "News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel" -> context;
-      default -> throw new Exception("Invalid data");
-    };
   }
 }
