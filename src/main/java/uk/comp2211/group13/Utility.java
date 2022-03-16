@@ -1,11 +1,14 @@
 package uk.comp2211.group13;
 
+import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This is a class containing utility functions, such as date parsing and validation functions.
@@ -128,4 +131,22 @@ public class Utility {
       default -> Granularity.None;
     };
   }
+
+  /**
+   * Method to check filter type
+   *
+   * @param filt - Filter to be type-checked
+   * @return - Corresponding filter type
+   */
+  public Filter filterType(String filt){
+    switch (filt){
+
+      case "Male", "Female" : return Filter.Gender;
+      case "<25", "25-34", "35-44", "45-54", ">54" : return Filter.Age;
+      case "Low", "Medium", "High" : return Filter.Income;
+      case "News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel" : return Filter.Context;
+    }
+    return null;
+  }
+
 }

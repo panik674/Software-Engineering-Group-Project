@@ -69,7 +69,7 @@ public class WelcomeScene extends BaseScene {
     var mainPane = new BorderPane();
     welcomePane.getChildren().add(mainPane);
 
-    Text appTitle = new Text("Welcome to 'Witty Name' App");
+    Text appTitle = new Text("Welcome to The Old Biddy App");
     mainPane.setCenter(appTitle);
 
     vbox = new VBox();
