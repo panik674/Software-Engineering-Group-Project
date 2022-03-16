@@ -24,6 +24,7 @@ public class Save {
 
     /**
      * This function receives the customisable objects that a user may want to save, turns them into a JSON object and saves it into a respective file
+     *
      * @param filters
      * @param metrics
      * @param granularity
@@ -52,7 +53,7 @@ public class Save {
     // TODO: Handle cases where the file might not exist, without crashing.
     public void loadFilters(String filepath) {
         JSONParser parser = new JSONParser();
-        try{
+        try {
             Object obj = parser.parse(new FileReader(filepath));
             JSONObject jsonObject = (JSONObject) obj;
             filters = (HashSet<Filter>) jsonObject.get("filters");
@@ -68,4 +69,25 @@ public class Save {
             e.printStackTrace();
         }
     }
+
+    public HashSet<Filter> getFilters() {
+        return filters;
+    }
+
+    public HashSet<Metric> getMetrics() {
+        return metrics;
+    }
+
+    public Granularity getGranularity() {
+        return granularity;
+    }
+
+    public Date getStartDate(){
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
 }
