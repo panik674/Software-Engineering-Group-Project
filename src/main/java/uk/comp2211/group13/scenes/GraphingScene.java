@@ -1,11 +1,12 @@
 package uk.comp2211.group13.scenes;
 
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -15,11 +16,12 @@ import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppWindow;
 import uk.comp2211.group13.ui.AppPane;
-
+import java.security.KeyStore;
 import java.util.*;
 
 public class GraphingScene extends BaseScene {
@@ -29,6 +31,13 @@ public class GraphingScene extends BaseScene {
   private StackPane graphingPane;
   private LineChart lineChart;
   private HashMap<Date, Float> metric;
+  private HashMap<Filter, String[]> filters = new HashMap<>();
+  private Metric currentMetric;
+  private String[] GenderList = {};
+  private String[] AgeList = {};
+  private String[] IncomeList = {};
+  private String[] ContextList = {};
+  private Utility util = new Utility();
 
 
   /**
@@ -56,6 +65,8 @@ public class GraphingScene extends BaseScene {
   @Override
   public void build() {
     logger.info("Building " + this.getClass().getName());
+
+
 
     //Building the root pane
     root = new AppPane(appWindow.getWidth(), appWindow.getHeight());
@@ -109,72 +120,114 @@ public class GraphingScene extends BaseScene {
     metricBox.setValue(metrics[0]);
     vbox.getChildren().add(metricBox);
 
-    //Creating a ComboBox widget which will allow the user to apply filters to the metric graphs in a future prototype
-    ComboBox<String> filterBox = new ComboBox<>();
-    filterBox.setValue("Choose a Filter");
-    vbox.getChildren().add(filterBox);
+    //Creating a MenuButton to allow the user to select filters to apply to the graph
+    String[] filterNames = {"Gender: Male", "Gender: Female", "Age: <25", "Age: 25-34", "Age: 35-44", "Age: 45-54", "Age: >54", "Income: Low", "Income: Medium", "Income: High", "Context: News", "Context: Shopping", "Context: Social Media", "Context: Blog", "Context: Hobbies", "Context: Travel"};
+    MenuButton menuButton = new MenuButton("Filters");
+    for (String i : filterNames) {
+      //Creating different CheckMenuItems for each filter
+      String[] currentFilter = i.split(" ", 2);
+      CheckMenuItem CMItem = new CheckMenuItem(i);
+      //Binding actions to the CheckMenuItems
+      CMItem.setOnAction(e -> {
+        //Adding filters to the graphs when they are selected
+        if (CMItem.isSelected()) {
+          addFilters(util.filterType(currentFilter[1]),currentFilter[1]);
+          vbox.getChildren().remove(lineChart);
+          metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
+          metricGraph(vbox, metricBox.getValue(), metric);
+
+        }
+        //Removing filters from the graphs when they are unselected
+        else {
+          removeFilters(util.filterType(currentFilter[1]),currentFilter[1]);
+          vbox.getChildren().remove(lineChart);
+          metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
+          metricGraph(vbox, metricBox.getValue(), metric);
+        }
+      });
+      menuButton.getItems().add(CMItem);
+    }
+    vbox.getChildren().add(menuButton);
+
 
     //Setting the default metric graph to the "Clicks" metric. The data is requested and is then parsed to the metricGraph method
-    metric = appWindow.getMetrics().request(Metric.Clicks, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+    currentMetric = Metric.Clicks;
+    metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
+
     metricGraph(vbox, metricBox.getValue(), metric);
 
     //Adding an action the metric ComboBox which removes the current graph from the VBox and adds a new one in its place with the selected metric's data requested and plotted
     metricBox.setOnAction(e -> {
       vbox.getChildren().remove(lineChart);
       if ("Number of Clicks".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Clicks, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.Clicks;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Impressions".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Impressions, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.Impressions;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Uniques".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Unique, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.Unique;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Bounce Pages".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.BouncePage, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.BouncePage;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Bounce Visits".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.BounceVisit, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.BounceVisit;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Number of Conversions".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.Conversions, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.Conversions;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
+        ;
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Total Costs".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.TotalCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.TotalCost;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CTR".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CTR, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.CTR;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CPA".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CPA, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.CPA;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CPC".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CPC, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.CPC;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("CPM".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.CPM, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.CPM;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else if ("Bounce Visit Rate".equals(metricBox.getValue())) {
-        metric = appWindow.getMetrics().request(Metric.BounceRateVisit, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.BounceRateVisit;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
 
       } else {
-        metric = appWindow.getMetrics().request(Metric.BounceRatePage, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), new HashMap<>(), Granularity.Day);
+        currentMetric = Metric.BounceRatePage;
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), filters, Granularity.Day);
         metricGraph(vbox, metricBox.getValue(), metric);
       }
 
     });
+
 
   }
 
@@ -231,4 +284,71 @@ public class GraphingScene extends BaseScene {
     appWindow.histogramScreen();
   }
 
+  /**
+   * Method to remove filters from the 'filters' HashMap
+   *
+   * @param filtType - The type of the filter being removed
+   * @param filt - The filter which is being removed
+   */
+  public void removeFilters(Filter filtType, String filt) {
+    //Checking the filter type, removing the filter from the appropriate filter String[] list and adding it to the filters HashMap
+    if (filtType == Filter.Gender) {
+      List<String> list = new ArrayList<String>(Arrays.asList(GenderList));
+      list.remove(filt);
+      GenderList = list.toArray(new String[0]);
+      filters.put(Filter.Gender, GenderList);
+    } else if (filtType == Filter.Age) {
+      List<String> list = new ArrayList<String>(Arrays.asList(AgeList));
+      list.remove(filt);
+      AgeList = list.toArray(new String[0]);
+      filters.put(Filter.Age, AgeList);
+    } else if (filtType == Filter.Income) {
+      List<String> list = new ArrayList<String>(Arrays.asList(IncomeList));
+      list.remove(filt);
+      IncomeList = list.toArray(new String[0]);
+      filters.put(Filter.Income, IncomeList);
+    } else {
+      List<String> list = new ArrayList<String>(Arrays.asList(ContextList));
+      list.remove(filt);
+      ContextList = list.toArray(new String[0]);
+      filters.put(Filter.Context, ContextList);
+    }
+    //Removing the HashMap entries with empty lists, so all metric values are displayed without any filters applied
+    for (Filter i : filters.keySet()){
+      if (filters.get(i).length == 0){
+        filters.remove(i);
+      }
+    }
+  }
+
+  /**
+   * Method to add filters from the 'filters' HashMap
+   *
+   * @param filtType - The type of the filter being added
+   * @param filt - The filter which is being added
+   */
+  public void addFilters(Filter filtType, String filt) {
+    //Checking the filter type, adding the filter from the appropriate filter String[] list and adding it to the filters HashMap
+    if (filtType == Filter.Gender) {
+      List<String> list = new ArrayList<String>(Arrays.asList(GenderList));
+      list.add(filt);
+      GenderList = list.toArray(new String[0]);
+      filters.put(Filter.Gender, GenderList);
+    } else if (filtType == Filter.Age) {
+      List<String> list = new ArrayList<String>(Arrays.asList(AgeList));
+      list.add(filt);
+      AgeList = list.toArray(new String[0]);
+      filters.put(Filter.Age, AgeList);
+    } else if (filtType == Filter.Income) {
+      List<String> list = new ArrayList<String>(Arrays.asList(IncomeList));
+      list.add(filt);
+      IncomeList = list.toArray(new String[0]);
+      filters.put(Filter.Income, IncomeList);
+    } else {
+      List<String> list = new ArrayList<String>(Arrays.asList(ContextList));
+      list.add(filt);
+      ContextList = list.toArray(new String[0]);
+      filters.put(Filter.Context, ContextList);
+    }
+  }
 }
