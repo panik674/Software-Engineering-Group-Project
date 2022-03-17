@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.enums.Filter;
-import uk.comp2211.group13.enums.Path;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +27,24 @@ public class DataTest {
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
 
-        boolean result = data.ingest(pathsTest);
+        int result = data.ingest(pathsTest);
 
-        Assert.assertSame("Test Successful Ingest", true, result);
+        Assert.assertSame("Test Successful Ingest", 0, result);
+
+    }
+    @Test
+    public void ingestFolderSucessfulTest(){
+        String path = "src/test/java/uk/comp2211/group13/testdata";
+        int result2 = data.ingest(path);
+
+        Assert.assertSame("Test Successful Ingest", 0,result2);
+    }
+    @Test
+    public void ingestFolderMissingTest(){
+        String path = "src/test/java/uk/comp2211/group13/testdata2";
+        int result2 = data.ingest(path);
+
+        Assert.assertSame("Test Missing Ingest", 1,result2);
     }
 
     /**
@@ -42,9 +56,9 @@ public class DataTest {
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
 
-        boolean result = data.ingest(pathsTest);
+        int result = data.ingest(pathsTest);
 
-        Assert.assertSame("Test missing path Ingest", false, result);
+        Assert.assertSame("Test Successful Ingest", 1, result);
     }
 
     /**
@@ -57,9 +71,17 @@ public class DataTest {
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/invalid.csv");
 
-        boolean result = data.ingest(pathsTest);
+        int result = data.ingest(pathsTest);
+        Assert.assertSame("Test invalid data file Ingest", 4, result);
+    }
+    /** This will test if ingest folder will fail if a file contains invalid data
+     * */
+    @Test
+    public void ingestFolderInvalidFormatTest(){
+        String paths = "src/test/java/uk/comp2211/group13/testdata2";
+        int result = data.ingest(paths);
 
-        Assert.assertSame("Test invalid data file Ingest", false, result);
+        Assert.assertSame("Test invalid data file Ingest",4,result);
     }
 
     /**
@@ -72,9 +94,32 @@ public class DataTest {
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
         pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
 
-        boolean result = data.ingest(pathsTest);
+        int result = data.ingest(pathsTest);
+        Assert.assertSame("Test wrong data file Ingest", 1, result);
+    }
+    /** This will test if ingest file if a file not found
+     * */
+    @Test
+    public void ScannerFileNotFoundTest(){
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log2.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log2.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log2.csv");
+       int result = data.ingest(pathsTest);
 
-        Assert.assertSame("Test wrong data file Ingest", false, result);
+        Assert.assertSame("Scanner file not found",2,result);
+    }
+    /**
+     * This test is to test log mismatch
+     * */
+    @Test
+    public void MismatchTest(){
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log2.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+        int result = data.ingest(pathsTest);
+        Assert.assertSame("click and server mismatch",3,result);
     }
 
     /**
@@ -92,25 +137,5 @@ public class DataTest {
         Assert.assertNotNull(data.request(data.getMinDate(), data.getMaxDate(), filter));
     }
 
-    /**
-     * This tests that log type estimations are correct
-     */
-    @Test
-    public void estimateLogTypeTest() {
-        Assert.assertEquals(
-                Path.Impression,
-                data.estimateLogType("src/test/java/uk/comp2211/group13/testdata/impression_log.csv")
-        );
-
-        Assert.assertEquals(
-                Path.Click,
-                data.estimateLogType("src/test/java/uk/comp2211/group13/testdata/click_log.csv")
-        );
-
-        Assert.assertEquals(
-                Path.Server,
-                data.estimateLogType("src/test/java/uk/comp2211/group13/testdata/server_log.csv")
-        );
-    }
 }
 
