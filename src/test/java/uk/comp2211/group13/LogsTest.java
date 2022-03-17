@@ -6,7 +6,6 @@ import org.junit.Test;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Logs;
 import uk.comp2211.group13.enums.Filter;
-import uk.comp2211.group13.enums.Path;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -44,13 +43,13 @@ public class LogsTest {
     @Test
     public void getBounceVisitTest() {
         int resultFor2_week = 5095;
-        Assert.assertEquals(resultFor2_week, logs.getBounceVisit());
+        Assert.assertEquals(resultFor2_week, logs.getBounceVisit(15));
     }
 
     @Test
     public void getBouncePagTest() {
         int result = 8665;
-        Assert.assertEquals(result, logs.getBouncePage());
+        Assert.assertEquals(result, logs.getBouncePage(1));
     }
 
     @Test
