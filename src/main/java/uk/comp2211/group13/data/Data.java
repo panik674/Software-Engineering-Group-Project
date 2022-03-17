@@ -261,7 +261,7 @@ public class Data {
                 maxDate = impression.date();
               }
               if (minDate.after(impression.date())) minDate = impression.date();
-              if (maxDate.before(impression.date())) maxDate = impression.date();
+              if (maxDate.before(impression.date())) maxDate = new Date(impression.date().getTime() + 1000L);
 
             } catch (ParseException e) {
               throw e;
