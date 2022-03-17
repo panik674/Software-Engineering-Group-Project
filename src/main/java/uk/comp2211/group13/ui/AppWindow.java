@@ -8,13 +8,10 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.App;
+import uk.comp2211.group13.threading.FileThreading;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
-import uk.comp2211.group13.scenes.BaseScene;
-import uk.comp2211.group13.scenes.GraphingScene;
-import uk.comp2211.group13.scenes.HistogramScene;
-import uk.comp2211.group13.scenes.ValuesScene;
-import uk.comp2211.group13.scenes.WelcomeScene;
+import uk.comp2211.group13.scenes.*;
 
 // This code has been inspired by code from COMP 1206's TetrECS
 
@@ -93,6 +90,20 @@ public class AppWindow {
    */
   public void welcomeScreen() {
     loadScene(new WelcomeScene(this));
+  }
+
+  /**
+   * Display start screen with error
+   */
+  public void welcomeScreen(String error) {
+    loadScene(new WelcomeScene(this, error));
+  }
+
+  /**
+   * Display loading screen
+   */
+  public void loadingScreen(FileThreading fileThreading) {
+    loadScene(new LoadingScene(this, fileThreading));
   }
 
   /**

@@ -14,23 +14,25 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.comp2211.group13.enums.Path;
+import uk.comp2211.group13.threading.FileThreading;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class WelcomeScene extends BaseScene {
 
   private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
 
+  private List<File> files;
+
   private StackPane welcomePane;
   private VBox vbox;
   private RadioButton radioButton;
   private Text error;
+  //private List<File> files;
 
   /**
    * Creates a new scene.
@@ -39,7 +41,19 @@ public class WelcomeScene extends BaseScene {
    */
   public WelcomeScene(AppWindow appWindow) {
     super(appWindow);
+    error = new Text("");
   }
+
+  /**
+   * Creates a new scene with error.
+   *
+   * @param appWindow the app window that displays the scene with error
+   */
+  public WelcomeScene(AppWindow appWindow, String error) {
+    super(appWindow);
+    this.error = new Text(error);
+  }
+
 
   /**
    * Initialise the scene and start the game
@@ -93,6 +107,8 @@ public class WelcomeScene extends BaseScene {
 
     Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
     hbox.getChildren().add(termsText);
+
+    vbox.getChildren().add(error);
   }
 
   @Override
@@ -103,37 +119,64 @@ public class WelcomeScene extends BaseScene {
     });
   }
 
+  public void run() {
+
+  }
   // Code was inspired by: https://www.geeksforgeeks.org/javafx-filechooser-class/
   public void fileLoader(MouseEvent event) {
     try {
       if (radioButton.isSelected()) {
-        ArrayList<String> stringPaths = new ArrayList<>();
-        vbox.getChildren().remove(error);
+        //vbox.getChildren().remove(error);
+        error.setText("");
         // create a File chooser
         FileChooser fileChooser = new FileChooser();
         // get the file selected
-        List<File> files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
-
+        files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
         if (files.size() == 3) {
-          for (File file : files) {
-            if (file != null) {
-              stringPaths.add(file.getAbsolutePath());
-            }
-          }
-          if (appWindow.getData().ingest(stringPaths) == 0) {
-            appWindow.valuesScreen();
-          } else {
-            error = new Text("Please select the correct formats of the file");
-            vbox.getChildren().add(error);
-          }
+
+          FileThreading fileThreading = new FileThreading(files, appWindow);
+
+
+          fileThreading.start();
+          appWindow.loadingScreen(fileThreading);
         } else {
-          error = new Text("Please select exactly three files!");
-          vbox.getChildren().add(error);
+          error.setText("Please select exactly three files!");
         }
+        /*Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+
+          }
+        });*/
+
+
+        //processingFiles(files);
+
       }
     } catch (Exception e) {
 
       System.out.println(e.getMessage());
+    }
+  }
+
+  public void processingFiles(List<File> files) {
+    ArrayList<String> stringPaths = new ArrayList<>();
+    if (files.size() == 3) {
+      for (File file : files) {
+        if (file != null) {
+          stringPaths.add(file.getAbsolutePath());
+        }
+      }
+      if (appWindow.getData().ingest(stringPaths) == 0) {
+        appWindow.valuesScreen();
+      } else {
+        appWindow.welcomeScreen();
+        error = new Text("Please select the correct formats of the file");
+        vbox.getChildren().add(error);
+      }
+    } else {
+      error = new Text("Please select exactly three files!");
+      vbox.getChildren().add(error);
     }
   }
 }
