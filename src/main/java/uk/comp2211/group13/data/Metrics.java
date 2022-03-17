@@ -30,6 +30,9 @@ public class Metrics {
    */
   private final Data data;
 
+  private int bouncePages = 1;
+  private int bounceSeconds = 15;
+
   /**
    * Class constructor. Initialises the Data variable, with the one specified form the user
    *
@@ -142,6 +145,42 @@ public class Metrics {
   }
 
   /**
+   * Used to set the page value to determine a bounce
+   *
+   * @param pages page minimum
+   */
+  public void setBouncePages(int pages) {
+    this.bouncePages = pages;
+  }
+
+  /**
+   * Used to set the visit time minimum to determine a bounce
+   *
+   * @param seconds time minimum
+   */
+  public void setBounceSeconds(int seconds) {
+    this.bouncePages = seconds;
+  }
+
+  /**
+   * Used to get the value for pages for a bounce
+   *
+   * @return no. pages
+   */
+  public int getBouncePages() {
+    return this.bouncePages;
+  }
+
+  /**
+   * Used to get the value of seconds for a bounce
+   *
+   * @return no. seconds
+   */
+  public int getBounceSeconds() {
+    return this.bounceSeconds;
+  }
+
+  /**
    * Pass through function for the number of impressions
    *
    * @param logs: Log object for which the accumulation happens
@@ -178,7 +217,7 @@ public class Metrics {
    * @return number of bounces
    */
   public int bouncePage(Logs logs) {
-    return logs.getBouncePage();
+    return logs.getBouncePage(bouncePages);
   }
 
   /**
@@ -188,7 +227,7 @@ public class Metrics {
    * @return number of bounces
    */
   public int bounceVisit(Logs logs) {
-    return logs.getBounceVisit();
+    return logs.getBounceVisit(bounceSeconds);
   }
 
   /**
@@ -239,7 +278,6 @@ public class Metrics {
     return totalCost(logs) / acquisitions;
   }
 
-
   /**
    * Getter for Cost-Per-Click metric (CPC)
    * We define cost as the total cost for the clicks.
@@ -276,7 +314,7 @@ public class Metrics {
   public float bounceRatePage(Logs logs) {
 
     float clicks = logs.getClicks();
-    int bounce = logs.getBouncePage();
+    int bounce = logs.getBouncePage(bouncePages);
 
     return bounce / clicks;
   }
@@ -288,7 +326,7 @@ public class Metrics {
    */
   public float bounceRateVisit(Logs logs) {
     float clicks = logs.getClicks();
-    int bounce = logs.getBounceVisit();
+    int bounce = logs.getBounceVisit(bounceSeconds);
 
     return bounce / clicks;
   }
