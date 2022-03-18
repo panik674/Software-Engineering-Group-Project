@@ -1,6 +1,8 @@
 package uk.comp2211.group13.scenes;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
@@ -120,20 +122,38 @@ public class GraphingScene extends BaseScene {
     metricBox.setValue(metrics[0]);
     vbox.getChildren().add(metricBox);
 
-    filterMenu(new String[]{"Male", "Female"},"Gender");
+    MenuButton genderBox = filterMenu(new String[]{"Male", "Female"},"Gender");
     filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age");
+    MenuButton ageBox = filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age");
     filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"Low", "Medium", "High"},"Income");
+    MenuButton incomeBox = filterMenu(new String[]{"Low", "Medium", "High"},"Income");
     filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context");
+    MenuButton contextBox = filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context");
     vbox.getChildren().add(filterHbox);
+
+    //Creating a button to disable all of the current filters
+    Button filterReset = new Button("Remove all filters");
+    //Binding an action event to the button
+    filterReset.setOnAction(new EventHandler<ActionEvent>() {
+      //Method to clear all the filter hashmaps, uncheck all the items in the filter drop-downs and rebuild the graph accordingly
+      @Override public void handle(ActionEvent e) {
+        vbox.getChildren().remove(lineChart);
+        filterRemove(genderFilters,genderBox);
+        filterRemove(ageFilters,ageBox);
+        filterRemove(incomeFilters,incomeBox);
+        filterRemove(contextFilters,contextBox);
+        metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), Granularity.Day);
+        metricGraph(metricBox.getValue(), metric);
+
+      }
+    });
+
+    vbox.getChildren().add(filterReset);
 
 
     //Setting the default metric graph to the "Clicks" metric. The data is requested and is then parsed to the metricGraph method
     currentMetric = Metric.Clicks;
     metric = appWindow.getMetrics().request(currentMetric, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), Granularity.Day);
-
     metricGraph(metricBox.getValue(), metric);
 
     //Adding an action the metric ComboBox which removes the current graph from the VBox and adds a new one in its place with the selected metric's data requested and plotted
@@ -207,6 +227,9 @@ public class GraphingScene extends BaseScene {
       }
 
     });
+
+
+
 
 
   }
@@ -353,8 +376,9 @@ public class GraphingScene extends BaseScene {
    *
    * @param filterNames - List of filters to be added to the MenuButton
    * @param filterType - Label for the MenuButton
+   * @return The built MenuButton to allow for interaction later
    */
-  public void filterMenu(String[] filterNames, String filterType){
+  public MenuButton filterMenu(String[] filterNames, String filterType){
     //Creating a MenuButton to allow the user to select filters to apply to the graph
     MenuButton menuButton = new MenuButton(filterType);
     for (String i : filterNames) {
@@ -381,6 +405,8 @@ public class GraphingScene extends BaseScene {
       menuButton.getItems().add(CMItem);
     }
     filterHbox.getChildren().add(menuButton);
+
+    return menuButton;
   }
 
   /**
@@ -411,6 +437,19 @@ public class GraphingScene extends BaseScene {
     combinedFilters.putAll(incomeFilters);
     combinedFilters.putAll(contextFilters);
     return combinedFilters;
+  }
+
+  /**
+   * Method to clear a filter hashmap and unselecting all the items in its corresponding MenuButton to false
+   *
+   * @param filterMap - The filter HashMap to be cleared
+   * @param filterBox - The filter MenuButton to have all its items unselected
+   */
+  public void filterRemove(HashMap<Filter,String[]> filterMap, MenuButton filterBox){
+    filterMap.clear();
+    for(MenuItem i : filterBox.getItems()){
+      ((CheckMenuItem) i).setSelected(false);
+    }
   }
 
 }

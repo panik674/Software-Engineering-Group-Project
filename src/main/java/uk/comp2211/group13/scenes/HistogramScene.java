@@ -1,5 +1,7 @@
 package uk.comp2211.group13.scenes;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.BarChart;
@@ -9,6 +11,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -121,14 +124,33 @@ public class HistogramScene extends BaseScene {
     histogramButton.setStyle("-fx-background-color: #01ffff");
     hBoxCharts.getChildren().add(histogramButton);
 
-    filterMenu(new String[]{"Male", "Female"},"Gender");
+    MenuButton genderBox = filterMenu(new String[]{"Male", "Female"},"Gender");
     filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age");
+    MenuButton ageBox = filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age");
     filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"Low", "Medium", "High"},"Income");
+    MenuButton incomeBox = filterMenu(new String[]{"Low", "Medium", "High"},"Income");
     filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context");
+    MenuButton contextBox = filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context");
     vbox.getChildren().add(filterHbox);
+
+    //Creating a button to disable all of the current filters
+    Button filterReset = new Button("Remove all filters");
+    //Binding an action event to the button
+    filterReset.setOnAction(new EventHandler<ActionEvent>() {
+      //Method to clear all the filter hashmaps, uncheck all the items in the filter drop-downs and rebuild the graph accordingly
+      @Override public void handle(ActionEvent e) {
+        vbox.getChildren().remove(histogram);
+        filterRemove(genderFilters, genderBox);
+        filterRemove(ageFilters, ageBox);
+        filterRemove(incomeFilters, incomeBox);
+        filterRemove(contextFilters, contextBox);
+        clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), Granularity.Day);
+        histogramBuild();
+
+      }
+    });
+
+    vbox.getChildren().add(filterReset);
 
     //Building the histogram for the ClickCosts
     histogramBuild();
@@ -280,8 +302,9 @@ public class HistogramScene extends BaseScene {
    *
    * @param filterNames - List of filters to be added to the MenuButton
    * @param filterType - Label for the MenuButton
+   * @return The built MenuButton to allow for interaction later
    */
-  public void filterMenu(String[] filterNames, String filterType){
+  public MenuButton filterMenu(String[] filterNames, String filterType){
     //Creating a MenuButton to allow the user to select filters to apply to the graph
     MenuButton menuButton = new MenuButton(filterType);
     for (String i : filterNames) {
@@ -308,6 +331,8 @@ public class HistogramScene extends BaseScene {
       menuButton.getItems().add(CMItem);
     }
     filterHbox.getChildren().add(menuButton);
+
+    return menuButton;
   }
 
   /**
@@ -338,6 +363,13 @@ public class HistogramScene extends BaseScene {
     combinedFilters.putAll(incomeFilters);
     combinedFilters.putAll(contextFilters);
     return combinedFilters;
+  }
+
+  public void filterRemove(HashMap<Filter,String[]> filterMap, MenuButton filterBox){
+    filterMap.clear();
+    for(MenuItem i : filterBox.getItems()){
+      ((CheckMenuItem) i).setSelected(false);
+    }
   }
 
 }
