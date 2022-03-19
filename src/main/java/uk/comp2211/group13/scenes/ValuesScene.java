@@ -129,7 +129,7 @@ public class ValuesScene extends BaseScene {
 
     // Second row
     ValueBlock nOCon_Block = new ValueBlock("Number of Conversions", requestValue(Metric.Conversions)); //TODO: Add binding
-    ValueBlock tC_Block = new ValueBlock("Total Cost", requestValue(Metric.TotalCost));
+    ValueBlock tC_Block = requestTotalCost();
     ValueBlock cTR_Block = new ValueBlock("CTR", requestValue(Metric.CTR));
     ValueBlock cPA_Block = new ValueBlock("CPA", requestValue(Metric.CPA));
     row2 = new HBox(nOCon_Block, tC_Block, cTR_Block, cPA_Block);
@@ -172,12 +172,52 @@ public class ValuesScene extends BaseScene {
           appWindow.getData().getMinDate()
       );
     } catch (Exception e) {
-      System.out.println(e);
+      System.out.println(e.getMessage());
     }
 
     System.out.println(value);
-    return value.toString();
 
+    switch (metric) {
+      case Impressions, Clicks, Unique, BouncePage, BounceVisit -> {
+        return Integer.toString(Math.round(value));
+      }
+      case Conversions, CTR, CPA, CPC, CPM, BounceRatePage, BounceRateVisit -> {
+        return Float.toString(Math.round(value * 1000) / (float) 1000);
+      }
+      default -> {
+        return value.toString();
+      }
+    }
+  }
+
+  private ValueBlock requestTotalCost() {
+    try {
+      value = (
+          appWindow.getMetrics().request(
+              Metric.TotalCost,
+              appWindow.getData().getMinDate(),
+              appWindow.getData().getMaxDate(),
+              new HashMap<>(),
+              Granularity.None
+          )
+      ).get(
+          appWindow.getData().getMinDate()
+      );
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+
+    System.out.println(value);
+
+    int rounded = Math.round(value);
+
+    System.out.println(rounded);
+
+    if (value >= 100) {
+      return new ValueBlock("Total Cost (£)", Float.toString((float) rounded/100));
+    } else {
+      return new ValueBlock("Total Cost (p)", Integer.toString(rounded));
+    }
   }
 
   private void toggleForNum(MouseEvent mouseEvent) {
