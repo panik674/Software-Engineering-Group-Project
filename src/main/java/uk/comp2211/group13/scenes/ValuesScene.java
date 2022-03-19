@@ -128,7 +128,7 @@ public class ValuesScene extends BaseScene {
     hBoxSetter(row1);
 
     // Second row
-    ValueBlock nOCon_Block = new ValueBlock("Number of Conversions", requestValue(Metric.Conversions)); //TODO: Add binding
+    ValueBlock nOCon_Block = new ValueBlock("Rate of Conversions", requestValue(Metric.Conversions)); //TODO: Add binding
     ValueBlock tC_Block = requestTotalCost();
     ValueBlock cTR_Block = new ValueBlock("CTR", requestValue(Metric.CTR));
     ValueBlock cPA_Block = new ValueBlock("CPA", requestValue(Metric.CPA));
