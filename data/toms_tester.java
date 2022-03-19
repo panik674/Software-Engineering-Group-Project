@@ -36,8 +36,8 @@ public class toms_tester {
 
     long t1 = System.nanoTime();
     //data.ingest(pathsTest);
-    data.ingest("C:\\Users\\thoma\\Downloads\\2_month_campaign");
-    //data.ingest("src/test/java/uk/comp2211/group13/testdata");
+    //data.ingest("C:\\Users\\thoma\\Downloads\\2_month_campaign");
+    data.ingest("src/test/java/uk/comp2211/group13/testdata");
 
     long t2 = System.nanoTime();
 
@@ -52,7 +52,7 @@ public class toms_tester {
         data.getMinDate(),
         data.getMaxDate(),
         filter,
-        Granularity.Year
+        Granularity.Second
     );
 
     long t3 = System.nanoTime();
