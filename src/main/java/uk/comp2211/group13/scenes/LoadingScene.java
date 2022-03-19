@@ -1,9 +1,15 @@
 package uk.comp2211.group13.scenes;
 
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,8 +56,20 @@ public class LoadingScene extends BaseScene {
         var mainPane = new BorderPane();
         loadingPane.getChildren().add(mainPane);
 
-        Text appTitle = new Text("Loading...");
-        mainPane.setCenter(appTitle);
+        VBox loadingVBox = new VBox();
+        loadingVBox.setSpacing(10);
+        loadingVBox.setPadding(new Insets(10, 10, 10, 10));
+        loadingVBox.setAlignment(Pos.CENTER);
+        mainPane.setCenter(loadingVBox);
+
+        Text appTitle = new Text("Loading, Checking and Knitting...");
+        loadingVBox.getChildren().add(appTitle);
+
+        ImageView loadingImage = new ImageView(new Image(getClass().getResource("/granny.gif").toExternalForm()));
+
+        loadingImage.setFitWidth(600);
+        loadingImage.setPreserveRatio(true);
+        loadingVBox.getChildren().add(loadingImage);
 
         fileThreading.setDisplayValuesListener(this::displayValues);
         fileThreading.setErrorListener(this::errorDisplay);
