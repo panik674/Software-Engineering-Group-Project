@@ -65,6 +65,7 @@ public class LoadingScene extends BaseScene {
         Text appTitle = new Text("Loading, Checking and Knitting...");
         loadingVBox.getChildren().add(appTitle);
 
+        // Source of image: https://www.deviantart.com/kellerac/art/Grandma-693732407 (by KellerAC)
         ImageView loadingImage = new ImageView(new Image(getClass().getResource("/granny.gif").toExternalForm()));
 
         loadingImage.setFitWidth(600);
