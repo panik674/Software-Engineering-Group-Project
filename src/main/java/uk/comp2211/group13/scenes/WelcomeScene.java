@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,21 +79,34 @@ public class WelcomeScene extends BaseScene {
     vbox.setPadding(new Insets(10, 10, 10, 10));
     vbox.setSpacing(10);
 
-    Button loadButton = new Button("Load Data");
-    vbox.getChildren().add(loadButton);
-    loadButton.setOnMouseClicked(this::fileLoader);
+    HBox loadHbox = new HBox();
+    vbox.getChildren().add(loadHbox);
+    loadHbox.setAlignment(Pos.CENTER);
+    loadHbox.setPadding(new Insets(10, 10, 10, 10));
+    loadHbox.setSpacing(10);
 
-    HBox hbox = new HBox();
-    vbox.getChildren().add(hbox);
-    hbox.setAlignment(Pos.CENTER);
-    hbox.setPadding(new Insets(10, 10, 10, 10));
-    hbox.setSpacing(10);
+    Button loadFilesButton = new Button("Load Files");
+    loadHbox.getChildren().add(loadFilesButton);
+    loadFilesButton.setOnMouseClicked(this::fileLoader);
+
+    Button loadFolderButton = new Button("Load Folder");
+    loadHbox.getChildren().add(loadFolderButton);
+    loadFolderButton.setOnMouseClicked(this::folderLoader);
+
+    HBox tncHbox = new HBox();
+    vbox.getChildren().add(tncHbox);
+    tncHbox.setAlignment(Pos.CENTER);
+    tncHbox.setPadding(new Insets(10, 10, 10, 10));
+    tncHbox.setSpacing(10);
 
     radioButton = new RadioButton();
-    hbox.getChildren().add(radioButton);
+    tncHbox.getChildren().add(radioButton);
 
     Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
-    hbox.getChildren().add(termsText);
+    tncHbox.getChildren().add(termsText);
+
+    error = new Text("");
+    vbox.getChildren().add(error);
   }
 
   @Override
@@ -108,7 +122,8 @@ public class WelcomeScene extends BaseScene {
     try {
       if (radioButton.isSelected()) {
         ArrayList<String> stringPaths = new ArrayList<>();
-        vbox.getChildren().remove(error);
+        clearError();
+
         // create a File chooser
         FileChooser fileChooser = new FileChooser();
         // get the file selected
@@ -123,17 +138,50 @@ public class WelcomeScene extends BaseScene {
           if (appWindow.getData().ingest(stringPaths) == 0) {
             appWindow.valuesScreen();
           } else {
-            error = new Text("Please select the correct formats of the file");
-            vbox.getChildren().add(error);
+            displayError("Please select the correct formats of the file");
           }
         } else {
-          error = new Text("Please select exactly three files!");
-          vbox.getChildren().add(error);
+          displayError("Please select exactly three files!");
         }
+      } else {
+        displayError("Please accept terms and conditions prior to trying to load files.");
       }
     } catch (Exception e) {
-
       System.out.println(e.getMessage());
     }
+  }
+
+  public void folderLoader(MouseEvent event) {
+    try {
+      if (radioButton.isSelected()) {
+        String folderPath;
+        clearError();
+
+        // create a File chooser
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        // get the file selected
+        File folder = directoryChooser.showDialog(appWindow.getStage());
+        folderPath = folder.getAbsolutePath();
+
+        if (appWindow.getData().ingest(folderPath) == 0) {
+          appWindow.valuesScreen();
+        } else {
+          displayError("The loaded folder is invalid");
+        }
+      } else {
+        displayError("Please accept terms and conditions prior to trying to load folders.");
+      }
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private void displayError(String message) {
+    vbox.getChildren().remove(error);
+    error = new Text(message);
+    vbox.getChildren().add(error);
+  }
+  private void clearError() {
+    vbox.getChildren().remove(error);
   }
 }
