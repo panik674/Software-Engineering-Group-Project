@@ -41,6 +41,17 @@ public class WelcomeScene extends BaseScene {
    */
   public WelcomeScene(AppWindow appWindow) {
     super(appWindow);
+    error = new Text("");
+  }
+
+  /**
+   * Creates a new scene with error.
+   *
+   * @param appWindow the app window that displays the scene with error
+   */
+  public WelcomeScene(AppWindow appWindow, String error) {
+    super(appWindow);
+    this.error = new Text(error);
   }
 
   /**
@@ -130,28 +141,14 @@ public class WelcomeScene extends BaseScene {
         // get the file selected
         files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
         if (files.size() == 3) {
-
           FileThreading fileThreading = new FileThreading(files, appWindow);
-
-
           fileThreading.start();
           appWindow.loadingScreen(fileThreading);
         } else {
-          error.setText("Please select exactly three files!");
+          displayError("Please select exactly three files!");
         }
-        /*Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-
-          }
-        });*/
-
-
-        //processingFiles(files);
-
       }
     } catch (Exception e) {
-
       System.out.println(e.getMessage());
     }
   }
@@ -168,30 +165,10 @@ public class WelcomeScene extends BaseScene {
         appWindow.valuesScreen();
       } else {
         appWindow.welcomeScreen();
-        error = new Text("Please select the correct formats of the file");
-        vbox.getChildren().add(error);
+        displayError("Please select the correct formats of the file");
       }
     } else {
-      error = new Text("Please select exactly three files!");
-      vbox.getChildren().add(error);
-          for (File file : files) {
-            if (file != null) {
-              stringPaths.add(file.getAbsolutePath());
-            }
-          }
-          if (appWindow.getData().ingest(stringPaths) == 0) {
-            appWindow.valuesScreen();
-          } else {
-            displayError("Please select the correct formats of the file");
-          }
-        } else {
-          displayError("Please select exactly three files!");
-        }
-      } else {
-        displayError("Please accept terms and conditions prior to trying to load files.");
-      }
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
+      displayError("Please select exactly three files!");
     }
   }
 
@@ -225,6 +202,7 @@ public class WelcomeScene extends BaseScene {
     error = new Text(message);
     vbox.getChildren().add(error);
   }
+
   private void clearError() {
     vbox.getChildren().remove(error);
   }
