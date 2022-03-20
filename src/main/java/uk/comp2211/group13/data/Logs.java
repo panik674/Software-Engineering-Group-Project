@@ -49,11 +49,11 @@ public class Logs {
    *
    * @return Total number of bounces in logs
    */
-  public int getBouncePage() {
+  public int getBouncePage(int pages) {
     int sum = 0;
 
     for (Server value : serverLogs) {
-      if (value.pages() <= 1) sum++;
+      if (value.pages() <= pages) sum++;
     }
 
     return sum;
@@ -64,13 +64,13 @@ public class Logs {
    *
    * @return Total number of bounces in logs
    */
-  public int getBounceVisit() {
+  public int getBounceVisit(int visitLength) {
     int sum = 0;
 
     for (Server value : serverLogs) {
       try {
         long seconds = difDate(value.entryDate(), value.exitDate());
-        if (seconds <= 15) sum++;
+        if (seconds <= visitLength) sum++;
 
       } catch (Exception e) {
         if (!Objects.equals(e.getMessage(), "Unparseable date: \"n/a\"")) {

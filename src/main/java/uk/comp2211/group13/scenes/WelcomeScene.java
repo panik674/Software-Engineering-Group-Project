@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +33,6 @@ public class WelcomeScene extends BaseScene {
   private VBox vbox;
   private RadioButton radioButton;
   private Text error;
-  //private List<File> files;
 
   /**
    * Creates a new scene.
@@ -41,19 +41,7 @@ public class WelcomeScene extends BaseScene {
    */
   public WelcomeScene(AppWindow appWindow) {
     super(appWindow);
-    error = new Text("");
   }
-
-  /**
-   * Creates a new scene with error.
-   *
-   * @param appWindow the app window that displays the scene with error
-   */
-  public WelcomeScene(AppWindow appWindow, String error) {
-    super(appWindow);
-    this.error = new Text(error);
-  }
-
 
   /**
    * Initialise the scene and start the game
@@ -83,7 +71,7 @@ public class WelcomeScene extends BaseScene {
     var mainPane = new BorderPane();
     welcomePane.getChildren().add(mainPane);
 
-    Text appTitle = new Text("Welcome to 'Witty Name' App");
+    Text appTitle = new Text("Welcome to The Old Biddy App");
     mainPane.setCenter(appTitle);
 
     vbox = new VBox();
@@ -92,22 +80,33 @@ public class WelcomeScene extends BaseScene {
     vbox.setPadding(new Insets(10, 10, 10, 10));
     vbox.setSpacing(10);
 
-    Button loadButton = new Button("Load Data");
-    vbox.getChildren().add(loadButton);
-    loadButton.setOnMouseClicked(this::fileLoader);
+    HBox loadHbox = new HBox();
+    vbox.getChildren().add(loadHbox);
+    loadHbox.setAlignment(Pos.CENTER);
+    loadHbox.setPadding(new Insets(10, 10, 10, 10));
+    loadHbox.setSpacing(10);
 
-    HBox hbox = new HBox();
-    vbox.getChildren().add(hbox);
-    hbox.setAlignment(Pos.CENTER);
-    hbox.setPadding(new Insets(10, 10, 10, 10));
-    hbox.setSpacing(10);
+    Button loadFilesButton = new Button("Load Files");
+    loadHbox.getChildren().add(loadFilesButton);
+    loadFilesButton.setOnMouseClicked(this::fileLoader);
+
+    Button loadFolderButton = new Button("Load Folder");
+    loadHbox.getChildren().add(loadFolderButton);
+    loadFolderButton.setOnMouseClicked(this::folderLoader);
+
+    HBox tncHbox = new HBox();
+    vbox.getChildren().add(tncHbox);
+    tncHbox.setAlignment(Pos.CENTER);
+    tncHbox.setPadding(new Insets(10, 10, 10, 10));
+    tncHbox.setSpacing(10);
 
     radioButton = new RadioButton();
-    hbox.getChildren().add(radioButton);
+    tncHbox.getChildren().add(radioButton);
 
     Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
-    hbox.getChildren().add(termsText);
+    tncHbox.getChildren().add(termsText);
 
+    error = new Text("");
     vbox.getChildren().add(error);
   }
 
@@ -119,15 +118,13 @@ public class WelcomeScene extends BaseScene {
     });
   }
 
-  public void run() {
-
-  }
   // Code was inspired by: https://www.geeksforgeeks.org/javafx-filechooser-class/
   public void fileLoader(MouseEvent event) {
     try {
       if (radioButton.isSelected()) {
-        //vbox.getChildren().remove(error);
-        error.setText("");
+        ArrayList<String> stringPaths = new ArrayList<>();
+        clearError();
+
         // create a File chooser
         FileChooser fileChooser = new FileChooser();
         // get the file selected
@@ -177,6 +174,58 @@ public class WelcomeScene extends BaseScene {
     } else {
       error = new Text("Please select exactly three files!");
       vbox.getChildren().add(error);
+          for (File file : files) {
+            if (file != null) {
+              stringPaths.add(file.getAbsolutePath());
+            }
+          }
+          if (appWindow.getData().ingest(stringPaths) == 0) {
+            appWindow.valuesScreen();
+          } else {
+            displayError("Please select the correct formats of the file");
+          }
+        } else {
+          displayError("Please select exactly three files!");
+        }
+      } else {
+        displayError("Please accept terms and conditions prior to trying to load files.");
+      }
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
     }
+  }
+
+  public void folderLoader(MouseEvent event) {
+    try {
+      if (radioButton.isSelected()) {
+        String folderPath;
+        clearError();
+
+        // create a File chooser
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        // get the file selected
+        File folder = directoryChooser.showDialog(appWindow.getStage());
+        folderPath = folder.getAbsolutePath();
+
+        if (appWindow.getData().ingest(folderPath) == 0) {
+          appWindow.valuesScreen();
+        } else {
+          displayError("The loaded folder is invalid");
+        }
+      } else {
+        displayError("Please accept terms and conditions prior to trying to load folders.");
+      }
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private void displayError(String message) {
+    vbox.getChildren().remove(error);
+    error = new Text(message);
+    vbox.getChildren().add(error);
+  }
+  private void clearError() {
+    vbox.getChildren().remove(error);
   }
 }

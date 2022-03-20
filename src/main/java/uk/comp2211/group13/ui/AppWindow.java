@@ -131,7 +131,7 @@ public class AppWindow {
    * This is used to set the default settings for the stage. (ie, title and dimensions)
    */
   private void setupStage() {
-    stage.setTitle("Think of witty name");  // TODO: Think of witty name
+    stage.setTitle("The Old Biddy");  // TODO: Think of witty name
     stage.setMinWidth(width);
     stage.setMinHeight(height);
     stage.setOnCloseRequest(ev -> App.getInstance().shutdown());
