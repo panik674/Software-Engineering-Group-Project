@@ -1,5 +1,6 @@
 package uk.comp2211.group13.scenes;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -8,10 +9,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -45,6 +43,10 @@ public class HistogramScene extends BaseScene {
   private VBox vbox = new VBox();
   private HBox filterHbox = new HBox();
   private Utility util = new Utility();
+  private Granularity granularity = Granularity.Day;
+  private Date startDate = appWindow.getData().getMinDate();
+  private Date endDate = appWindow.getData().getMaxDate();
+  private HBox dateHbox = new HBox();
 
   /**
    * Creates a new scene.
@@ -96,7 +98,7 @@ public class HistogramScene extends BaseScene {
     //Building the VBox which will contain the main UI elements
     vbox.setAlignment(Pos.CENTER);
     vbox.setPadding(new Insets(10, 10, 10, 10));
-    vbox.setSpacing(30);
+    vbox.setSpacing(20);
     mainPane.setTop(vbox);
 
     //Creating a Text widget for the graphing scene's title
@@ -124,6 +126,35 @@ public class HistogramScene extends BaseScene {
     histogramButton.setStyle("-fx-background-color: #01ffff");
     hBoxCharts.getChildren().add(histogramButton);
 
+    dateHbox.getChildren().add(regionBuild());
+    dateHbox.getChildren().add(dateMenu("Start Date"));
+    dateHbox.getChildren().add(regionBuild());
+    dateHbox.getChildren().add(dateMenu("End Date"));
+    dateHbox.getChildren().add(regionBuild());
+    vbox.getChildren().add(dateHbox);
+
+    String[] timeGrans = {"Day","Hour","Month","Year"};
+    ComboBox granularityBox = new ComboBox(FXCollections.observableArrayList(timeGrans));
+    granularityBox.setValue(timeGrans[0]);
+    granularityBox.setOnAction(e -> {
+      vbox.getChildren().remove(histogram);
+      if ("Day".equals(granularityBox.getValue())){
+        granularity = Granularity.Day;
+      }
+      else if ("Hour".equals(granularityBox.getValue())){
+        granularity = Granularity.Hour;
+      }
+      else if ("Month".equals(granularityBox.getValue())){
+        granularity = Granularity.Month;
+      }
+      else {
+        granularity = Granularity.Year;
+      }
+      clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+      histogramBuild();
+    });
+    vbox.getChildren().add(granularityBox);
+
     MenuButton genderBox = filterMenu(new String[]{"Male", "Female"},"Gender");
     filterHbox.getChildren().add(regionBuild());
     MenuButton ageBox = filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age");
@@ -144,7 +175,7 @@ public class HistogramScene extends BaseScene {
         filterRemove(ageFilters, ageBox);
         filterRemove(incomeFilters, incomeBox);
         filterRemove(contextFilters, contextBox);
-        clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), Granularity.Day);
+        clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
         histogramBuild();
 
       }
@@ -316,7 +347,7 @@ public class HistogramScene extends BaseScene {
         if (CMItem.isSelected()) {
           addFilters(util.filterType(i),i);
           vbox.getChildren().remove(histogram);
-          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), Granularity.Day);
+          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
           histogramBuild();
 
         }
@@ -324,7 +355,7 @@ public class HistogramScene extends BaseScene {
         else {
           removeFilters(util.filterType(i),i);
           vbox.getChildren().remove(histogram);
-          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), Granularity.Day);
+          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
           histogramBuild();
         }
       });
@@ -370,6 +401,31 @@ public class HistogramScene extends BaseScene {
     for(MenuItem i : filterBox.getItems()){
       ((CheckMenuItem) i).setSelected(false);
     }
+  }
+
+  public ComboBox dateMenu(String Label){
+    Set<Date> datesSet = clickCosts.keySet();
+    List<Date> datesList = new ArrayList<>(datesSet);
+    Collections.sort(datesList);
+    ComboBox dateBox = new ComboBox(FXCollections.observableArrayList(datesList));
+    dateBox.setValue(Label);
+    dateBox.setOnAction(e -> {
+      vbox.getChildren().remove(histogram);
+      switch (Label){
+        case "Start Date" :
+          startDate = (Date) dateBox.getValue();
+          break;
+        case "End Date" :
+          endDate = (Date) dateBox.getValue();
+          break;
+      }
+      clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+      histogramBuild();
+
+    });
+    return dateBox;
+
+
   }
 
 }
