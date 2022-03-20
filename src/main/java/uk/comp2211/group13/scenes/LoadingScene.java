@@ -47,6 +47,8 @@ public class LoadingScene extends BaseScene {
 
         root = new AppPane(appWindow.getWidth(), appWindow.getHeight());
 
+        root.setStyle("-fx-background-color: #21bdd4");
+
         loadingPane = new StackPane();
         loadingPane.setMaxWidth(appWindow.getWidth());
         loadingPane.setMaxHeight(appWindow.getHeight());
@@ -64,6 +66,8 @@ public class LoadingScene extends BaseScene {
 
         Text appTitle = new Text("Loading, Checking and Knitting...");
         loadingVBox.getChildren().add(appTitle);
+        appTitle.setStyle("-fx-font: 24");
+        appTitle.setStyle("-fx-font-weight: bold");
 
         // Source of image: https://www.deviantart.com/kellerac/art/Grandma-693732407 (by KellerAC)
         ImageView loadingImage = new ImageView(new Image(getClass().getResource("/granny.gif").toExternalForm()));
