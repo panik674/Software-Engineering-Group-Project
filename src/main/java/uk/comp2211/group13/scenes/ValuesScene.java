@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -178,26 +177,12 @@ public class ValuesScene extends BaseScene {
     row3 = new HBox(cPC_Block, cPM_Block, bR_Block);
     hBoxSetter(row3);
 
-    filterHbox = new HBox();
+    Button resetFilters = new Button("Reset Filters");
+    vBox.getChildren().add(resetFilters);
+    resetFilters.setOnMouseClicked(this::resetFilters);
 
-    filterMenu(new String[]{"Male", "Female"},"Gender");
-    filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age");
-    filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"Low", "Medium", "High"},"Income");
-    filterHbox.getChildren().add(regionBuild());
-    filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context");
-    vBox.getChildren().add(filterHbox);
-
-    /*ChoiceBox<String> filtersChoices = new ChoiceBox<>();
-    filtersChoices.setValue("Select a filter");
-    filtersChoices.setMaxWidth(100);
-
-    filtersChoices.getItems().add("Filter1");
-    filtersChoices.getItems().add("Filter2");
-   // filtersChoices.get
-
-    vBox.getChildren().add(filtersChoices);*/
+    setupFiltersBox();
+    //vBox.getChildren().add(filterHbox);
   }
 
   private void hBoxSetter(HBox row) {
@@ -280,6 +265,32 @@ public class ValuesScene extends BaseScene {
     } else {
       bR_Block.setValue(requestValue((Metric.BounceRatePage)));
     }
+  }
+
+  private void resetFilters(MouseEvent mouseEvent) {
+    genderFilters = new HashMap<>();
+    ageFilters = new HashMap<>();
+    incomeFilters = new HashMap<>();
+    contextFilters = new HashMap<>();
+
+    vBox.getChildren().remove(filterHbox);
+    setupFiltersBox();
+
+    reRequestFilteredValues();
+  }
+
+  private void setupFiltersBox() {
+    filterHbox = new HBox();
+
+    filterHbox.getChildren().add(filterMenu(new String[]{"Male", "Female"},"Gender"));
+    filterHbox.getChildren().add(regionBuild());
+    filterHbox.getChildren().add(filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age"));
+    filterHbox.getChildren().add(regionBuild());
+    filterHbox.getChildren().add(filterMenu(new String[]{"Low", "Medium", "High"},"Income"));
+    filterHbox.getChildren().add(regionBuild());
+    filterHbox.getChildren().add(filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context"));
+
+    vBox.getChildren().add(filterHbox);
   }
 
   /**
@@ -373,7 +384,7 @@ public class ValuesScene extends BaseScene {
    * @param filterNames - List of filters to be added to the MenuButton
    * @param filterType - Label for the MenuButton
    */
-  public void filterMenu(String[] filterNames, String filterType){
+  public MenuButton filterMenu(String[] filterNames, String filterType){
     //Creating a MenuButton to allow the user to select filters to apply to the graph
     MenuButton menuButton = new MenuButton(filterType);
     for (String i : filterNames) {
@@ -381,12 +392,12 @@ public class ValuesScene extends BaseScene {
       CheckMenuItem CMItem = new CheckMenuItem(i);
       //Binding actions to the CheckMenuItems
       CMItem.setOnAction(e -> {
-        //Adding filters to the graphs when they are selected
+        //Adding filters to the values when they are selected
         if (CMItem.isSelected()) {
           addFilters(util.filterType(i),i);
           reRequestFilteredValues();
         }
-        //Removing filters from the graphs when they are unselected
+        //Removing filters from the values when they are unselected
         else {
           removeFilters(util.filterType(i),i);
           reRequestFilteredValues();
@@ -394,11 +405,11 @@ public class ValuesScene extends BaseScene {
       });
       menuButton.getItems().add(CMItem);
     }
-    filterHbox.getChildren().add(menuButton);
+    return menuButton;
   }
 
   /**
-   * Method to merge the three filter hashmaps to apply them all when plotting the linechart
+   * Method to merge the three filter hashmaps to apply them all
    *
    * @param genderFilters - The filter hashmap for the gender filters
    * @param ageFilters - The filter hashmap for the age filters
