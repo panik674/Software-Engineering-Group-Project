@@ -11,8 +11,11 @@ import uk.comp2211.group13.enums.Metric;
 
 import java.io.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+
+import static uk.comp2211.group13.data.Save.getDirectory;
 
 
 public class SaveTest  {
@@ -41,11 +44,18 @@ public class SaveTest  {
     /**This test will test save filters
      * */
     @Test
-    public void testSaveFilters() throws IOException {
-
+    public void testSaveFilters(){
+        String path = getDirectory();
+        File file = new File(path);
+        Assert.assertNotNull(file);
     }
     /**This test will test load filter**/
     @Test
-    public void testLoadFilters() throws Exception {
+    public void testLoadFilters() {
+        Assert.assertNotNull(save.filters);
+        Assert.assertNotNull(save.metrics);
+        Assert.assertNotNull(save.granularity);
+        Assert.assertNotNull(save.startDate);
+        Assert.assertNotNull(save.endDate);
     }
 }
