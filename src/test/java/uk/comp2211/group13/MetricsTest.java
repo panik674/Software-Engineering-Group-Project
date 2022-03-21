@@ -132,7 +132,7 @@ public class MetricsTest {
   public void requestTest() throws ParseException {
     Assert.assertNotNull(
         metrics.request(
-            Metric.BouncePage,
+            Metric.Clicks,
             Utility.string2Date("2015-01-01 12:00:00"),
             Utility.string2Date("2015-01-15 12:00:00"),
             new HashMap<>(),

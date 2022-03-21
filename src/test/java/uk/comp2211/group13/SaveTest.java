@@ -11,7 +11,6 @@ import uk.comp2211.group13.enums.Metric;
 
 import java.io.*;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 

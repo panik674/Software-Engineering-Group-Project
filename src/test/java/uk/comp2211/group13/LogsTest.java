@@ -55,7 +55,8 @@ public class LogsTest {
         int resultFor2_week = 5095;
         Assert.assertEquals(resultFor2_week, logs.getBounceVisit(15));
     }
-    @Test void bounceVisitNotNegative(){
+    @Test
+    public void bounceVisitNotNegative(){
         Assert.assertTrue(logs.getBounceVisit(15)>0);
     }
     @Test
