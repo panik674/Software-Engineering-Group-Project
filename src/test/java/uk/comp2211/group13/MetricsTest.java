@@ -9,7 +9,6 @@ import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
-import uk.comp2211.group13.enums.Path;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -46,12 +45,22 @@ public class MetricsTest {
   }
 
   @Test
+  public void clickRateNotNegative(){
+    Assert.assertTrue(metrics.clickRate(logs)>0);
+  }
+
+  @Test
   public void bounceRatePageTest() {
     double result = 0.3622037470340729;
     Assert.assertEquals(
         BigDecimal.valueOf(result),
         BigDecimal.valueOf(metrics.bounceRatePage(logs))
     );
+  }
+
+  @Test
+  public void bounceRatePageNotNegativeTest(){
+    Assert.assertTrue(metrics.bounceRatePage(logs)>0);
   }
 
   @Test
@@ -64,6 +73,11 @@ public class MetricsTest {
   }
 
   @Test
+  public void conversionrateNotNegative(){
+    Assert.assertTrue(metrics.conversionRate(logs)>0);
+  }
+
+  @Test
   public void costThousandTest() {
     double result = 1.0019391775131226;
     Assert.assertEquals(
@@ -72,6 +86,10 @@ public class MetricsTest {
     );
   }
 
+  @Test
+  public void costThousandNotNegativeTest(){
+    Assert.assertTrue(metrics.costThousand(logs)>0);
+  }
   @Test
   public void costAcquisitionTest() {
     double result = 58.29112243652344;
@@ -82,6 +100,10 @@ public class MetricsTest {
   }
 
   @Test
+  public void costAcquisitionNotNegativeTest(){
+    Assert.assertTrue(metrics.costAcquisition(logs)>0);
+  }
+  @Test
   public void costClickTest() {
     double result = 4.916221618652344;
     Assert.assertEquals(
@@ -89,7 +111,10 @@ public class MetricsTest {
         BigDecimal.valueOf(metrics.costClick(logs))
     );
   }
-
+  @Test
+  public void costClickNotNegative(){
+    Assert.assertTrue(metrics.costClick(logs)>0);
+  }
   @Test
   public void totalCastTest() {
     double result = 118097.8125;
@@ -97,6 +122,10 @@ public class MetricsTest {
         BigDecimal.valueOf(result),
         BigDecimal.valueOf(logs.getImpressionCost() + logs.getClickCost())
     );
+  }
+  @Test
+  public void totalCastNotNegative(){
+    Assert.assertTrue((logs.getImpressionCost()+logs.getClickCost()>0));
   }
 
   @Test
