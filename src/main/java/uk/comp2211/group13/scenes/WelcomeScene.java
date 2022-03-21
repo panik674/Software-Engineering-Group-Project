@@ -15,18 +15,19 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.comp2211.group13.enums.Path;
+import uk.comp2211.group13.threading.FileThreading;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class WelcomeScene extends BaseScene {
 
   private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
+
+  private List<File> files;
 
   private StackPane welcomePane;
   private VBox vbox;
@@ -40,6 +41,17 @@ public class WelcomeScene extends BaseScene {
    */
   public WelcomeScene(AppWindow appWindow) {
     super(appWindow);
+    error = new Text("");
+  }
+
+  /**
+   * Creates a new scene with error.
+   *
+   * @param appWindow the app window that displays the scene with error
+   */
+  public WelcomeScene(AppWindow appWindow, String error) {
+    super(appWindow);
+    this.error = new Text(error);
   }
 
   /**
@@ -127,27 +139,36 @@ public class WelcomeScene extends BaseScene {
         // create a File chooser
         FileChooser fileChooser = new FileChooser();
         // get the file selected
-        List<File> files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
-
+        files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
         if (files.size() == 3) {
-          for (File file : files) {
-            if (file != null) {
-              stringPaths.add(file.getAbsolutePath());
-            }
-          }
-          if (appWindow.getData().ingest(stringPaths) == 0) {
-            appWindow.valuesScreen();
-          } else {
-            displayError("Please select the correct formats of the file");
-          }
+          FileThreading fileThreading = new FileThreading(files, appWindow);
+          fileThreading.start();
+          appWindow.loadingScreen(fileThreading);
         } else {
           displayError("Please select exactly three files!");
         }
-      } else {
-        displayError("Please accept terms and conditions prior to trying to load files.");
       }
     } catch (Exception e) {
       System.out.println(e.getMessage());
+    }
+  }
+
+  public void processingFiles(List<File> files) {
+    ArrayList<String> stringPaths = new ArrayList<>();
+    if (files.size() == 3) {
+      for (File file : files) {
+        if (file != null) {
+          stringPaths.add(file.getAbsolutePath());
+        }
+      }
+      if (appWindow.getData().ingest(stringPaths) == 0) {
+        appWindow.valuesScreen();
+      } else {
+        appWindow.welcomeScreen();
+        displayError("Please select the correct formats of the file");
+      }
+    } else {
+      displayError("Please select exactly three files!");
     }
   }
 
@@ -181,6 +202,7 @@ public class WelcomeScene extends BaseScene {
     error = new Text(message);
     vbox.getChildren().add(error);
   }
+
   private void clearError() {
     vbox.getChildren().remove(error);
   }
