@@ -43,7 +43,7 @@ public class ValuesScene extends BaseScene {
   private ValueBlock cPA_Block;
 
   // Third row
-  private ValueBlock cPC_Block; //TODO: Add binding
+  private ValueBlock cPC_Block;
   private ValueBlock cPM_Block;
   private ValueBlock bR_Block;
 
