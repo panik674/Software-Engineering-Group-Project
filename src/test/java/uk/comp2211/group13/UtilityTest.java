@@ -12,71 +12,32 @@ public class UtilityTest {
 
   @Test
   public void testString2Date() throws ParseException {
-    Assert.assertEquals(
-        new GregorianCalendar(2015, Calendar.JANUARY, 1, 12, 4, 29).getTime(),
-        Utility.string2Date("2015-01-01 12:04:29")
-    );
-    Assert.assertEquals(
-        new GregorianCalendar(2015, Calendar.JANUARY, 1, 13, 28, 22).getTime(),
-        Utility.string2Date("2015-01-01 13:28:22")
-    );
-    Assert.assertEquals(
-        new GregorianCalendar(2015, Calendar.JANUARY, 13, 13, 29, 51).getTime(),
-        Utility.string2Date("2015-01-13 13:29:51")
-    );
+    Assert.assertEquals(new GregorianCalendar(2015, Calendar.JANUARY, 1, 12, 4, 29).getTime(), Utility.string2Date("2015-01-01 12:04:29"));
+    Assert.assertEquals(new GregorianCalendar(2015, Calendar.JANUARY, 1, 13, 28, 22).getTime(), Utility.string2Date("2015-01-01 13:28:22"));
+    Assert.assertEquals(new GregorianCalendar(2015, Calendar.JANUARY, 13, 13, 29, 51).getTime(), Utility.string2Date("2015-01-13 13:29:51"));
   }
 
   @Test
   public void testString2DateInvalidFormat() {
-    Assert.assertThrows(
-        ParseException.class,
-        () -> Utility.string2Date("2015/01/01 12:04:29")
-    );
-    Assert.assertThrows(
-        ParseException.class,
-        () -> Utility.string2Date("16:45:23 2016-01-01")
-    );
+    Assert.assertThrows(ParseException.class, () -> Utility.string2Date("2015/01/01 12:04:29"));
+    Assert.assertThrows(ParseException.class, () -> Utility.string2Date("16:45:23 2016-01-01"));
   }
 
   @Test
   public void testDate2String() {
-    Assert.assertEquals(
-        "2015-01-01 12:04:29",
-        Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 1, 12, 4, 29).getTime())
-    );
-    Assert.assertEquals(
-        "2015-01-01 13:28:22",
-        Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 1, 13, 28, 22).getTime())
-    );
-    Assert.assertEquals(
-        "2015-01-13 13:29:51",
-        Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 13, 13, 29, 51).getTime())
-    );
+    Assert.assertEquals("2015-01-01 12:04:29", Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 1, 12, 4, 29).getTime()));
+    Assert.assertEquals("2015-01-01 13:28:22", Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 1, 13, 28, 22).getTime()));
+    Assert.assertEquals("2015-01-13 13:29:51", Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 13, 13, 29, 51).getTime()));
   }
 
   @Test
   public void testValidateDate() {
-    Assert.assertEquals(
-        true,
-        Utility.validateDate("2015-01-01 12:04:29")
-    );
-    Assert.assertEquals(
-        true,
-        Utility.validateDate("2015-01-01 13:28:22")
-    );
-    Assert.assertEquals(
-        true,
-        Utility.validateDate("2015-01-13 13:29:51")
-    );
+    Assert.assertEquals(true, Utility.validateDate("2015-01-01 12:04:29"));
+    Assert.assertEquals(true, Utility.validateDate("2015-01-01 13:28:22"));
+    Assert.assertEquals(true, Utility.validateDate("2015-01-13 13:29:51"));
 
-    Assert.assertEquals(
-        false,
-        Utility.validateDate("2015/01/01 12:04:29")
-    );
-    Assert.assertEquals(
-        false,
-        Utility.validateDate("16:45:23 2016-01-01")
-    );
+    Assert.assertEquals(false, Utility.validateDate("2015/01/01 12:04:29"));
+    Assert.assertEquals(false, Utility.validateDate("16:45:23 2016-01-01"));
   }
 
   @Test
@@ -88,18 +49,9 @@ public class UtilityTest {
       Assert.fail();
     }
 
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateGender("Invalid")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateGender("M")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateGender("male")
-    );
+    Assert.assertThrows(Exception.class, () -> Utility.validateGender("Invalid"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateGender("M"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateGender("male"));
   }
 
   @Test
@@ -114,18 +66,9 @@ public class UtilityTest {
       Assert.fail();
     }
 
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateAge("Invalid")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateAge("56")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateAge("twenty five")
-    );
+    Assert.assertThrows(Exception.class, () -> Utility.validateAge("Invalid"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateAge("56"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateAge("twenty five"));
   }
 
   @Test
@@ -138,18 +81,9 @@ public class UtilityTest {
       Assert.fail();
     }
 
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateIncome("Invalid")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateIncome("£50,000")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateIncome("Huge")
-    );
+    Assert.assertThrows(Exception.class, () -> Utility.validateIncome("Invalid"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateIncome("£50,000"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateIncome("Huge"));
   }
 
   @Test
@@ -165,18 +99,9 @@ public class UtilityTest {
       Assert.fail();
     }
 
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateContext("Invalid")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateContext("Racing")
-    );
-    Assert.assertThrows(
-        Exception.class,
-        () -> Utility.validateContext("MotoCross")
-    );
+    Assert.assertThrows(Exception.class, () -> Utility.validateContext("Invalid"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateContext("Racing"));
+    Assert.assertThrows(Exception.class, () -> Utility.validateContext("MotoCross"));
   }
 
   @Test
