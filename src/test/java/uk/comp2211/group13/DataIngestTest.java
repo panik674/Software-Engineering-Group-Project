@@ -9,7 +9,7 @@ import uk.comp2211.group13.enums.Filter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DataTest {
+public class DataIngestTest {
   private Data data;
 
   @Before

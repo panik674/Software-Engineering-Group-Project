@@ -20,6 +20,7 @@ import uk.comp2211.group13.ui.AppWindow;
 import uk.comp2211.group13.ui.AppPane;
 
 
+import java.time.ZoneId;
 import java.util.*;
 
 public class GraphingScene extends BaseScene {
@@ -130,11 +131,12 @@ public class GraphingScene extends BaseScene {
 
 
     dateHbox.getChildren().add(regionBuild());
-    dateHbox.getChildren().add(dateMenu("Start Date"));
+    dateHbox.getChildren().add(dateCalen("Start"));
     dateHbox.getChildren().add(regionBuild());
-    dateHbox.getChildren().add(dateMenu("End Date"));
+    dateHbox.getChildren().add(dateCalen("End"));
     dateHbox.getChildren().add(regionBuild());
     vbox.getChildren().add(dateHbox);
+
 
     String[] timeGrans = {"Day","Hour","Month","Year"};
     ComboBox granularityBox = new ComboBox(FXCollections.observableArrayList(timeGrans));
@@ -463,29 +465,47 @@ public class GraphingScene extends BaseScene {
     }
   }
 
-  public ComboBox dateMenu(String Label){
-    Set<Date> datesSet = metric.keySet();
-    List<Date> datesList = new ArrayList<>(datesSet);
-    Collections.sort(datesList);
-    ComboBox dateBox = new ComboBox(FXCollections.observableArrayList(datesList));
-    dateBox.setValue(Label);
-    dateBox.setOnAction(e -> {
-      vbox.getChildren().remove(lineChart);
-      switch (Label){
-        case "Start Date" :
-          startDate = (Date) dateBox.getValue();
-          break;
-        case "End Date" :
-          endDate = (Date) dateBox.getValue();
-          break;
+  /**
+   * Method to build DatePickers to choose the date range of the data graphed
+   *
+   * @param date - Used to specify which date instance variable needs to be queried
+   * @return - The DatePicker
+   */
+  public DatePicker dateCalen(String date){
+    DatePicker dp = new DatePicker();
+    switch (date){
+      case "Start" :
+        dp.setValue(startDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+        break;
+      case "End" :
+        dp.setValue(endDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+    }
+    EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
+      public void handle(ActionEvent e)
+      {
+        vbox.getChildren().remove(lineChart);
+        switch (date){
+          case "Start" :
+            startDate = java.util.Date.from(dp.getValue().atStartOfDay()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+            break;
+          case "End" :
+            endDate = java.util.Date.from(dp.getValue().atStartOfDay()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+            break;
+        }
+        metric = appWindow.getMetrics().request(currentMetric, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+        metricGraph(metricBox.getValue(), metric);
       }
-      metric = appWindow.getMetrics().request(currentMetric, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
-      metricGraph(metricBox.getValue(), metric);
-
-    });
-    return dateBox;
-
-
+    };
+    dp.setOnAction(event);
+    return dp;
   }
 
 }

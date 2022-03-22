@@ -23,6 +23,7 @@ import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.*;
 
 public class HistogramScene extends BaseScene {
@@ -127,9 +128,9 @@ public class HistogramScene extends BaseScene {
     hBoxCharts.getChildren().add(histogramButton);
 
     dateHbox.getChildren().add(regionBuild());
-    dateHbox.getChildren().add(dateMenu("Start Date"));
+    dateHbox.getChildren().add(dateCalen("Start"));
     dateHbox.getChildren().add(regionBuild());
-    dateHbox.getChildren().add(dateMenu("End Date"));
+    dateHbox.getChildren().add(dateCalen("End"));
     dateHbox.getChildren().add(regionBuild());
     vbox.getChildren().add(dateHbox);
 
@@ -403,29 +404,47 @@ public class HistogramScene extends BaseScene {
     }
   }
 
-  public ComboBox dateMenu(String Label){
-    Set<Date> datesSet = clickCosts.keySet();
-    List<Date> datesList = new ArrayList<>(datesSet);
-    Collections.sort(datesList);
-    ComboBox dateBox = new ComboBox(FXCollections.observableArrayList(datesList));
-    dateBox.setValue(Label);
-    dateBox.setOnAction(e -> {
-      vbox.getChildren().remove(histogram);
-      switch (Label){
-        case "Start Date" :
-          startDate = (Date) dateBox.getValue();
-          break;
-        case "End Date" :
-          endDate = (Date) dateBox.getValue();
-          break;
+  /**
+   * Method to build DatePickers to choose the date range of the data graphed
+   *
+   * @param date - Used to specify which date instance variable needs to be queried
+   * @return - The DatePicker
+   */
+  public DatePicker dateCalen(String date){
+    DatePicker dp = new DatePicker();
+    switch (date){
+      case "Start" :
+        dp.setValue(startDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+        break;
+      case "End" :
+        dp.setValue(endDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+    }
+    EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
+      public void handle(ActionEvent e)
+      {
+        vbox.getChildren().remove(histogram);
+        switch (date){
+          case "Start" :
+            startDate = java.util.Date.from(dp.getValue().atStartOfDay()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+            break;
+          case "End" :
+            endDate = java.util.Date.from(dp.getValue().atStartOfDay()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+            break;
+        }
+        clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+        histogramBuild();
       }
-      clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
-      histogramBuild();
-
-    });
-    return dateBox;
-
-
+    };
+    dp.setOnAction(event);
+    return dp;
   }
 
 }

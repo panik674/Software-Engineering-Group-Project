@@ -377,6 +377,30 @@ public class Data {
   public Logs request(Date startDate, Date endDate, HashMap<Filter, String[]> filters) {
     Logs output = new Logs();
 
+    // Check dates are ordered correctly
+    if (endDate.before(startDate)) {
+      logger.error("End date cannot occur before start date");
+      return null;
+    }
+
+    // Validate filters
+    try {
+      for (Map.Entry<Filter, String[]> filter : filters.entrySet()) {
+        for (String value : filter.getValue()) {
+          switch (filter.getKey()) {
+            case Gender -> Utility.validateGender(value);
+            case Age -> Utility.validateAge(value);
+            case Income -> Utility.validateIncome(value);
+            case Context -> Utility.validateContext(value);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Invalid filter entered");
+      return null;
+    }
+
+
     impressionLoop: for (Impression impression : masterLog.impressionLogs) {
       // Check date
       if (!withinDate(startDate, endDate, impression.date())) continue;
