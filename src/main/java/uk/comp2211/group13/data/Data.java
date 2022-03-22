@@ -377,6 +377,12 @@ public class Data {
   public Logs request(Date startDate, Date endDate, HashMap<Filter, String[]> filters) {
     Logs output = new Logs();
 
+    // Check dates are ordered correctly
+    if (endDate.before(startDate)) {
+      logger.error("End date cannot occur before start date");
+      return null;
+    }
+
     impressionLoop: for (Impression impression : masterLog.impressionLogs) {
       // Check date
       if (!withinDate(startDate, endDate, impression.date())) continue;
