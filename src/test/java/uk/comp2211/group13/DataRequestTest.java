@@ -6,15 +6,19 @@ import org.junit.Test;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.enums.Filter;
 
+import java.text.ParseException;
 import java.util.HashMap;
 
 public class DataRequestTest {
   private Data data;
+  private HashMap<Filter, String[]> filterMap;
 
   @Before
   public void setupData() {
     data = new Data();
     data.ingest("src/test/java/uk/comp2211/group13/testdata");
+
+    filterMap = new HashMap<>();
   }
 
   @Test
@@ -66,9 +70,7 @@ public class DataRequestTest {
             filter.put(Filter.Income, new String[]{income});
             filter.put(Filter.Context, new String[]{context});
 
-            Assert.assertNotNull(
-                data.request(data.getMinDate(), data.getMaxDate(), filter)
-            );
+            Assert.assertNotNull(data.request(data.getMinDate(), data.getMaxDate(), filter));
           }
         }
       }
@@ -98,4 +100,37 @@ public class DataRequestTest {
     Assert.assertNull(data.request(data.getMinDate(), data.getMaxDate(), filter));
   }
 
+  @Test
+  public void ageFilterFunctionTest() throws ParseException {
+    String[] age = {"<25", "25-34", "35-44", "45-54", ">54"};
+    filterMap.put(Filter.Age, age);
+    int result = 23923;
+    Assert.assertEquals(result, data.request(Utility.string2Date("2015-01-01 12:00:00"), Utility.string2Date("2015-01-15 12:00:00"), filterMap).getClicks());
+  }
+
+
+  @Test
+  public void genderFilterFunctionTest() throws ParseException {
+    String[] gender = {"Female"};
+    filterMap.put(Filter.Gender, gender);
+    int result = 15935;
+    Assert.assertEquals(result, data.request(Utility.string2Date("2015-01-01 12:00:00"), Utility.string2Date("2015-01-15 12:00:00"), filterMap).getClicks());
+  }
+
+  @Test
+  public void incomeFilterFunctionTest() throws ParseException {
+
+    String[] income = {"Medium", "High"};
+    filterMap.put(Filter.Income, income);
+    int result = 19345;
+    Assert.assertEquals(result, data.request(Utility.string2Date("2015-01-01 12:00:00"), Utility.string2Date("2015-01-15 12:00:00"), filterMap).getClicks());
+  }
+
+  @Test
+  public void contextFilterFunctionTest() throws ParseException {
+    String[] context = {"News", "Travel"};
+    filterMap.put(Filter.Context, context);
+    int result = 6716;
+    Assert.assertEquals(result, data.request(Utility.string2Date("2015-01-01 12:00:00"), Utility.string2Date("2015-01-15 12:00:00"), filterMap).getClicks());
+  }
 }
