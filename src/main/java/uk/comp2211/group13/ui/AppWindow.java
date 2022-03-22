@@ -12,6 +12,7 @@ import uk.comp2211.group13.threading.FileThreading;
 import uk.comp2211.group13.data.Data;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.scenes.*;
+import uk.comp2211.group13.threading.Threading;
 
 // This code has been inspired by code from COMP 1206's TetrECS
 
@@ -102,8 +103,8 @@ public class AppWindow {
   /**
    * Display loading screen
    */
-  public void loadingScreen(FileThreading fileThreading) {
-    loadScene(new LoadingScene(this, fileThreading));
+  public void loadingScreen(Threading threading) {
+    loadScene(new LoadingScene(this, threading));
   }
 
   /**

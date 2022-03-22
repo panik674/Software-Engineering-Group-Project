@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.threading.FileThreading;
+import uk.comp2211.group13.threading.FolderThreading;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
@@ -26,8 +27,6 @@ import java.util.List;
 public class WelcomeScene extends BaseScene {
 
   private static final Logger logger = LogManager.getLogger(WelcomeScene.class);
-
-  private List<File> files;
 
   private StackPane welcomePane;
   private VBox vbox;
@@ -139,7 +138,7 @@ public class WelcomeScene extends BaseScene {
         // create a File chooser
         FileChooser fileChooser = new FileChooser();
         // get the file selected
-        files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
+        List<File> files = fileChooser.showOpenMultipleDialog(appWindow.getStage());
         if (files.size() == 3) {
           FileThreading fileThreading = new FileThreading(files, appWindow);
           fileThreading.start();
@@ -147,48 +146,27 @@ public class WelcomeScene extends BaseScene {
         } else {
           displayError("Please select exactly three files!");
         }
+      } else {
+        displayError("Please accept terms and conditions prior to trying to load folders.");
       }
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
   }
 
-  public void processingFiles(List<File> files) {
-    ArrayList<String> stringPaths = new ArrayList<>();
-    if (files.size() == 3) {
-      for (File file : files) {
-        if (file != null) {
-          stringPaths.add(file.getAbsolutePath());
-        }
-      }
-      if (appWindow.getData().ingest(stringPaths) == 0) {
-        appWindow.valuesScreen();
-      } else {
-        appWindow.welcomeScreen();
-        displayError("Please select the correct formats of the file");
-      }
-    } else {
-      displayError("Please select exactly three files!");
-    }
-  }
-
   public void folderLoader(MouseEvent event) {
     try {
       if (radioButton.isSelected()) {
-        String folderPath;
         clearError();
 
         // create a File chooser
         DirectoryChooser directoryChooser = new DirectoryChooser();
         // get the file selected
         File folder = directoryChooser.showDialog(appWindow.getStage());
-        folderPath = folder.getAbsolutePath();
-
-        if (appWindow.getData().ingest(folderPath) == 0) {
-          appWindow.valuesScreen();
-        } else {
-          displayError("The loaded folder is invalid");
-        }
+        //************************
+        FolderThreading folderThreading = new FolderThreading(folder, appWindow);
+        folderThreading.start();
+        appWindow.loadingScreen(folderThreading);
       } else {
         displayError("Please accept terms and conditions prior to trying to load folders.");
       }

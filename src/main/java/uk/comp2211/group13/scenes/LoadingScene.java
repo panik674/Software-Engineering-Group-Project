@@ -14,6 +14,7 @@ import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.threading.FileThreading;
+import uk.comp2211.group13.threading.Threading;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
@@ -23,16 +24,16 @@ public class LoadingScene extends BaseScene {
 
     private StackPane loadingPane;
 
-    private FileThreading fileThreading;
+    private Threading threading;
 
     /**
      * Creates a new scene.
      *
      * @param appWindow the app window that displays the scene
      */
-    public LoadingScene(AppWindow appWindow, FileThreading fileThreading) {
+    public LoadingScene(AppWindow appWindow, Threading threading) {
         super(appWindow);
-        this.fileThreading = fileThreading;
+        this.threading = threading;
     }
 
     @Override
@@ -76,8 +77,8 @@ public class LoadingScene extends BaseScene {
         loadingImage.setPreserveRatio(true);
         loadingVBox.getChildren().add(loadingImage);
 
-        fileThreading.setDisplayValuesListener(this::displayValues);
-        fileThreading.setErrorListener(this::errorDisplay);
+        threading.setDisplayValuesListener(this::displayValues);
+        threading.setErrorListener(this::errorDisplay);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class LoadingScene extends BaseScene {
         scene.setOnKeyPressed((e) -> {
             if (e.getCode() != KeyCode.ESCAPE) return;
             appWindow.welcomeScreen();
-            fileThreading.stop();
+            threading.stop();
         });
     }
 
