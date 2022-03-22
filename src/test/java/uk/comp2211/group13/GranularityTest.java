@@ -77,5 +77,22 @@ public class FilterTest {
         String[] result = {"News", "Shopping"};
         Assert.assertTrue(filterMap.get(Filter.Context).length!= result.length);
     }
+    
+    @Test
+    public void granularityFunctionTest() throws ParseException {
+        Data data = new Data();
+        Metrics metrics = new Metrics(data);
+        ArrayList<String> pathsTest = new ArrayList<>();
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/click_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/impression_log.csv");
+        pathsTest.add("src/test/java/uk/comp2211/group13/testdata/server_log.csv");
+
+        Assert.assertNotNull(metrics.request(Metric.Clicks,
+                Utility.string2Date("2015-01-01 12:00:00"),
+                Utility.string2Date("2015-01-15 12:00:00"),
+                new HashMap<>(),
+                Granularity.Day));
+
+    }
 }
 
