@@ -434,7 +434,7 @@ public class HistogramScene extends BaseScene {
                     .toInstant());
             break;
           case "End" :
-            endDate = java.util.Date.from(dp.getValue().atStartOfDay()
+            endDate = java.util.Date.from(dp.getValue().atTime(23, 59, 59)
                     .atZone(ZoneId.systemDefault())
                     .toInstant());
             break;
