@@ -18,6 +18,7 @@ import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -143,7 +144,7 @@ public class ValuesScene extends BaseScene {
     booleanForNum = true;
     booleanForRate = true;
     // First row
-    nOI_Block = new ValueBlock("Number of impressions", requestValue(Metric.Impressions)); //TODO: Add binding
+    nOI_Block = new ValueBlock("Number of Impressions", requestValue(Metric.Impressions)); //TODO: Add binding
     nOC_Block = new ValueBlock("Number of Clicks", requestValue(Metric.Clicks));
     nOU_Block = new ValueBlock("Number of Uniques", requestValue(Metric.Unique));
     nOB_Block = new ValueBlock("Number of Bounces", requestValue(Metric.BouncePage));
@@ -158,7 +159,7 @@ public class ValuesScene extends BaseScene {
 
     // Second row
     nOCon_Block = new ValueBlock("Rate of Conversions", requestValue(Metric.Conversions)); //TODO: Add binding
-    tC_Block = requestTotalCost();
+    tC_Block = new ValueBlock("Total Cost (£)", requestValue(Metric.TotalCost));
     cTR_Block = new ValueBlock("CTR", requestValue(Metric.CTR));
     cPA_Block = new ValueBlock("CPA", requestValue(Metric.CPA));
     row2 = new HBox(nOCon_Block, tC_Block, cTR_Block, cPA_Block);
@@ -220,39 +221,12 @@ public class ValuesScene extends BaseScene {
       case Conversions, CTR, CPA, CPC, CPM, BounceRatePage, BounceRateVisit -> {
         return Float.toString(Math.round(value * 1000) / (float) 1000);
       }
+      case TotalCost -> {
+        return (NumberFormat.getCurrencyInstance().format(value/100.0)).replace("£", "");
+      }
       default -> {
         return value.toString();
       }
-    }
-  }
-
-  private ValueBlock requestTotalCost() {
-    try {
-      value = (
-          appWindow.getMetrics().request(
-              Metric.TotalCost,
-              appWindow.getData().getMinDate(),
-              appWindow.getData().getMaxDate(),
-              new HashMap<>(),
-              Granularity.None
-          )
-      ).get(
-          appWindow.getData().getMinDate()
-      );
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-    }
-
-    System.out.println(value);
-
-    int rounded = Math.round(value);
-
-    System.out.println(rounded);
-
-    if (value >= 100) {
-      return new ValueBlock("Total Cost (£)", Float.toString((float) rounded/100));
-    } else {
-      return new ValueBlock("Total Cost (p)", Integer.toString(rounded));
     }
   }
 
