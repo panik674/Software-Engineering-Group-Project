@@ -176,7 +176,7 @@ public class HistogramScene extends BaseScene {
         filterRemove(ageFilters, ageBox);
         filterRemove(incomeFilters, incomeBox);
         filterRemove(contextFilters, contextBox);
-        clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+        clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
         histogramBuild();
 
       }
@@ -348,7 +348,7 @@ public class HistogramScene extends BaseScene {
         if (CMItem.isSelected()) {
           addFilters(util.filterType(i),i);
           vbox.getChildren().remove(histogram);
-          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
           histogramBuild();
 
         }
@@ -356,7 +356,7 @@ public class HistogramScene extends BaseScene {
         else {
           removeFilters(util.filterType(i),i);
           vbox.getChildren().remove(histogram);
-          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, appWindow.getData().getMinDate(), appWindow.getData().getMaxDate(), mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
+          clickCosts = appWindow.getMetrics().request(Metric.ClickCost, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
           histogramBuild();
         }
       });
