@@ -11,14 +11,13 @@ import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MetricsRequestTest {
   private Data data;
   private Metrics metrics;
   private Logs logs;
+  private HashMap<Filter, String[]> filter;
 
   @Before
   public void setupData() {
@@ -28,7 +27,7 @@ public class MetricsRequestTest {
 
     metrics = new Metrics(data);
 
-    HashMap<Filter, String[]> filter = new HashMap<>();
+    filter = new HashMap<>();
     logs = data.request(data.getMinDate(), data.getMaxDate(), filter);
   }
 
@@ -44,6 +43,86 @@ public class MetricsRequestTest {
     for (Granularity granularity : Granularity.values()) {
       Assert.assertNotNull(metrics.request(Metric.Impressions, data.getMinDate(), data.getMaxDate(), new HashMap<>(), granularity));
     }
+  }
+
+  @Test
+  public void allFiltersRequestTest(){
+    HashMap<Filter, String[]> filter;
+    for (String gender : Utility.getGenders) {
+      for (String age : Utility.getAges) {
+        for (String income : Utility.getIncomes) {
+          for (String context : Utility.getContexts) {
+            filter = new HashMap<>();
+
+            filter.put(Filter.Gender, new String[]{gender});
+            filter.put(Filter.Age, new String[]{age});
+            filter.put(Filter.Income, new String[]{income});
+            filter.put(Filter.Context, new String[]{context});
+
+            Assert.assertNotNull(metrics.request(Metric.Impressions,data.getMinDate(),data.getMaxDate(),filter,Granularity.Day));
+          }
+        }
+      }
+    }
+  }
+
+
+  @Test
+  public void dateTest() {
+    Assert.assertNotNull(metrics.request(Metric.Impressions,data.getMinDate(), data.getMaxDate(), filter,Granularity.Day));
+  }
+
+  @Test
+  public void sameDateTest() {
+    Assert.assertNotNull(metrics.request(Metric.Impressions,data.getMinDate(), data.getMinDate(), filter,Granularity.Day));
+  }
+
+  @Test
+  public void invalidDateTest() {
+    try{
+    Assert.assertNull(metrics.request(Metric.Impressions,data.getMaxDate(), data.getMinDate(),filter,Granularity.Day));
+    }catch (Exception e){
+      e.getMessage();
+    }
+  }
+
+  @Test
+  public void testInvalidFilters() {
+    try{
+      HashMap<Filter, String[]> filter = new HashMap<>();
+      filter.put(Filter.Gender, new String[]{"gender"});
+
+      Assert.assertNull(metrics.request(Metric.Impressions,data.getMinDate(),data.getMaxDate(),filter,Granularity.Day));
+
+      filter = new HashMap<>();
+      filter.put(Filter.Age, new String[]{"age"});
+
+      Assert.assertNull(metrics.request(Metric.Impressions,data.getMinDate(),data.getMaxDate(),filter,Granularity.Day));
+
+      filter = new HashMap<>();
+      filter.put(Filter.Income, new String[]{"income"});
+
+      Assert.assertNull(metrics.request(Metric.Impressions,data.getMinDate(),data.getMaxDate(),filter,Granularity.Day));
+
+      filter = new HashMap<>();
+      filter.put(Filter.Context, new String[]{"context"});
+
+      Assert.assertNull(metrics.request(Metric.Impressions,data.getMinDate(),data.getMaxDate(),filter,Granularity.Day));
+
+    }catch (Exception e){
+      e.getMessage();
+    }
+  }
+
+  @Test
+  public void testInvalidGranularity(){
+    try {
+      Granularity granularity = Granularity.valueOf("month");
+      Assert.assertNull(metrics.request(Metric.Impressions,data.getMinDate(),data.getMaxDate(),filter,granularity));
+    }catch (Exception e){
+      e.getMessage();
+    }
+
   }
 
   @Test
@@ -122,4 +201,5 @@ public class MetricsRequestTest {
   public void totalCastNotNegative() {
     Assert.assertTrue((logs.getImpressionCost() + logs.getClickCost() > 0));
   }
+
 }
