@@ -36,8 +36,8 @@ public class toms_tester {
 
     long t1 = System.nanoTime();
     //data.ingest(pathsTest);
-    //data.ingest("C:\\Users\\thoma\\Downloads\\2_month_campaign");
-    data.ingest("src/test/java/uk/comp2211/group13/testdata");
+    data.ingest("C:\\Users\\thoma\\Downloads\\2_month_campaign");
+    //data.ingest("src/test/java/uk/comp2211/group13/testdata");
 
     long t2 = System.nanoTime();
 
@@ -47,12 +47,18 @@ public class toms_tester {
     //    filter
     //);
 
-    HashMap<Date, Float> test = metrics.request(
-        Metric.Impressions,
+    //HashMap<Date, Float> test = metrics.request(
+    //    Metric.Impressions,
+    //    data.getMinDate(),
+    //    data.getMaxDate(),
+    //    filter,
+    //    Granularity.Second
+    //);
+
+    HashMap<Metric, Float> test = metrics.requestOverview(
         data.getMinDate(),
         data.getMaxDate(),
-        filter,
-        Granularity.Second
+        filter
     );
 
     long t3 = System.nanoTime();

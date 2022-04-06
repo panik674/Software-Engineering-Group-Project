@@ -46,9 +46,12 @@ public class Metrics {
    * This can be used to request metric data.
    *
    * @param metric metric to request
+   * @param startDate start filter date
+   * @param endDate end filter date
+   * @param filters filters
+   * @param granularity time granularity
    * @return metric data
    */
-  //TODO: Add increment granularity in Sprint 2.
   public HashMap<Date, Float> request(Metric metric, Date startDate, Date endDate, HashMap<Filter, String[]> filters, Granularity granularity) {
     HashMap<Date, Float> table = new HashMap<>();
 
@@ -93,6 +96,40 @@ public class Metrics {
         case BounceRatePage -> table.put(startDate, bounceRatePage(masterLog));
         case BounceRateVisit -> table.put(startDate, bounceRateVisit(masterLog));
       }
+    }
+
+    return table;
+  }
+
+  /**
+   * This can be used to request metric overview data.
+   *
+   * @param startDate start filter date
+   * @param endDate end filter date
+   * @param filters filters
+   * @return metric overview data
+   */
+  public HashMap<Metric, Float> requestOverview(Date startDate, Date endDate, HashMap<Filter, String[]> filters) {
+    HashMap<Metric, Float> table = new HashMap<>();
+    Logs masterLog = data.request(startDate, endDate, filters);
+
+    for (Metric metric : Metric.values()) {
+      table.put(metric, switch (metric) {
+        case Impressions -> (float) impressions(masterLog);
+        case Clicks -> (float) clicks(masterLog);
+        case Unique -> (float) uniques(masterLog);
+        case BouncePage -> (float) bouncePage(masterLog);
+        case BounceVisit -> (float) bounceVisit(masterLog);
+        case Conversions -> conversionRate(masterLog);
+        case TotalCost -> totalCost(masterLog);
+        case ClickCost -> masterLog.getClickCost();
+        case CTR -> clickRate(masterLog);
+        case CPA -> costAcquisition(masterLog);
+        case CPC -> costClick(masterLog);
+        case CPM -> costThousand(masterLog);
+        case BounceRatePage -> bounceRatePage(masterLog);
+        case BounceRateVisit -> bounceRateVisit(masterLog);
+      });
     }
 
     return table;
