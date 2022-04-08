@@ -4,6 +4,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -81,8 +83,12 @@ public class WelcomeScene extends BaseScene {
     var mainPane = new BorderPane();
     welcomePane.getChildren().add(mainPane);
 
-    Text appTitle = new Text("Welcome to The Old Biddy App");
-    mainPane.setCenter(appTitle);
+    //Text appTitle = new Text("Welcome to");
+    ImageView logo = new ImageView(new Image(getClass().getResource("/appLogo.png").toExternalForm()));
+
+    logo.setFitWidth(800);
+    logo.setPreserveRatio(true);
+    mainPane.setCenter(logo);
 
     vbox = new VBox();
     mainPane.setBottom(vbox);
