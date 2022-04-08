@@ -2,6 +2,7 @@ package uk.comp2211.group13.ui;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -93,6 +94,10 @@ public class AppWindow {
     loadScene(new WelcomeScene(this));
   }
 
+  public void mainScreen() {
+    loadScene(new MainScene(this));
+  }
+
   /**
    * Display start screen with error
    */
@@ -132,6 +137,7 @@ public class AppWindow {
    * This is used to set the default settings for the stage. (ie, title and dimensions)
    */
   private void setupStage() {
+    stage.getIcons().add(new Image("/icon.png"));
     stage.setTitle("The Old Biddy");  // TODO: Think of witty name
     stage.setMinWidth(width);
     stage.setMinHeight(height);
