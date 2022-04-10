@@ -94,7 +94,7 @@ public class LoadingScene extends BaseScene {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                appWindow.valuesScreen();
+                appWindow.mainScreen();
             }
         });
 

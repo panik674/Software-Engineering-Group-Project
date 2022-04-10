@@ -94,10 +94,6 @@ public class AppWindow {
     loadScene(new WelcomeScene(this));
   }
 
-  public void mainScreen() {
-    loadScene(new MainScene(this));
-  }
-
   /**
    * Display start screen with error
    */
@@ -113,24 +109,10 @@ public class AppWindow {
   }
 
   /**
-   * Display values screen
+   * Display main screen
    */
-  public void valuesScreen() {
-    loadScene(new ValuesScene(this));
-  }
-
-  /**
-   * Display graphs screen
-   */
-  public void graphingScreen() {
-    loadScene(new GraphingScene(this));
-  }
-
-  /**
-   * Display histogram screen
-   */
-  public void histogramScreen() {
-    loadScene(new HistogramScene(this));
+  public void mainScreen() {
+    loadScene(new MainScene(this));
   }
 
   /**
