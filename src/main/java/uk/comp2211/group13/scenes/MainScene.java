@@ -21,12 +21,10 @@ import uk.comp2211.group13.panes.OverviewPane;
 import uk.comp2211.group13.ui.AppPane;
 import uk.comp2211.group13.ui.AppWindow;
 
-import java.util.ArrayList;
-
 public class MainScene extends BaseScene {
     private static final Logger logger = LogManager.getLogger(MainScene.class);
 
-    private StackPane valuesPane;
+    private StackPane mainPane;
 
     private BasePane currentPane;
 
@@ -55,7 +53,6 @@ public class MainScene extends BaseScene {
     private int graphInc;
     private int histogramInc;
 
-    public ArrayList<TabButton> tabButtons;
 
     /**
      * Creates a new scene.
@@ -84,30 +81,26 @@ public class MainScene extends BaseScene {
 
         root = new AppPane(appWindow.getWidth(), appWindow.getHeight());
 
-        valuesPane = new StackPane();
-        valuesPane.setMaxWidth(appWindow.getWidth());
-        valuesPane.setMaxHeight(appWindow.getHeight());
+        mainPane = new StackPane();
+        mainPane.setMaxWidth(appWindow.getWidth());
+        mainPane.setMaxHeight(appWindow.getHeight());
 
-        root.getChildren().add(valuesPane);
-
-        /*tabButtons = new ArrayList<>();
-        //Set up base TabButtons
-        TabButton tabButton1 = new TabButton("Overview 1", valuesPane, overviewPane);
-        TabButton tabButton2 = new TabButton("Graph 1", valuesPane, graphPane);
-        TabButton tabButton3 = new TabButton("Histogram 1", valuesPane, histogramPane);
-        tabButtons.add(tabButton1);
-        tabButtons.add(tabButton2);
-        tabButtons.add(tabButton3);*/
+        root.getChildren().add(mainPane);
 
         mainVbox = new VBox();
-        valuesPane.getChildren().add(mainVbox);
+        mainPane.getChildren().add(mainVbox);
 
+        // Stack Pane that contains the pane (overview, graph, or histogram)
         stackPane = new StackPane();
+
+        // Setting up the three initial panes
         overviewPane = new OverviewPane(appWindow);
         graphPane = new GraphPane(appWindow);
         histogramPane = new HistogramPane(appWindow);
 
+        // Building the tab bar
         baseBuild();
+
         stackPane.setMaxWidth(appWindow.getWidth() - horizontalPane.getWidth());
         stackPane.setMaxHeight(appWindow.getHeight() - horizontalPane.getHeight());
 
@@ -115,10 +108,13 @@ public class MainScene extends BaseScene {
         mainVbox.getChildren().add(stackPane);
 
         stackPane.getChildren().add(overviewPane);
+
         currentPane = overviewPane;
-        //mainPane.getCharts().setOnMouseClicked(this::changeScene);
     }
 
+    /**
+     * Build the tab bar at the top
+     */
     public void baseBuild () {
         horizontalPane = new HBox();
         horizontalPane.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
@@ -126,7 +122,7 @@ public class MainScene extends BaseScene {
         horizontalPane.setMinHeight(40);
         horizontalPane.setMaxHeight(40);
         horizontalPane.setAlignment(Pos.CENTER);
-        //horizontalPane.set
+
         mainVbox.getChildren().add(horizontalPane);
         VBox.setVgrow(horizontalPane, Priority.ALWAYS);
 
@@ -138,11 +134,11 @@ public class MainScene extends BaseScene {
 
         hBox = new HBox();
         TabButton tabButton1 = new TabButton("Overview", overviewInc, stackPane, overviewPane, currentPane);
-        //tabButton1.setOnMouseClicked(this::changePane);
+
         TabButton tabButton2 = new TabButton("Graph", graphInc, stackPane, graphPane, currentPane);
-        //tabButton2.getTabButton().setOnMouseClicked(this::changePane);
+
         TabButton tabButton3 = new TabButton("Histogram", histogramInc, stackPane, histogramPane, currentPane);
-        //tabButton3.getTabButton().setOnMouseClicked(this::changePane);
+
         tabButton1.setTabClosedListener(this::tabClosed);
         tabButton2.setTabClosedListener(this::tabClosed);
         tabButton3.setTabClosedListener(this::tabClosed);
@@ -154,6 +150,7 @@ public class MainScene extends BaseScene {
         HBox.setHgrow(hBox, Priority.ALWAYS);
 
 
+        // Set up the tab adding symbol (plus)
         plusImage = new ImageView(new Image(getClass().getResource("/plus.png").toExternalForm()));
         togglePlus = true;
 
@@ -166,9 +163,7 @@ public class MainScene extends BaseScene {
         addTabHbox = new HBox();
         addTabHbox.setSpacing(5);
         addTabHbox.setStyle("-fx-background-color: #21bdd4");
-        //addTabHbox.setPrefHeight(20);
         addTabHbox.setAlignment(Pos.CENTER);
-        //addTabHbox.setPadding(new Insets(0, 5, 0, 5));
 
         overviewText = new Text("Overview");
         graphText = new Text("Graph");
@@ -189,13 +184,9 @@ public class MainScene extends BaseScene {
         horizontalPane.getChildren().add(plusImage);
     }
 
-    private void changePane(MouseEvent mouseEvent) {
-        logger.info("Tab Button Clicked");
-        valuesPane.getChildren().clear();
-
-        //valuesPane.getChildren().add(currentPane);
-    }
-
+    /**
+     * This method add listeners for the required keyboard and mouse events
+     */
     @Override
     public void events() {
         scene.setOnKeyPressed((e) -> {
@@ -204,16 +195,28 @@ public class MainScene extends BaseScene {
         });
     }
 
+
+    /**
+     * Handle when a tab gets closed
+     *
+     * @param tabButton the tab button that has been closed
+     * @param type the type of the tab that has been closed
+     */
     private void tabClosed (TabButton tabButton, String type) {
         hBox.getChildren().remove(tabButton);
-        switch (type) {
+        /*switch (type) {
             case "Overview" -> overviewInc--;
             case "Graph" -> graphInc--;
             case "Histogram" -> histogramInc--;
             default -> System.err.println("Wrong type");
-        }
+        }*/
     }
 
+    /**
+     * Handle when a tab is added and the animation for that
+     *
+     * @param mouseEvent the mouse clicking event
+     */
     private void addPane (MouseEvent mouseEvent) {
         RotateTransition rotate = new RotateTransition(Duration.millis(1000), plusImage);
         if (togglePlus) {
@@ -223,25 +226,30 @@ public class MainScene extends BaseScene {
             addTabHbox.getChildren().add(overviewText);
             addTabHbox.getChildren().add(graphText);
             addTabHbox.getChildren().add(histogramText);
-            transitionInHbox();
+            transitionInHBox();
         } else {
             rotate.setFromAngle(45);
             rotate.setToAngle(0);
-            transitionOutHbox();
-            //addTabHbox.getChildren().clear();
+            transitionOutHBox();
         }
         rotate.play();
         togglePlus = !togglePlus;
     }
 
-    private void transitionInHbox () {
+    /**
+     * Handle the appearing animation of the tab adding options
+     */
+    private void transitionInHBox() {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), addTabHbox);
         fadeTransition.setFromValue(0);
         fadeTransition.setToValue(1);
         fadeTransition.play();
     }
 
-    private void transitionOutHbox () {
+    /**
+     * Handle the disappearing animation of the tab adding options
+     */
+    private void transitionOutHBox() {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), addTabHbox);
         fadeTransition.setFromValue(1);
         fadeTransition.setToValue(0);
@@ -250,6 +258,11 @@ public class MainScene extends BaseScene {
 
     }
 
+    /**
+     * Handle when a new Overview tab is added
+     *
+     * @param mouseEvent the mouse clicking event
+     */
     private void newOverview (MouseEvent mouseEvent) {
         logger.info("New Overview Tab Button has been added!");
         overviewInc++;
@@ -257,7 +270,7 @@ public class MainScene extends BaseScene {
         OverviewPane newOverviewPane = new OverviewPane(appWindow);
         currentPane = newOverviewPane;
 
-        TabButton tabButton = new TabButton("Overview", overviewInc, stackPane, newOverviewPane, currentPane); // Add increment
+        TabButton tabButton = new TabButton("Overview", overviewInc, stackPane, newOverviewPane, currentPane);
         tabButton.setTabClosedListener(this::tabClosed);
         hBox.getChildren().add(tabButton);
 
@@ -268,6 +281,11 @@ public class MainScene extends BaseScene {
         addPane(mouseEvent);
     }
 
+    /**
+     * Handle when a new Graph tab is added
+     *
+     * @param mouseEvent the mouse clicking event
+     */
     private void newGraph (MouseEvent mouseEvent) {
         logger.info("New Graph Tab Button has been added!");
         graphInc++;
@@ -275,7 +293,7 @@ public class MainScene extends BaseScene {
         GraphPane newGraphPane = new GraphPane(appWindow);
         currentPane = newGraphPane;
 
-        TabButton tabButton = new TabButton("Graph", graphInc, stackPane, newGraphPane, currentPane); // Add increment
+        TabButton tabButton = new TabButton("Graph", graphInc, stackPane, newGraphPane, currentPane);
         tabButton.setTabClosedListener(this::tabClosed);
         hBox.getChildren().add(tabButton);
 
@@ -286,6 +304,11 @@ public class MainScene extends BaseScene {
         addPane(mouseEvent);
     }
 
+    /**
+     * Handle when a new Histogram tab is added
+     *
+     * @param mouseEvent the mouse clicking event
+     */
     private void newHistogram (MouseEvent mouseEvent) {
         logger.info("New Histogram Tab Button has been added!");
         histogramInc++;
@@ -293,7 +316,7 @@ public class MainScene extends BaseScene {
         HistogramPane newHistogramPane  = new HistogramPane(appWindow);
         currentPane = newHistogramPane;
 
-        TabButton tabButton = new TabButton("Histogram", histogramInc, stackPane, newHistogramPane, currentPane); // Add increment
+        TabButton tabButton = new TabButton("Histogram", histogramInc, stackPane, newHistogramPane, currentPane);
         tabButton.setTabClosedListener(this::tabClosed);
         hBox.getChildren().add(tabButton);
 

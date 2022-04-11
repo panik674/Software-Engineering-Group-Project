@@ -53,6 +53,9 @@ public class GraphPane extends BasePane {
         build();
     }
 
+    /**
+     * Build the layout of the scene.
+     */
     @Override
     public void build() {
         //Building the VBox which will contain the main UI elements

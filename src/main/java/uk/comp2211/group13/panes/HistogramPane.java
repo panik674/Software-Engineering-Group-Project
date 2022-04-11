@@ -57,6 +57,9 @@ public class HistogramPane extends BasePane {
         build();
     }
 
+    /**
+     * Build the layout of the scene.
+     */
     @Override
     public void build() {
         dateHbox.getChildren().add(regionBuild());

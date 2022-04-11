@@ -38,7 +38,7 @@ public class TabButton extends StackPane {
         this.currentPane = currentPane;
 
         format();
-    }// I will add the pane later
+    }
 
     private void format () {
         HBox hBox = new HBox();
@@ -52,15 +52,12 @@ public class TabButton extends StackPane {
 
         tabButton.setOnMouseClicked(this::changePane);
 
-        //HBox hBox = new HBox();
-        //hBox.setPadding(new Insets(2, 0, 0, 70));
         x = new ImageView(new Image(getClass().getResource("/x.png").toExternalForm()));
 
         x.setFitWidth(12);
         x.setPreserveRatio(true);
 
         x.setOnMouseClicked(this::closePane);
-        //hBox.getChildren().add(x);
 
         hBox.getChildren().add(tabButton);
         hBox.getChildren().add(x);

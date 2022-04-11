@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.component.FilterComponent;
 import uk.comp2211.group13.component.ValueBlock;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
@@ -74,21 +75,28 @@ public class OverviewPane extends BasePane {
         build();
     }
 
+    /**
+     * Build the layout of the scene.
+     */
     @Override
     public void build() {
         HBox hBox = new HBox();
         setCenter(hBox);
 
+        // Setting up stackPane that will have the filter component
         StackPane filterStackPane = new StackPane();
         filterStackPane.setPrefWidth(500);
-        filterStackPane.setPrefHeight(650); //661
+        filterStackPane.setPrefHeight(650);
 
         filterStackPane.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
                 + "-fx-border-radius: 5;");
 
+        FilterComponent filterComponent = new FilterComponent("Overview");
+        filterStackPane.getChildren().add(filterComponent);
+
+        // Vbox that will contain the values
         vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
-        vBox.setPadding(new Insets(10, 10, 10, 10));
         vBox.setSpacing(10);
 
         hBox.getChildren().add(vBox);
@@ -97,6 +105,9 @@ public class OverviewPane extends BasePane {
         buildBlocks();
     }
 
+    /**
+     * Build the blocks of the overview values block.
+     */
     private void buildBlocks() {
         // Initialising the boolean objects
         booleanForNum = true;
@@ -146,9 +157,13 @@ public class OverviewPane extends BasePane {
         resetFilters.setOnMouseClicked(this::resetFilters);
 
         setupFiltersBox();
-        //vBox.getChildren().add(filterHbox);
     }
 
+    /**
+     * Set the HBox of each row of the values block
+     *
+     * @param row - The HBox of the row
+     */
     private void hBoxSetter(HBox row) {
         vBox.getChildren().add(row);
         row.setAlignment(Pos.CENTER);
@@ -156,10 +171,13 @@ public class OverviewPane extends BasePane {
         row.setSpacing(20);
     }
 
+    /**
+     * Request the value for each metric
+     *
+     * @param metric - The metric requesting its value
+     */
     private String requestValue(Metric metric) {
         try {
-
-            // For know we are assuming that the data will be given will just be on this range. To be improved on Sprint 2
             value = (
                     appWindow.getMetrics().request(
                             metric,
@@ -193,6 +211,11 @@ public class OverviewPane extends BasePane {
         }
     }
 
+    /**
+     * Toggle between Bounces per visit and per page
+     *
+     * @param mouseEvent - The mouse click event
+     */
     private void toggleForNum(MouseEvent mouseEvent) {
         booleanForNum = !booleanForNum;
 
@@ -206,6 +229,11 @@ public class OverviewPane extends BasePane {
 
     }
 
+    /**
+     * Toggle between Bounces Rate per visit and per page
+     *
+     * @param mouseEvent - The mouse click event
+     */
     private void toggleForRate(MouseEvent mouseEvent) {
         booleanForRate = !booleanForRate;
 

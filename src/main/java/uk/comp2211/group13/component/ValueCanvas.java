@@ -10,7 +10,7 @@ public class ValueCanvas extends Canvas {
   private final double height;
 
   public ValueCanvas() {
-    width = 140;
+    width = 150;
     height = 100;
 
     //A canvas needs a fixed width and height
