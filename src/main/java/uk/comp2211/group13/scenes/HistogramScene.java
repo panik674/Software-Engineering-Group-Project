@@ -16,6 +16,8 @@ import javafx.scene.layout.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
+import uk.comp2211.group13.component.GraphingComponent;
+import uk.comp2211.group13.component.HistogramComponent;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
@@ -32,7 +34,7 @@ public class HistogramScene extends BaseScene {
 
   private BarChart histogram;
   private StackPane graphingPane;
-  private HashMap<Date, Float> clickCosts  ;
+  private HashMap<Date, Float> clickCosts;
   private HashMap<Filter, String[]> genderFilters = new HashMap<>();
   private HashMap<Filter, String[]> ageFilters = new HashMap<>();
   private HashMap<Filter, String[]> incomeFilters = new HashMap<>();
@@ -182,9 +184,8 @@ public class HistogramScene extends BaseScene {
       }
     });
 
-    vbox.getChildren().add(filterReset);
-
     //Building the histogram for the ClickCosts
+    //vbox.getChildren().add(new HistogramComponent(clickCosts));
     histogramBuild();
   }
 

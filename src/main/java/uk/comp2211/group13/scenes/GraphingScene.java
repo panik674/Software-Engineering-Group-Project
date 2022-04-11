@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.component.FilterComponent;
+import uk.comp2211.group13.component.GraphingComponent;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
@@ -125,14 +126,14 @@ public class GraphingScene extends BaseScene {
     //Creating a ComboBox widget which will allow the user to choose which metric graph to display
     metricBox.setValue(metrics[0]);
     vbox.getChildren().add(metricBox);
-    vbox.getChildren().add(new HBox (regionBuild(), new FilterComponent("Graph"),regionBuild()));
+
 
 
 
     //Setting the default metric graph to the "Clicks" metric. The data is requested and is then parsed to the metricGraph method
     currentMetric = Metric.Clicks;
     metric = appWindow.getMetrics().request(currentMetric, startDate, endDate, mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters), granularity);
-
+    //vbox.getChildren().add(new GraphingComponent(metricBox.getValue(), metric));
 
     dateHbox.getChildren().add(regionBuild());
     dateHbox.getChildren().add(dateCalen("Start"));
