@@ -192,7 +192,9 @@ public class WelcomeScene extends BaseScene {
   }
 
   private void clearError() {
-    vbox.getChildren().remove(error);
+    //vbox.getChildren().remove(error);
+    error.setText("");
+
   }
 
   private void animateImage (ImageView imageView) {
