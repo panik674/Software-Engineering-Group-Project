@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,9 +43,13 @@ public class ValueBlock extends StackPane {
     vBox.setSpacing(10);
 
     Text nameText = new Text(valueName);
+    nameText.setFill(Color.WHITE);
+    nameText.setStyle("-fx-font-weight: bold;");
     vBox.getChildren().add(nameText);
 
     valueText = new Text(value); //TODO: Add binding
+    valueText.setFill(Color.WHITE);
+    valueText.setStyle("-fx-font-weight: bold;");
     vBox.getChildren().add(valueText);
   }
 
