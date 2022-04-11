@@ -6,5 +6,5 @@ public interface TabClosedListener {
     /**
      * Handle an closing tabs event
      */
-    void tabClosed (TabButton tabButton);
+    void tabClosed (TabButton tabButton, String type);
 }

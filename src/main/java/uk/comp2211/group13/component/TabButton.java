@@ -19,6 +19,7 @@ public class TabButton extends StackPane {
 
 
     private String name;
+    private int increment;
     private StackPane stackPane;
     private BasePane basePane;
     private BasePane currentPane;
@@ -29,8 +30,9 @@ public class TabButton extends StackPane {
     public TabClosedListener tabClosedListener;
 
 
-    public TabButton (String name, StackPane stackPane, BasePane basePane, BasePane currentPane) {
+    public TabButton (String name, int increment, StackPane stackPane, BasePane basePane, BasePane currentPane) {
         this.name = name;
+        this.increment = increment;
         this.stackPane = stackPane;
         this.basePane = basePane;
         this.currentPane = currentPane;
@@ -41,7 +43,7 @@ public class TabButton extends StackPane {
     private void format () {
         HBox hBox = new HBox();
 
-        tabButton = new Button(name);
+        tabButton = new Button(name + " " + increment);
         tabButton.setStyle("-fx-background-color: #21bdd4;" + "-fx-border-color: grey;");
 
         tabButton.setTextFill(Color.WHITE);
@@ -77,11 +79,12 @@ public class TabButton extends StackPane {
     private void closePane (MouseEvent mouseEvent) {
         logger.info("Tab has been close!");
 
-        tabClosedListener.tabClosed(this);
+        tabClosedListener.tabClosed(this, name);
 
         if (currentPane == basePane) {
             stackPane.getChildren().clear();
-            Text text = new Text("Select or add window!");
+            Text text = new Text("Select or add a tab!");
+            text.setStyle("-fx-font-size: 24;" + "-fx-font-weight: bold;");
             stackPane.getChildren().add(text);
         }
     }
