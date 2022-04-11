@@ -10,8 +10,8 @@ public class ValueCanvas extends Canvas {
   private final double height;
 
   public ValueCanvas() {
-    width = 190;
-    height = 120;
+    width = 140;
+    height = 100;
 
     //A canvas needs a fixed width and height
     setWidth(width);
@@ -37,12 +37,13 @@ public class ValueCanvas extends Canvas {
     gc.clearRect(0, 0, width, height);
 
     //Colour fill
-    gc.setEffect(innerShadow);
-    gc.setFill(Color.CYAN);
+    //gc.setEffect(innerShadow);
+    //gc.setFill(Color.CYAN);
+    gc.setFill(Color.rgb(33, 189, 212));
     gc.fillRect(0, 0, width, height);
 
     //Border
-    gc.setStroke(Color.BLACK);
+    //gc.setStroke(Color.BLACK);
 
   }
 

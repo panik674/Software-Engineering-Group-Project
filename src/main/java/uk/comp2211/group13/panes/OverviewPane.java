@@ -6,10 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
@@ -52,6 +49,7 @@ public class OverviewPane extends BasePane {
     private HBox row1;
     private HBox row2;
     private HBox row3;
+    private HBox row4;
 
     private HBox filterHbox;
 
@@ -78,11 +76,23 @@ public class OverviewPane extends BasePane {
 
     @Override
     public void build() {
+        HBox hBox = new HBox();
+        setCenter(hBox);
+
+        StackPane filterStackPane = new StackPane();
+        filterStackPane.setPrefWidth(500);
+        filterStackPane.setPrefHeight(650); //661
+
+        filterStackPane.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
+                + "-fx-border-radius: 5;");
+
         vBox = new VBox();
-        setCenter(vBox);
         vBox.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(10, 10, 10, 10));
         vBox.setSpacing(10);
+
+        hBox.getChildren().add(vBox);
+        hBox.getChildren().add(filterStackPane);
 
         buildBlocks();
     }
@@ -95,6 +105,11 @@ public class OverviewPane extends BasePane {
         nOI_Block = new ValueBlock("Number of Impressions", requestValue(Metric.Impressions)); //TODO: Add binding
         nOC_Block = new ValueBlock("Number of Clicks", requestValue(Metric.Clicks));
         nOU_Block = new ValueBlock("Number of Uniques", requestValue(Metric.Unique));
+
+        row1 = new HBox(nOI_Block, nOC_Block, nOU_Block);
+        hBoxSetter(row1);
+
+        // Second row
         nOB_Block = new ValueBlock("Number of Bounces", requestValue(Metric.BouncePage));
 
         pAndVToggle_1 = new Button("Visits");
@@ -102,19 +117,19 @@ public class OverviewPane extends BasePane {
         pAndVToggle_1.setOnMouseClicked(this::toggleForNum);
         pAndVToggle_1.setMaxWidth(50);
 
-        row1 = new HBox(nOI_Block, nOC_Block, nOU_Block, nOB_Block);
-        hBoxSetter(row1);
-
-        // Second row
         nOCon_Block = new ValueBlock("Rate of Conversions", requestValue(Metric.Conversions)); //TODO: Add binding
         tC_Block = new ValueBlock("Total Cost (£)", requestValue(Metric.TotalCost));
-        cTR_Block = new ValueBlock("CTR", requestValue(Metric.CTR));
-        cPA_Block = new ValueBlock("CPA", requestValue(Metric.CPA));
-        row2 = new HBox(nOCon_Block, tC_Block, cTR_Block, cPA_Block);
+        row2 = new HBox(nOB_Block, nOCon_Block, tC_Block);
         hBoxSetter(row2);
 
         // Third row
+        cTR_Block = new ValueBlock("CTR", requestValue(Metric.CTR));
+        cPA_Block = new ValueBlock("CPA", requestValue(Metric.CPA));
         cPC_Block = new ValueBlock("CPC", requestValue(Metric.CPC)); //TODO: Add binding
+
+        row3 = new HBox(cTR_Block, cPA_Block, cPC_Block);
+        hBoxSetter(row3);
+
         cPM_Block = new ValueBlock("CPM", requestValue(Metric.CPM));
         bR_Block = new ValueBlock("Bounce Rate", requestValue(Metric.BounceRatePage));
 
@@ -123,8 +138,8 @@ public class OverviewPane extends BasePane {
         pAndVToggle_2.setOnMouseClicked(this::toggleForRate);
         pAndVToggle_2.setMaxWidth(50);
 
-        row3 = new HBox(cPC_Block, cPM_Block, bR_Block);
-        hBoxSetter(row3);
+        row4 = new HBox(cPM_Block, bR_Block);
+        hBoxSetter(row4);
 
         Button resetFilters = new Button("Reset Filters");
         vBox.getChildren().add(resetFilters);
@@ -138,7 +153,7 @@ public class OverviewPane extends BasePane {
         vBox.getChildren().add(row);
         row.setAlignment(Pos.CENTER);
         row.setPadding(new Insets(10, 10, 10, 10));
-        row.setSpacing(47);
+        row.setSpacing(20);
     }
 
     private String requestValue(Metric metric) {

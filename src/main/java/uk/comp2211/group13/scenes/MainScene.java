@@ -1,10 +1,12 @@
 package uk.comp2211.group13.scenes;
 
+import javafx.animation.RotateTransition;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.component.TabButton;
@@ -33,6 +35,10 @@ public class MainScene extends BaseScene {
     private StackPane stackPane;
 
     private HBox hBox;
+
+    private ImageView plusImage;
+
+    private Boolean togglePlus;
 
     public ArrayList<TabButton> tabButtons;
 
@@ -127,7 +133,8 @@ public class MainScene extends BaseScene {
         HBox.setHgrow(hBox, Priority.ALWAYS);
 
 
-        ImageView plusImage = new ImageView(new Image(getClass().getResource("/plus.png").toExternalForm()));
+        plusImage = new ImageView(new Image(getClass().getResource("/plus.png").toExternalForm()));
+        togglePlus = true;
 
         plusImage.setFitWidth(25);
         plusImage.setPreserveRatio(true);
@@ -159,6 +166,15 @@ public class MainScene extends BaseScene {
     }
 
     private void addPane (MouseEvent mouseEvent) {
-
+        RotateTransition rotate = new RotateTransition(Duration.millis(2000), plusImage);
+        if (togglePlus) {
+            rotate.setFromAngle(0);
+            rotate.setToAngle(45);
+        } else {
+            rotate.setFromAngle(45);
+            rotate.setToAngle(0);
+        }
+        rotate.play();
+        togglePlus = !togglePlus;
     }
 }
