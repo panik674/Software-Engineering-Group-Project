@@ -1,5 +1,6 @@
 package uk.comp2211.group13.scenes;
 
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.threading.FileThreading;
@@ -85,6 +87,8 @@ public class WelcomeScene extends BaseScene {
 
     //Text appTitle = new Text("Welcome to");
     ImageView logo = new ImageView(new Image(getClass().getResource("/appLogo.png").toExternalForm()));
+
+    animateImage(logo);
 
     logo.setFitWidth(800);
     logo.setPreserveRatio(true);
@@ -189,5 +193,13 @@ public class WelcomeScene extends BaseScene {
 
   private void clearError() {
     vbox.getChildren().remove(error);
+  }
+
+  private void animateImage (ImageView imageView) {
+    FadeTransition fadeTransition = new FadeTransition(Duration.millis(2500), imageView);
+    fadeTransition.setFromValue(0);
+    fadeTransition.setToValue(1);
+
+    fadeTransition.play();
   }
 }
