@@ -40,6 +40,9 @@ public class TabButton extends StackPane {
         format();
     }
 
+    /**
+     * Set the format of the tab button
+     */
     private void format () {
         HBox hBox = new HBox();
 
@@ -65,6 +68,11 @@ public class TabButton extends StackPane {
         getChildren().add(hBox);
     }
 
+    /**
+     * Handle when the tab button gets clicked
+     *
+     * @param mouseEvent the mouse clicking event
+     */
     private void changePane (MouseEvent mouseEvent) {
         logger.info("Tab Button has been clicked!");
         stackPane.getChildren().clear();
@@ -73,6 +81,11 @@ public class TabButton extends StackPane {
         stackPane.getChildren().add(basePane);
     }
 
+    /**
+     * Handle when the tab button gets closed (aka clicking the "x" image)
+     *
+     * @param mouseEvent the mouse clicking event
+     */
     private void closePane (MouseEvent mouseEvent) {
         logger.info("Tab has been close!");
 
@@ -86,14 +99,29 @@ public class TabButton extends StackPane {
         }
     }
 
+    /**
+     * Get the tabButton Button
+     *
+     * @return tabButton
+     */
     public Button getTabButton () {
         return tabButton;
     }
 
+    /**
+     * Get the "x" image
+     *
+     * @return x
+     */
     public ImageView getX () {
         return x;
     }
 
+    /**
+     * Get the associated with the tab Button
+     *
+     * @return basePane
+     */
     public BasePane getBasePane () {
         return  basePane;
     }
