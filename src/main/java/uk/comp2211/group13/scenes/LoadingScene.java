@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,8 +68,8 @@ public class LoadingScene extends BaseScene {
 
         Text appTitle = new Text("Loading, Checking and Knitting...");
         loadingVBox.getChildren().add(appTitle);
-        appTitle.setStyle("-fx-font: 24");
-        appTitle.setStyle("-fx-font-weight: bold");
+        appTitle.setFill(Color.WHITE);
+        appTitle.setStyle("-fx-font-size: 24;" + "-fx-font-weight: bold;");
 
         // Source of image: https://www.deviantart.com/kellerac/art/Grandma-693732407 (by KellerAC)
         ImageView loadingImage = new ImageView(new Image(getClass().getResource("/granny.gif").toExternalForm()));
