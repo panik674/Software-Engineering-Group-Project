@@ -2,6 +2,7 @@ package uk.comp2211.group13.scenes;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.RotateTransition;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -171,7 +172,7 @@ public class MainScene extends BaseScene {
         //Hbox for the options of tab when pressing the plus symbol
         addTabHBox = new HBox();
         addTabHBox.setSpacing(5);
-        addTabHBox.setStyle("-fx-background-color: #21bdd4");
+        addTabHBox.setPadding(new Insets(0, 5, 0, 5));
         addTabHBox.setAlignment(Pos.CENTER);
 
         overviewText = new Text("Overview");
@@ -221,10 +222,6 @@ public class MainScene extends BaseScene {
             stackPane.getChildren().add(text);
             currentTabButton = null;
         }
-
-        /*if (currentTabButton != tabButton && currentTabButton != null) {
-            currentTabButton.getTabButton().setStyle("-fx-background-color: #21bdd4");
-        }*/
 
         /*switch (type) {
             case "Overview" -> overviewInc--;
@@ -281,6 +278,7 @@ public class MainScene extends BaseScene {
      * Handle the appearing animation of the tab adding options
      */
     private void transitionInHBox() {
+        addTabHBox.setStyle("-fx-background-color: #21bdd4");
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), addTabHBox);
         fadeTransition.setFromValue(0);
         fadeTransition.setToValue(1);
@@ -295,8 +293,16 @@ public class MainScene extends BaseScene {
         fadeTransition.setFromValue(1);
         fadeTransition.setToValue(0);
         fadeTransition.play();
-        fadeTransition.setOnFinished((e) -> addTabHBox.getChildren().clear());
+        fadeTransition.setOnFinished((e) -> clearAddTabHBox());
 
+    }
+
+    /**
+     * Handle the clearing of the tab adding options
+     */
+    private void clearAddTabHBox () {
+        addTabHBox.setStyle("-fx-background-color: #21bdd4");
+        addTabHBox.getChildren().clear();
     }
 
     /**
