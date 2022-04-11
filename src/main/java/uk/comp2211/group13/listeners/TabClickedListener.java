@@ -3,9 +3,9 @@ package uk.comp2211.group13.listeners;
 import uk.comp2211.group13.component.TabButton;
 import uk.comp2211.group13.panes.BasePane;
 
-public interface TabClosedListener {
+public interface TabClickedListener {
     /**
-     * Handle a closing tabs event
+     * Handle tabs clicking
      */
-    void tabClosed (TabButton tabButton, String type, BasePane basePane);
+    void tabClicked (TabButton tabButton, BasePane basePane);
 }

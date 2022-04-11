@@ -10,8 +10,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.comp2211.group13.listeners.TabClickedListener;
 import uk.comp2211.group13.listeners.TabClosedListener;
 import uk.comp2211.group13.panes.BasePane;
+import uk.comp2211.group13.scenes.MainScene;
 
 public class TabButton extends StackPane {
 
@@ -28,14 +30,15 @@ public class TabButton extends StackPane {
     public ImageView x;
 
     public TabClosedListener tabClosedListener;
+    public TabClickedListener tabClickedListener;
 
 
-    public TabButton (String name, int increment, StackPane stackPane, BasePane basePane, BasePane currentPane) {
+    public TabButton (String name, int increment, BasePane basePane, BasePane currentPane) {
         this.name = name;
         this.increment = increment;
-        this.stackPane = stackPane;
         this.basePane = basePane;
         this.currentPane = currentPane;
+
 
         format();
     }
@@ -48,6 +51,8 @@ public class TabButton extends StackPane {
 
         tabButton = new Button(name + " " + increment);
         tabButton.setStyle("-fx-background-color: #21bdd4;" + "-fx-border-color: grey;");
+
+        //currentButton.styleProperty().bindBidirectional(this.getTabButton().styleProperty());
 
         tabButton.setTextFill(Color.WHITE);
         tabButton.setPrefWidth(85);
@@ -75,10 +80,16 @@ public class TabButton extends StackPane {
      */
     private void changePane (MouseEvent mouseEvent) {
         logger.info("Tab Button has been clicked!");
-        stackPane.getChildren().clear();
+        //stackPane.getChildren().clear();
 
         currentPane = basePane;
-        stackPane.getChildren().add(basePane);
+        tabClickedListener.tabClicked(this, basePane);
+        //stackPane.getChildren().add(basePane);
+
+        //if (currentButton != null) {
+        //currentButton.setStyle("-fx-background-color: #21bdd4");
+        //}
+        //tabButton.setStyle("-fx-background-color: #14606d");
     }
 
     /**
@@ -89,14 +100,7 @@ public class TabButton extends StackPane {
     private void closePane (MouseEvent mouseEvent) {
         logger.info("Tab has been close!");
 
-        tabClosedListener.tabClosed(this, name);
-
-        if (currentPane == basePane) {
-            stackPane.getChildren().clear();
-            Text text = new Text("Select or add a tab!");
-            text.setStyle("-fx-font-size: 24;" + "-fx-font-weight: bold;");
-            stackPane.getChildren().add(text);
-        }
+        tabClosedListener.tabClosed(this, name, basePane);
     }
 
     /**
@@ -133,4 +137,13 @@ public class TabButton extends StackPane {
     public void setTabClosedListener (TabClosedListener listener) {
         this.tabClosedListener = listener;
     }
+
+    /**
+     * Set the listener to handle tabs clicking
+     * @param listener listener to add
+     */
+    public void setTabClickedListener (TabClickedListener listener) {
+        this.tabClickedListener = listener;
+    }
+
 }
