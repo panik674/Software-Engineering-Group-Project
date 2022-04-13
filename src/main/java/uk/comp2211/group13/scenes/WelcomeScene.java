@@ -1,9 +1,12 @@
 package uk.comp2211.group13.scenes;
 
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -13,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.threading.FileThreading;
@@ -81,8 +85,14 @@ public class WelcomeScene extends BaseScene {
     var mainPane = new BorderPane();
     welcomePane.getChildren().add(mainPane);
 
-    Text appTitle = new Text("Welcome to The Old Biddy App");
-    mainPane.setCenter(appTitle);
+    //Text appTitle = new Text("Welcome to");
+    ImageView logo = new ImageView(new Image(getClass().getResource("/appLogo.png").toExternalForm()));
+
+    animateImage(logo);
+
+    logo.setFitWidth(800);
+    logo.setPreserveRatio(true);
+    mainPane.setCenter(logo);
 
     vbox = new VBox();
     mainPane.setBottom(vbox);
@@ -182,6 +192,16 @@ public class WelcomeScene extends BaseScene {
   }
 
   private void clearError() {
-    vbox.getChildren().remove(error);
+    //vbox.getChildren().remove(error);
+    error.setText("");
+
+  }
+
+  private void animateImage (ImageView imageView) {
+    FadeTransition fadeTransition = new FadeTransition(Duration.millis(2500), imageView);
+    fadeTransition.setFromValue(0);
+    fadeTransition.setToValue(1);
+
+    fadeTransition.play();
   }
 }
