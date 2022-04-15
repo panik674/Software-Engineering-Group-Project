@@ -8,6 +8,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.control.CheckBox;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class FilterComponent extends StackPane {
@@ -30,7 +32,7 @@ public class FilterComponent extends StackPane {
     private CheckBox high = new CheckBox("High");
     private CheckBox news = new CheckBox("News");
     private CheckBox shopping = new CheckBox("Shopping");
-    private CheckBox sMedia = new CheckBox("Social Media");
+    private CheckBox socialMedia = new CheckBox("Social Media");
     private CheckBox blog = new CheckBox("Blog");
     private CheckBox hobby = new CheckBox("Hobby");
     private CheckBox travel = new CheckBox("Travel");
@@ -67,12 +69,13 @@ public class FilterComponent extends StackPane {
         day.setToggleGroup(granToggle);
         month.setToggleGroup(granToggle);
         year.setToggleGroup(granToggle);
+        day.fire();
         //Building accordions for the time granularity and filters
         accordBuild("Time Granularity",new VBox(hour,day,month,year));
         accordBuild("Gender",new VBox(male,female));
         accordBuild("Age", new VBox(ageRange1,ageRange2,ageRange3,ageRange4,ageRange5));
         accordBuild("Income", new VBox(low,medium,high));
-        accordBuild("Context", new VBox(news,shopping,sMedia,blog,hobby,travel));
+        accordBuild("Context", new VBox(news,shopping,socialMedia,blog,hobby,travel));
         //Setting vbox spacing
         vbox.setSpacing(20);
         //Adding title label to component
@@ -202,7 +205,9 @@ public class FilterComponent extends StackPane {
      * @return - The start datepicker's value
      */
     public Date getStartDate(){
-        return Date.from(Instant.from(startdp.getValue()));
+        return java.util.Date.from(startdp.getValue().atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
     /**
@@ -210,8 +215,10 @@ public class FilterComponent extends StackPane {
      *
      * @return - The end datepicker's value
      */
-    public Date endStartDate(){
-        return Date.from(Instant.from(enddp.getValue()));
+    public Date getEndDate(){
+        return java.util.Date.from(enddp.getValue().atTime(23, 59, 59)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
     /**
@@ -241,41 +248,86 @@ public class FilterComponent extends StackPane {
         return ((RadioButton) granToggle.getSelectedToggle()).getText();
     }
 
-    /**
-     * Getter method for the gender list
-     *
-     * @return - The gender list
-     */
-    public String[] getGendersList(){
-        return GenderList;
+
+    public boolean getMaleFilter(){
+        return male.isSelected();
     }
 
-    /**
-     * Getter method for the age list
-     *
-     * @return - The age list
-     */
-    public String[] getAgesList(){
-        return AgeList;
+    public boolean getFemaleFilter(){
+        return female.isSelected();
     }
 
-    /**
-     * Getter method for the income list
-     *
-     * @return - The income list
-     */
-    public String[] getIncomeList(){
-        return IncomeList;
+    public boolean getAgeRange1Filter(){
+        return ageRange1.isSelected();
     }
 
-    /**
-     * Getter method for the context list
-     *
-     * @return - The context list
-     */
-    public String[] getContextList(){
-        return ContextList;
+    public boolean getAgeRange2Filter(){
+        return ageRange2.isSelected();
+    }
+
+    public boolean getAgeRange3Filter(){
+        return ageRange3.isSelected();
+    }
+
+    public boolean getAgeRange4Filter(){
+        return ageRange4.isSelected();
+    }
+
+    public boolean getAgeRange5Filter(){
+        return ageRange5.isSelected();
+    }
+
+    public boolean getLowIncomeFilter(){
+        return low.isSelected();
+    }
+
+    public boolean getMediumIncomeFilter(){
+        return medium.isSelected();
+    }
+
+    public boolean getHighIncomeFilter(){
+        return high.isSelected();
+    }
+
+    public boolean getNewsFilter(){
+        return news.isSelected();
+    }
+
+    public boolean getShoppingFilter(){
+        return shopping.isSelected();
+    }
+
+    public boolean getsocialMediaFilter(){
+        return socialMedia.isSelected();
+    }
+
+    public boolean getBlogFilter(){
+        return blog.isSelected();
+    }
+
+    public boolean getHobbyFilter(){
+        return hobby.isSelected();
+    }
+
+    public boolean getTravelFilter(){
+        return travel.isSelected();
     }
 
 
+
+
+
+
+    public void setStartDate(LocalDate startDate){
+        startdp.setValue(startDate);
+    }
+
+    public void setEndDate(LocalDate endDate){
+        enddp.setValue(endDate);
+    }
+
+
+    public Button getUpdateButton(){
+        return updateButton;
+    }
 }

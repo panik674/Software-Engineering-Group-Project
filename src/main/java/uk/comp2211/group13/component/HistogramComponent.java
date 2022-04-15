@@ -14,6 +14,7 @@ public class HistogramComponent extends StackPane {
     private BarChart histogram;
     private HashMap<Date, Float> clickCosts;
 
+
     public HistogramComponent(HashMap<Date, Float> clickCosts){
         this.clickCosts = clickCosts;
         build();

@@ -85,8 +85,8 @@ public class OverviewPane extends BasePane {
 
         // Setting up stackPane that will have the filter component
         StackPane filterStackPane = new StackPane();
-        filterStackPane.setPrefWidth(500);
-        filterStackPane.setPrefHeight(650);
+        filterStackPane.setPrefWidth(appWindow.getWidth()/3);
+        filterStackPane.setPrefHeight(appWindow.getHeight());
 
         filterStackPane.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
                 + "-fx-border-radius: 5;");
@@ -151,12 +151,6 @@ public class OverviewPane extends BasePane {
 
         row4 = new HBox(cPM_Block, bR_Block);
         hBoxSetter(row4);
-
-        Button resetFilters = new Button("Reset Filters");
-        vBox.getChildren().add(resetFilters);
-        resetFilters.setOnMouseClicked(this::resetFilters);
-
-        setupFiltersBox();
     }
 
     /**
@@ -166,6 +160,8 @@ public class OverviewPane extends BasePane {
      */
     private void hBoxSetter(HBox row) {
         vBox.getChildren().add(row);
+        vBox.setPrefWidth(appWindow.getWidth()*2/3);
+        vBox.setPrefHeight(appWindow.getHeight());
         row.setAlignment(Pos.CENTER);
         row.setPadding(new Insets(10, 10, 10, 10));
         row.setSpacing(20);
@@ -413,23 +409,7 @@ public class OverviewPane extends BasePane {
         return menuButton;
     }
 
-    /**
-     * Method to merge the three filter hashmaps to apply them all
-     *
-     * @param genderFilters - The filter hashmap for the gender filters
-     * @param ageFilters - The filter hashmap for the age filters
-     * @param incomeFilters - The filter hashmap for the income filters
-     * @param contextFilters - The filter hashmap for the context filters
-     * @return - The merged filter hashmap
-     */
-    public HashMap<Filter, String[]> mergeFilter (HashMap<Filter, String[]> genderFilters, HashMap<Filter, String[]> ageFilters, HashMap<Filter, String[]> incomeFilters, HashMap<Filter, String[]> contextFilters){
-        HashMap<Filter, String[]> combinedFilters = new HashMap<>();
-        combinedFilters.putAll(genderFilters);
-        combinedFilters.putAll(ageFilters);
-        combinedFilters.putAll(incomeFilters);
-        combinedFilters.putAll(contextFilters);
-        return combinedFilters;
-    }
+
 
     /**
      *Method to Build and grow regions to provide spacing for the filter HBox

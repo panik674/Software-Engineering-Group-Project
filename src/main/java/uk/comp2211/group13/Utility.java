@@ -1,7 +1,9 @@
 package uk.comp2211.group13;
 
+import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
+import uk.comp2211.group13.enums.Metric;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -129,6 +131,25 @@ public class Utility {
       case "Month" -> Granularity.Month;
       case "Year" -> Granularity.Year;
       default -> Granularity.None;
+    };
+  }
+
+  public static Metric getMetric(String metric) {
+    return switch (metric){
+      case "Number of Clicks" -> Metric.Clicks;
+      case "Number of Impressions" -> Metric.Impressions;
+      case "Number of Uniques" -> Metric.Unique;
+      case "Number of Bounce Pages" -> Metric.BouncePage;
+      case "Number of Bounce Visits" -> Metric.BounceVisit;
+      case "Rate of Conversions" -> Metric.Conversions;
+      case "Total Costs" -> Metric.TotalCost;
+      case "CTR" -> Metric.CTR;
+      case "CPA" -> Metric.CPA;
+      case "CPC" -> Metric.CPC;
+      case "CPM" -> Metric.CPM;
+      case "Bounce Visit Rate" -> Metric.BounceRateVisit;
+      case "Bounce Page Rate" -> Metric.BounceRatePage;
+      default -> Metric.Clicks;
     };
   }
 
