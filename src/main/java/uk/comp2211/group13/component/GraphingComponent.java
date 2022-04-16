@@ -36,7 +36,7 @@ public class GraphingComponent extends StackPane {
 
         //A Chart series is created here which will hold the data values to be plotted
         XYChart.Series dataValues = new XYChart.Series();
-        dataValues.setName("Will be a filter in future");
+        dataValues.setName(metricLabel);
 
         //Here a list is created to store the Dates corresponding to the metric value which is then sorted into chronological order
         List<Date> dates = new ArrayList<Date>(metricToPlot.keySet());

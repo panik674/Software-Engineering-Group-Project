@@ -42,8 +42,8 @@ public class FilterComponent extends StackPane {
     private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
     private DatePicker startdp = new DatePicker();
     private DatePicker enddp = new DatePicker();
-    private Spinner<Integer> visitSpnr = new Spinner<Integer>(1,10,5);
-    private Spinner<Integer> pageSpnr = new Spinner<Integer>(1,10,5);
+    private Spinner<Integer> visitSpnr;
+    private Spinner<Integer> pageSpnr;
     private String[] GenderList = {};
     private String[] AgeList = {};
     private String[] IncomeList = {};
@@ -148,8 +148,8 @@ public class FilterComponent extends StackPane {
      *
      * @return - The spinner
      */
-    public Spinner<Integer> bounceSpinner(){
-        Spinner<Integer> spnr = new Spinner<Integer>(1,10,5);
+    public Spinner<Integer> bounceSpinner(int minimumValue, int maximumValue, int initialValue){
+        Spinner<Integer> spnr = new Spinner<Integer>(minimumValue,maximumValue,initialValue);
         return spnr;
     }
 
@@ -165,8 +165,10 @@ public class FilterComponent extends StackPane {
      * Adds the visit bounce time and the page bounce limit to the vbox
      */
     public void bounceFilters(){
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Some Tip"), regionBuild(), bounceSpinner()));
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Some Tip"), regionBuild(), bounceSpinner()));
+        visitSpnr = bounceSpinner(0,10000,15);
+        pageSpnr = bounceSpinner(0,1000,1);
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Some Tip"), regionBuild(), visitSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Some Tip"), regionBuild(), pageSpnr));
     }
 
     /**
@@ -313,11 +315,6 @@ public class FilterComponent extends StackPane {
         return travel.isSelected();
     }
 
-
-
-
-
-
     public void setStartDate(LocalDate startDate){
         startdp.setValue(startDate);
     }
@@ -325,7 +322,6 @@ public class FilterComponent extends StackPane {
     public void setEndDate(LocalDate endDate){
         enddp.setValue(endDate);
     }
-
 
     public Button getUpdateButton(){
         return updateButton;

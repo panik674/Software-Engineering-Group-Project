@@ -196,7 +196,7 @@ public class Metrics {
    * @param seconds time minimum
    */
   public void setBounceSeconds(int seconds) {
-    this.bouncePages = seconds;
+    this.bounceSeconds = seconds;
   }
 
   /**

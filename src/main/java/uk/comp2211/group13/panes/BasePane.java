@@ -1,24 +1,51 @@
 package uk.comp2211.group13.panes;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.component.FilterComponent;
+import uk.comp2211.group13.component.GraphingComponent;
+import uk.comp2211.group13.component.HistogramComponent;
 import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppWindow;
 
+import java.time.ZoneId;
 import java.util.*;
 
 public abstract class BasePane extends BorderPane {
 
     public AppWindow appWindow;
+    protected FilterComponent filters;
+    protected HashMap<Date, Float> metric;
+    protected HashMap<Filter, String[]> genderFilters = new HashMap<>();
+    protected HashMap<Filter, String[]> ageFilters = new HashMap<>();
+    protected HashMap<Filter, String[]> incomeFilters = new HashMap<>();
+    protected HashMap<Filter, String[]> contextFilters = new HashMap<>();
+    private String[] GenderList = {};
+    private String[] AgeList = {};
+    private String[] IncomeList = {};
+    private String[] ContextList = {};
+    protected HBox filterHbox = new HBox();
+    private String[] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Rate of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
+    private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
+    protected Metric currentMetric = Metric.Clicks;
+    protected Granularity granularity = Granularity.Day;
+    protected Date startDate;
+    protected Date endDate;
+
 
     public BasePane (AppWindow appWindow) {
         this.appWindow = appWindow;
+        startDate = appWindow.getData().getMinDate();
+        endDate = appWindow.getData().getMaxDate();
     }
 
     /**
@@ -31,6 +58,53 @@ public abstract class BasePane extends BorderPane {
     public HashMap<Date, Float> RequestData(Metric currentMetric, Date startDate, Date endDate, HashMap<Filter, String[]> filterMap, Granularity granularity){
         return appWindow.getMetrics().request(currentMetric, startDate, endDate, filterMap, granularity);
     }
+
+
+    public void build2() {
+        filters.setStartDate(startDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+        filters.setEndDate(endDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+        buildGraph();
+        updateButtonAction(filters);
+        filters.setPrefWidth(appWindow.getWidth()/3);
+        filters.setPrefHeight(appWindow.getHeight());
+        filters.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
+                + "-fx-border-radius: 5;");
+        filterHbox.getChildren().add(filters);
+        setCenter(filterHbox);
+    }
+
+    public void updateButtonAction(FilterComponent filterComponent) {
+        filterComponent.getUpdateButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if (filterComponent.getStartDate().before(filterComponent.getEndDate())) {
+                    startDate = filterComponent.getStartDate();
+                    endDate = filterComponent.getEndDate();
+                    granularity = Utility.getGranularity(filterComponent.getGranularity());
+                    GenderList = addGenderFilters(filterComponent, GenderList);
+                    AgeList = addAgeFilters(filterComponent, AgeList);
+                    IncomeList = addIncomeFilters(filterComponent, IncomeList);
+                    ContextList = addContextFilters(filterComponent, ContextList);
+                    genderFilters = addFilters(genderFilters, Filter.Gender, GenderList);
+                    ageFilters = addFilters(ageFilters, Filter.Age, AgeList);
+                    incomeFilters = addFilters(incomeFilters, Filter.Income, IncomeList);
+                    contextFilters = addFilters(contextFilters, Filter.Context, ContextList);
+                    buildGraph();
+                    filterHbox.getChildren().get(0).toFront();
+                }
+
+            }
+        });
+    }
+
+    public void buildGraph(){
+    }
+
+
 
     /**
      * Method to merge the three filter hashmaps to apply them all
@@ -77,7 +151,7 @@ public abstract class BasePane extends BorderPane {
         if (filterComponent.getAgeRange4Filter()){
             list.add("45-54");
         }
-        if (filterComponent.getAgeRange4Filter()){
+        if (filterComponent.getAgeRange5Filter()){
             list.add(">54");
         }
         return list.toArray(new String[0]);
@@ -133,6 +207,27 @@ public abstract class BasePane extends BorderPane {
             filterHashMap.remove(filter);
         }
         return filterHashMap;
+    }
+
+    public Metric getCurrentMetric(){
+        return currentMetric;
+    }
+
+    public HBox getFilterHbox(){
+        return filterHbox;
+    }
+
+    public HashMap<Date,Float> getMetric(){
+        return metric;
+    }
+
+
+    public FilterComponent getFilters(){
+        return filters;
+    }
+
+    public void setMetric(HashMap<Date,Float> metric){
+        metric = RequestData(currentMetric,startDate,endDate,mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters),granularity);
     }
 
 
