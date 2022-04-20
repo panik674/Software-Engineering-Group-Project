@@ -5,7 +5,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import uk.comp2211.group13.Utility;
 
 import java.util.*;
 
@@ -14,12 +14,19 @@ public class HistogramComponent extends StackPane {
     private BarChart histogram;
     private HashMap<Date, Float> clickCosts;
 
-
+    /**
+     * Builds the histogram component
+     *
+     * @param clickCosts - ClickCosts metric data to plot
+     */
     public HistogramComponent(HashMap<Date, Float> clickCosts){
         this.clickCosts = clickCosts;
         build();
     }
 
+    /**
+     * Sets up and creates the histogram component
+     */
     public void build(){
         //Setting up the x and y axes and labelling them accordingly
         CategoryAxis xAxis = new CategoryAxis();
@@ -44,7 +51,7 @@ public class HistogramComponent extends StackPane {
 
         //Iterating through the list of dates and adding the date along with its corresponding Click Cost value to the chart series and then adding the series to the histogram
         for (Date i : dates) {
-            dataValues.getData().add(new XYChart.Data(i.toString(), clickCosts.get(i)));
+            dataValues.getData().add(new XYChart.Data(Utility.date2String(i), clickCosts.get(i)));
         }
 
         //Adding the series to the chart, setting its name and adding it the parsed VBox

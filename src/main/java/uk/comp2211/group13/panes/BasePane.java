@@ -3,15 +3,11 @@ package uk.comp2211.group13.panes;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.component.FilterComponent;
-import uk.comp2211.group13.component.GraphingComponent;
-import uk.comp2211.group13.component.HistogramComponent;
-import uk.comp2211.group13.data.Metrics;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
@@ -29,10 +25,10 @@ public abstract class BasePane extends BorderPane {
     protected HashMap<Filter, String[]> ageFilters = new HashMap<>();
     protected HashMap<Filter, String[]> incomeFilters = new HashMap<>();
     protected HashMap<Filter, String[]> contextFilters = new HashMap<>();
-    private String[] GenderList = {};
-    private String[] AgeList = {};
-    private String[] IncomeList = {};
-    private String[] ContextList = {};
+    protected String[] GenderList = {};
+    protected String[] AgeList = {};
+    protected String[] IncomeList = {};
+    protected String[] ContextList = {};
     protected HBox filterHbox = new HBox();
     private String[] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Rate of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
     private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
@@ -42,6 +38,11 @@ public abstract class BasePane extends BorderPane {
     protected Date endDate;
 
 
+    /**
+     * Creates Base Scene
+     *
+     * @param appWindow - The app window that displays the scene
+     */
     public BasePane (AppWindow appWindow) {
         this.appWindow = appWindow;
         startDate = appWindow.getData().getMinDate();
@@ -53,14 +54,24 @@ public abstract class BasePane extends BorderPane {
      */
     public abstract void build();
 
-
-
+    /**
+     * Requests metric data
+     *
+     * @param currentMetric - The metric to be requested
+     * @param startDate - The start date of the data
+     * @param endDate - The end date of the data
+     * @param filterMap - The filters hashmap
+     * @param granularity - The granularity of the data
+     * @return - The data hashmap
+     */
     public HashMap<Date, Float> RequestData(Metric currentMetric, Date startDate, Date endDate, HashMap<Filter, String[]> filterMap, Granularity granularity){
         return appWindow.getMetrics().request(currentMetric, startDate, endDate, filterMap, granularity);
     }
 
-
-    public void build2() {
+    /**
+     * Sets up and builds the required components
+     */
+    public void buildComponents() {
         filters.setStartDate(startDate.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
@@ -69,6 +80,7 @@ public abstract class BasePane extends BorderPane {
                 .toLocalDate());
         buildGraph();
         updateButtonAction(filters);
+        resetButtonAction(filters);
         filters.setPrefWidth(appWindow.getWidth()/3);
         filters.setPrefHeight(appWindow.getHeight());
         filters.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
@@ -77,6 +89,11 @@ public abstract class BasePane extends BorderPane {
         setCenter(filterHbox);
     }
 
+    /**
+     * Binds actions to the update button
+     *
+     * @param filterComponent - The corresponding filter component
+     */
     public void updateButtonAction(FilterComponent filterComponent) {
         filterComponent.getUpdateButton().setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -95,16 +112,57 @@ public abstract class BasePane extends BorderPane {
                     contextFilters = addFilters(contextFilters, Filter.Context, ContextList);
                     buildGraph();
                     filterHbox.getChildren().get(0).toFront();
+
                 }
 
             }
         });
     }
 
+    /**
+     * Binds actions to the reset button
+     *
+     * @param filterComponent - The corresponding filter component
+     */
+    public void resetButtonAction(FilterComponent filterComponent){
+        filterComponent.getResetButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if (filterComponent.getStartDate().before(filterComponent.getEndDate()))
+                {
+                    filters.resetCheckBoxes();
+                    granularity = Granularity.Day;
+                    filters.fireDay();
+                    GenderList = listClear(GenderList);
+                    AgeList = listClear(AgeList);
+                    IncomeList = listClear(IncomeList);
+                    ContextList = listClear(ContextList);
+                    genderFilters.clear();
+                    ageFilters.clear();
+                    incomeFilters.clear();
+                    contextFilters.clear();
+                    resetBounces();
+                    buildGraph();
+                    filterHbox.getChildren().get(0).toFront();
+                }
+
+            }
+        });
+    }
+
+    /**
+     * Builds the graph or histogram. Defined in those classes and used polymorphically here
+     */
     public void buildGraph(){
     }
 
-
+    /**
+     * Resets the visit and page spinners
+     */
+    public void resetBounces(){
+        filters.resetVisitSpnr();
+        filters.resetPageSpnr();
+    }
 
     /**
      * Method to merge the three filter hashmaps to apply them all
@@ -124,6 +182,13 @@ public abstract class BasePane extends BorderPane {
         return combinedFilters;
     }
 
+    /**
+     * Adds filters to the gender String list if its corresponding checkbox is selected
+     *
+     * @param filterComponent - The corresponding filter component
+     * @param filters - The string list of filters
+     * @return - The updated string list
+     */
     public String[] addGenderFilters (FilterComponent filterComponent,String[] filters){
         List<String> list = new ArrayList<String>(Arrays.asList(filters));
         list.clear();
@@ -136,6 +201,13 @@ public abstract class BasePane extends BorderPane {
         return list.toArray(new String[0]);
     }
 
+    /**
+     * Adds filters to the age String list if its corresponding checkbox is selected
+     *
+     * @param filterComponent - The corresponding filter component
+     * @param filters - The string list of filters
+     * @return - The updated string list
+     */
     public String[] addAgeFilters (FilterComponent filterComponent,String[] filters){
         List<String> list = new ArrayList<String>(Arrays.asList(filters));
         list.clear();
@@ -157,6 +229,13 @@ public abstract class BasePane extends BorderPane {
         return list.toArray(new String[0]);
     }
 
+    /**
+     * Adds filters to the income String list if its corresponding checkbox is selected
+     *
+     * @param filterComponent - The corresponding filter component
+     * @param filters - The string list of filters
+     * @return - The updated string list
+     */
     public String[] addIncomeFilters (FilterComponent filterComponent,String[] filters){
         List<String> list = new ArrayList<String>(Arrays.asList(filters));
         list.clear();
@@ -172,6 +251,13 @@ public abstract class BasePane extends BorderPane {
         return list.toArray(new String[0]);
     }
 
+    /**
+     * Adds filters to the context String list if its corresponding checkbox is selected
+     *
+     * @param filterComponent - The corresponding filter component
+     * @param filters - The string list of filters
+     * @return - The updated string list
+     */
     public String[] addContextFilters (FilterComponent filterComponent,String[] filters){
         List<String> list = new ArrayList<String>(Arrays.asList(filters));
         list.clear();
@@ -199,6 +285,14 @@ public abstract class BasePane extends BorderPane {
         return list.toArray(new String[0]);
     }
 
+    /**
+     * Adds filters to the filter hashmap if its string list isn't empty. if it is, the filter is removed
+     *
+     * @param filterHashMap - The filter hashmap
+     * @param filter - The filter type to be added or removed
+     * @param filters - The filter type's string list of filters
+     * @return The updated filter hashmap
+     */
     public HashMap<Filter,String[]> addFilters(HashMap<Filter,String[]> filterHashMap, Filter filter, String[] filters){
         if (filters.length != 0){
             filterHashMap.put(filter,filters);
@@ -209,26 +303,52 @@ public abstract class BasePane extends BorderPane {
         return filterHashMap;
     }
 
+    /**
+     * Getter method for the current metric
+     *
+     * @return - The current metric
+     */
     public Metric getCurrentMetric(){
         return currentMetric;
     }
 
-    public HBox getFilterHbox(){
-        return filterHbox;
-    }
-
+    /**
+     * Getter method for the metric data
+     *
+     * @return - The metric data hashmap
+     */
     public HashMap<Date,Float> getMetric(){
         return metric;
     }
 
-
+    /**
+     * Getter method for the filter component
+     *
+     * @return
+     */
     public FilterComponent getFilters(){
         return filters;
     }
 
+    /**
+     * Setter method for the Metric data
+     *
+     * @param metric - The metric data hashmap
+     */
     public void setMetric(HashMap<Date,Float> metric){
         metric = RequestData(currentMetric,startDate,endDate,mergeFilter(genderFilters,ageFilters,incomeFilters,contextFilters),granularity);
     }
 
+    /**
+     * Clears the filter string lists
+     *
+     * @param stringList - The filter string list to be cleared
+     * @return The cleared string list
+     */
+    public String[] listClear(String[] stringList){
+        List<String> list = new ArrayList<String>(Arrays.asList(GenderList));
+        list.clear();
+        return list.toArray(new String[0]);
+    }
 
 }

@@ -5,9 +5,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.ui.AppWindow;
-
 import java.util.*;
 
 public class GraphingComponent extends StackPane {
@@ -16,6 +15,12 @@ public class GraphingComponent extends StackPane {
     private LineChart lineChart;
     private AppWindow appWindow;
 
+    /**
+     * Builds the graphing component
+     *
+     * @param metricLabel - Label for the component
+     * @param metricToPlot - Metric data to plot
+     */
     public GraphingComponent(String metricLabel, HashMap<Date, Float> metricToPlot){
         this.metricLabel = metricLabel;
         this.metricToPlot = metricToPlot;
@@ -23,6 +28,9 @@ public class GraphingComponent extends StackPane {
         build();
     }
 
+    /**
+     * Sets up and creates the graphing component
+     */
     public void build(){
         //Setting up the x and y axes and labelling them accordingly
         CategoryAxis xAxis = new CategoryAxis();
@@ -44,9 +52,10 @@ public class GraphingComponent extends StackPane {
 
         //Iterating through the list of dates and adding the date along with its corresponding metric value to the chart series and then adding the series to the graph
         for (Date i : dates) {
-            dataValues.getData().add(new XYChart.Data(i.toString(), metricToPlot.get(i)));
+            dataValues.getData().add(new XYChart.Data(Utility.date2String(i), metricToPlot.get(i)));
         }
         lineChart.getData().add(dataValues);
+
 
         getChildren().add(lineChart);
     }
