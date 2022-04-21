@@ -72,7 +72,9 @@ public class FilterComponent extends StackPane {
         year.setToggleGroup(granToggle);
         day.fire();
         //Building accordions for the time granularity and filters
-        accordBuild("Time Granularity",new VBox(hour,day,month,year));
+        if (filtCompType != "Overview") {
+            accordBuild("Time Granularity", new VBox(hour, day, month, year));
+        }
         accordBuild("Gender",new VBox(male,female));
         accordBuild("Age", new VBox(ageRange1,ageRange2,ageRange3,ageRange4,ageRange5));
         accordBuild("Income", new VBox(low,medium,high));
