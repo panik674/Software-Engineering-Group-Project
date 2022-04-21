@@ -36,8 +36,8 @@ public class toms_tester {
 
     long t1 = System.nanoTime();
     //data.ingest(pathsTest);
-    data.ingest("C:\\Users\\thoma\\Downloads\\2_month_campaign");
-    //data.ingest("src/test/java/uk/comp2211/group13/testdata");
+    //data.ingest("C:\\Users\\thoma\\Downloads\\2_month_campaign");
+    data.ingest("src/test/java/uk/comp2211/group13/testdata");
 
     long t2 = System.nanoTime();
 
@@ -47,30 +47,25 @@ public class toms_tester {
     //    filter
     //);
 
-    //HashMap<Date, Float> test = metrics.request(
-    //    Metric.Impressions,
-    //    data.getMinDate(),
-    //    data.getMaxDate(),
-    //    filter,
-    //    Granularity.Second
-    //);
-
-    HashMap<Metric, Float> test = metrics.requestOverview(
+    HashMap<Date, Float> test = metrics.request(
+        Metric.CTR,
         data.getMinDate(),
         data.getMaxDate(),
-        filter
+        filter,
+        Granularity.Hour
     );
+
+    //HashMap<Metric, Float> test = metrics.requestOverview(
+    //    data.getMinDate(),
+    //    data.getMaxDate(),
+    //    filter
+    //);
+
+    System.out.println(test);
 
     long t3 = System.nanoTime();
     long d1 = (t2 - t1);
     long d2 = (t3 - t2);
-
-    Logs masterLog = data.request();
-
-    System.out.println(masterLog.impressionLogs.size());
-    System.out.println(masterLog.clickLogs.size());
-
-    System.out.println(test);
 
     System.out.println("Time 1: " + d1/1000000000.00);
     System.out.println("Time 2: " + d2/1000000000.00);

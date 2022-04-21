@@ -277,7 +277,9 @@ public class Metrics {
     float conversions = logs.getConversions();
     int clicks = logs.getClicks();
 
-    return conversions / clicks;
+    Float result = conversions / clicks;
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
   /**
@@ -299,7 +301,9 @@ public class Metrics {
     float clicks = logs.getClicks();
     int impressions = logs.getImpressions();
 
-    return impressions / clicks;
+    Float result = impressions / clicks;
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
   /**
@@ -312,7 +316,9 @@ public class Metrics {
 
     int acquisitions = logs.getConversions();
 
-    return totalCost(logs) / acquisitions;
+    Float result = totalCost(logs) / acquisitions;
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
   /**
@@ -326,7 +332,9 @@ public class Metrics {
     float cost = logs.getClickCost();
     int clicks = logs.getClicks();
 
-    return (cost / clicks);
+    Float result = (cost / clicks);
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
   /**
@@ -340,7 +348,9 @@ public class Metrics {
     float cost = logs.getImpressionCost();
     int impressions = logs.getImpressions();
 
-    return cost / impressions * 1000;
+    Float result = cost / impressions * 1000;
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
   /**
@@ -353,7 +363,9 @@ public class Metrics {
     float clicks = logs.getClicks();
     int bounce = logs.getBouncePage(bouncePages);
 
-    return bounce / clicks;
+    Float result = bounce / clicks;
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
   /**
@@ -365,7 +377,9 @@ public class Metrics {
     float clicks = logs.getClicks();
     int bounce = logs.getBounceVisit(bounceSeconds);
 
-    return bounce / clicks;
+    Float result = bounce / clicks;
+
+    return result.isNaN() ? 0 : (result.isInfinite() ? 0 : result);
   }
 
 }
