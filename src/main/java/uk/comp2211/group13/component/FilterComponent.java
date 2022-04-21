@@ -7,7 +7,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.control.CheckBox;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class FilterComponent extends StackPane {
@@ -30,18 +31,19 @@ public class FilterComponent extends StackPane {
     private CheckBox high = new CheckBox("High");
     private CheckBox news = new CheckBox("News");
     private CheckBox shopping = new CheckBox("Shopping");
-    private CheckBox sMedia = new CheckBox("Social Media");
+    private CheckBox socialMedia = new CheckBox("Social Media");
     private CheckBox blog = new CheckBox("Blog");
     private CheckBox hobby = new CheckBox("Hobby");
     private CheckBox travel = new CheckBox("Travel");
     private String filtCompType;
     private Button updateButton;
+    private Button resetButton;
     private String[] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Rate of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
     private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
     private DatePicker startdp = new DatePicker();
     private DatePicker enddp = new DatePicker();
-    private Spinner<Integer> visitSpnr = new Spinner<Integer>(1,10,5);
-    private Spinner<Integer> pageSpnr = new Spinner<Integer>(1,10,5);
+    private Spinner<Integer> visitSpnr;
+    private Spinner<Integer> pageSpnr;
     private String[] GenderList = {};
     private String[] AgeList = {};
     private String[] IncomeList = {};
@@ -55,6 +57,7 @@ public class FilterComponent extends StackPane {
     public FilterComponent(String filtCompType){
         this.filtCompType=filtCompType;
         updateButton = new Button("Update " + filtCompType);
+        resetButton = new Button("Reset Filters");
         build();
     }
 
@@ -67,12 +70,15 @@ public class FilterComponent extends StackPane {
         day.setToggleGroup(granToggle);
         month.setToggleGroup(granToggle);
         year.setToggleGroup(granToggle);
+        day.fire();
         //Building accordions for the time granularity and filters
-        accordBuild("Time Granularity",new VBox(hour,day,month,year));
+        if (filtCompType != "Overview") {
+            accordBuild("Time Granularity", new VBox(hour, day, month, year));
+        }
         accordBuild("Gender",new VBox(male,female));
         accordBuild("Age", new VBox(ageRange1,ageRange2,ageRange3,ageRange4,ageRange5));
         accordBuild("Income", new VBox(low,medium,high));
-        accordBuild("Context", new VBox(news,shopping,sMedia,blog,hobby,travel));
+        accordBuild("Context", new VBox(news,shopping,socialMedia,blog,hobby,travel));
         //Setting vbox spacing
         vbox.setSpacing(20);
         //Adding title label to component
@@ -82,6 +88,7 @@ public class FilterComponent extends StackPane {
         //Adding the accordion and the update button to the vbox
         vbox.getChildren().add(filterAccord);
         vbox.getChildren().add(new HBox(regionBuild(), updateButton, regionBuild()));
+        vbox.getChildren().add(new HBox(regionBuild(), resetButton, regionBuild()));
         //Adding the vbox to the stackpane
         getChildren().add(vbox);
 
@@ -136,6 +143,7 @@ public class FilterComponent extends StackPane {
             case "Overview" :
                 //Calling the bounceFilters methods to build the bounce spinners
                 bounceFilters();
+                break;
         }
     }
 
@@ -145,8 +153,8 @@ public class FilterComponent extends StackPane {
      *
      * @return - The spinner
      */
-    public Spinner<Integer> bounceSpinner(){
-        Spinner<Integer> spnr = new Spinner<Integer>(1,10,5);
+    public Spinner<Integer> bounceSpinner(int minimumValue, int maximumValue, int initialValue){
+        Spinner<Integer> spnr = new Spinner<Integer>(minimumValue,maximumValue,initialValue);
         return spnr;
     }
 
@@ -162,8 +170,10 @@ public class FilterComponent extends StackPane {
      * Adds the visit bounce time and the page bounce limit to the vbox
      */
     public void bounceFilters(){
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Some Tip"), regionBuild(), bounceSpinner()));
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Some Tip"), regionBuild(), bounceSpinner()));
+        visitSpnr = bounceSpinner(0,10000,15);
+        pageSpnr = bounceSpinner(0,1000,1);
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Some Tip"), regionBuild(), visitSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Some Tip"), regionBuild(), pageSpnr));
     }
 
     /**
@@ -202,7 +212,9 @@ public class FilterComponent extends StackPane {
      * @return - The start datepicker's value
      */
     public Date getStartDate(){
-        return Date.from(Instant.from(startdp.getValue()));
+        return java.util.Date.from(startdp.getValue().atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
     /**
@@ -210,8 +222,32 @@ public class FilterComponent extends StackPane {
      *
      * @return - The end datepicker's value
      */
-    public Date endStartDate(){
-        return Date.from(Instant.from(enddp.getValue()));
+    public Date getEndDate(){
+        return java.util.Date.from(enddp.getValue().atTime(23, 59, 59)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+
+    /**
+     * Unchecks all checkboxes
+     */
+    public void resetCheckBoxes(){
+        male.setSelected(false);
+        female.setSelected(false);
+        ageRange1.setSelected(false);
+        ageRange2.setSelected(false);
+        ageRange3.setSelected(false);
+        ageRange4.setSelected(false);
+        ageRange5.setSelected(false);
+        low.setSelected(false);
+        medium.setSelected(false);
+        high.setSelected(false);
+        news.setSelected(false);
+        shopping.setSelected(false);
+        socialMedia.setSelected(false);
+        blog.setSelected(false);
+        hobby.setSelected(false);
+        travel.setSelected(false);
     }
 
     /**
@@ -242,40 +278,204 @@ public class FilterComponent extends StackPane {
     }
 
     /**
-     * Getter method for the gender list
+     * Getter method for the male filter
      *
-     * @return - The gender list
+     * @return - True or false depending on if the filter is selected
      */
-    public String[] getGendersList(){
-        return GenderList;
+    public boolean getMaleFilter(){
+        return male.isSelected();
     }
 
     /**
-     * Getter method for the age list
+     * Getter method for the male filter
      *
-     * @return - The age list
+     * @return - True or false depending on if the filter is selected
      */
-    public String[] getAgesList(){
-        return AgeList;
+    public boolean getFemaleFilter(){
+        return female.isSelected();
     }
 
     /**
-     * Getter method for the income list
+     * Getter method for the first age range filter
      *
-     * @return - The income list
+     * @return - True or false depending on if the filter is selected
      */
-    public String[] getIncomeList(){
-        return IncomeList;
+    public boolean getAgeRange1Filter(){
+        return ageRange1.isSelected();
     }
 
     /**
-     * Getter method for the context list
+     * Getter method for the second age range filter
      *
-     * @return - The context list
+     * @return - True or false depending on if the filter is selected
      */
-    public String[] getContextList(){
-        return ContextList;
+    public boolean getAgeRange2Filter(){
+        return ageRange2.isSelected();
     }
 
+    /**
+     * Getter method for the third age range filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getAgeRange3Filter(){
+        return ageRange3.isSelected();
+    }
+
+    /**
+     * Getter method for the fourth age range filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getAgeRange4Filter(){
+        return ageRange4.isSelected();
+    }
+
+    /**
+     * Getter method for the fifth age range filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getAgeRange5Filter(){
+        return ageRange5.isSelected();
+    }
+
+    /**
+     * Getter method for the low income filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getLowIncomeFilter(){
+        return low.isSelected();
+    }
+
+    /**
+     * Getter method for the medium income filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getMediumIncomeFilter(){
+        return medium.isSelected();
+    }
+
+    /**
+     * Getter method for the high income filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getHighIncomeFilter(){
+        return high.isSelected();
+    }
+
+    /**
+     * Getter method for the news filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getNewsFilter(){
+        return news.isSelected();
+    }
+
+    /**
+     * Getter method for the shopping filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getShoppingFilter(){
+        return shopping.isSelected();
+    }
+
+    /**
+     * Getter method for the social media filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getsocialMediaFilter(){
+        return socialMedia.isSelected();
+    }
+
+    /**
+     * Getter method for the blog filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getBlogFilter(){
+        return blog.isSelected();
+    }
+
+    /**
+     * Getter method for the hobby filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getHobbyFilter(){
+        return hobby.isSelected();
+    }
+
+    /**
+     * Getter method for the travel filter
+     *
+     * @return - True or false depending on if the filter is selected
+     */
+    public boolean getTravelFilter(){
+        return travel.isSelected();
+    }
+
+    /**
+     * Setter method for the start date
+     *
+     * @param startDate - The date to set the start date to
+     */
+    public void setStartDate(LocalDate startDate){
+        startdp.setValue(startDate);
+    }
+
+    /**
+     * Setter method for the end date
+     *
+     * @param endDate - The date to set the end date to
+     */
+    public void setEndDate(LocalDate endDate){
+        enddp.setValue(endDate);
+    }
+
+    /**
+     * Getter method for the update button
+     *
+     * @return - The update button
+     */
+    public Button getUpdateButton(){
+        return updateButton;
+    }
+
+    /**
+     * Getter method for the reset button
+     *
+     * @return - The reset button
+     */
+    public Button getResetButton(){
+        return resetButton;
+    }
+
+    /**
+     * Fires the day radio button
+     */
+    public void fireDay(){
+        day.fire();
+    }
+
+    /**
+     * Resets the visit spinner
+     */
+    public void resetVisitSpnr(){
+        visitSpnr.getValueFactory().setValue(15);
+    }
+
+    /**
+     * Resets the page spinner
+     */
+    public void resetPageSpnr(){
+        pageSpnr.getValueFactory().setValue(1);
+    }
 
 }

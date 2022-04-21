@@ -1,5 +1,7 @@
 package uk.comp2211.group13.panes;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -52,26 +54,19 @@ public class OverviewPane extends BasePane {
     private HBox row3;
     private HBox row4;
 
-    private HBox filterHbox;
+
 
     private Float value;
 
     private Boolean booleanForNum;
     private Boolean booleanForRate;
 
-    private HashMap<Filter, String[]> genderFilters = new HashMap<>();
-    private HashMap<Filter, String[]> ageFilters = new HashMap<>();
-    private HashMap<Filter, String[]> incomeFilters = new HashMap<>();
-    private HashMap<Filter, String[]> contextFilters = new HashMap<>();
 
-    private String[] GenderList = {};
-    private String[] AgeList = {};
-    private String[] IncomeList = {};
-    private String[] ContextList = {};
     private Utility util = new Utility();
 
     public OverviewPane (AppWindow appWindow) {
         super(appWindow);
+        filters = new FilterComponent("Overview");
         build();
     }
 
@@ -80,27 +75,25 @@ public class OverviewPane extends BasePane {
      */
     @Override
     public void build() {
-        HBox hBox = new HBox();
-        setCenter(hBox);
 
         // Setting up stackPane that will have the filter component
-        StackPane filterStackPane = new StackPane();
-        filterStackPane.setPrefWidth(500);
-        filterStackPane.setPrefHeight(650);
 
-        filterStackPane.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
-                + "-fx-border-radius: 5;");
-
-        FilterComponent filterComponent = new FilterComponent("Overview");
-        filterStackPane.getChildren().add(filterComponent);
 
         // Vbox that will contain the values
         vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
 
-        hBox.getChildren().add(vBox);
-        hBox.getChildren().add(filterStackPane);
+        filterHbox.getChildren().add(vBox);
+        updateButtonAction(filters);
+        resetButtonAction(filters);
+        filters.setPrefWidth(appWindow.getWidth()/3);
+        filters.setPrefHeight(appWindow.getHeight());
+        filters.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
+                + "-fx-border-radius: 5;");
+        filterHbox.getChildren().add(filters);
+        setCenter(filterHbox);
+
 
         buildBlocks();
     }
@@ -151,12 +144,6 @@ public class OverviewPane extends BasePane {
 
         row4 = new HBox(cPM_Block, bR_Block);
         hBoxSetter(row4);
-
-        Button resetFilters = new Button("Reset Filters");
-        vBox.getChildren().add(resetFilters);
-        resetFilters.setOnMouseClicked(this::resetFilters);
-
-        setupFiltersBox();
     }
 
     /**
@@ -166,6 +153,8 @@ public class OverviewPane extends BasePane {
      */
     private void hBoxSetter(HBox row) {
         vBox.getChildren().add(row);
+        vBox.setPrefWidth(appWindow.getWidth()*2/3);
+        vBox.setPrefHeight(appWindow.getHeight());
         row.setAlignment(Pos.CENTER);
         row.setPadding(new Insets(10, 10, 10, 10));
         row.setSpacing(20);
@@ -192,8 +181,6 @@ public class OverviewPane extends BasePane {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        System.out.println(value);
 
         switch (metric) {
             case Impressions, Clicks, Unique, BouncePage, BounceVisit -> {
@@ -272,163 +259,14 @@ public class OverviewPane extends BasePane {
         }
     }
 
-    private void resetFilters(MouseEvent mouseEvent) {
-        genderFilters = new HashMap<>();
-        ageFilters = new HashMap<>();
-        incomeFilters = new HashMap<>();
-        contextFilters = new HashMap<>();
-
-        vBox.getChildren().remove(filterHbox);
-        setupFiltersBox();
-
+    /**
+     * Calls the reRequestFilteredValues method. This must take place in this method as it is used polymorphically in the parent class
+     */
+    @Override
+    public void buildGraph() {
+        appWindow.getMetrics().setBouncePages(filters.getBouncePage());
+        appWindow.getMetrics().setBounceSeconds(filters.getBounceVisit());
         reRequestFilteredValues();
-    }
-
-    private void setupFiltersBox() {
-        filterHbox = new HBox();
-
-        filterHbox.getChildren().add(filterMenu(new String[]{"Male", "Female"},"Gender"));
-        filterHbox.getChildren().add(regionBuild());
-        filterHbox.getChildren().add(filterMenu(new String[]{"<25", "25-34", "35-44", "45-54", ">54"},"Age"));
-        filterHbox.getChildren().add(regionBuild());
-        filterHbox.getChildren().add(filterMenu(new String[]{"Low", "Medium", "High"},"Income"));
-        filterHbox.getChildren().add(regionBuild());
-        filterHbox.getChildren().add(filterMenu(new String[]{"News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel"},"Context"));
-
-        vBox.getChildren().add(filterHbox);
-    }
-
-    /**
-     * Method to remove filters from the 'filters' HashMap
-     *
-     * @param filtType - The type of the filter being removed
-     * @param filt - The filter which is being removed
-     */
-    public void removeFilters(Filter filtType, String filt) {
-        //Checking the filter type, removing the filter from the appropriate filter String[] list and adding it to the filters HashMap
-        //Also removing the HashMap entries with empty lists, so all metric values are displayed without any filters applied
-        if (filtType == Filter.Gender) {
-            List<String> list = new ArrayList<String>(Arrays.asList(GenderList));
-            list.remove(filt);
-            GenderList = list.toArray(new String[0]);
-            genderFilters.put(Filter.Gender, GenderList);
-            for (Filter i : genderFilters.keySet()){
-                if (genderFilters.get(i).length == 0){
-                    genderFilters.remove(i);
-                }
-            }
-        } else if (filtType == Filter.Age) {
-            List<String> list = new ArrayList<String>(Arrays.asList(AgeList));
-            list.remove(filt);
-            AgeList = list.toArray(new String[0]);
-            ageFilters.put(Filter.Age, AgeList);
-            for (Filter i : ageFilters.keySet()){
-                if (ageFilters.get(i).length == 0){
-                    ageFilters.remove(i);
-                }
-            }
-        } else if (filtType == Filter.Income) {
-            List<String> list = new ArrayList<String>(Arrays.asList(IncomeList));
-            list.remove(filt);
-            IncomeList = list.toArray(new String[0]);
-            incomeFilters.put(Filter.Income, IncomeList);
-            for (Filter i : incomeFilters.keySet()){
-                if (incomeFilters.get(i).length == 0){
-                    incomeFilters.remove(i);
-                }
-            }
-        } else {
-            List<String> list = new ArrayList<String>(Arrays.asList(ContextList));
-            list.remove(filt);
-            ContextList = list.toArray(new String[0]);
-            contextFilters.put(Filter.Context, ContextList);
-            for (Filter i : contextFilters.keySet()){
-                if (contextFilters.get(i).length == 0){
-                    contextFilters.remove(i);
-                }
-            }
-        }
-
-
-    }
-
-    /**
-     * Method to add filters from the 'filters' HashMap
-     *
-     * @param filtType - The type of the filter being added
-     * @param filt - The filter which is being added
-     */
-    public void addFilters(Filter filtType, String filt) {
-        //Checking the filter type, adding the filter from the appropriate filter String[] list and adding it to the filters HashMap
-        if (filtType == Filter.Gender) {
-            List<String> list = new ArrayList<String>(Arrays.asList(GenderList));
-            list.add(filt);
-            GenderList = list.toArray(new String[0]);
-            genderFilters.put(Filter.Gender, GenderList);
-        } else if (filtType == Filter.Age) {
-            List<String> list = new ArrayList<String>(Arrays.asList(AgeList));
-            list.add(filt);
-            AgeList = list.toArray(new String[0]);
-            ageFilters.put(Filter.Age, AgeList);
-        } else if (filtType == Filter.Income) {
-            List<String> list = new ArrayList<String>(Arrays.asList(IncomeList));
-            list.add(filt);
-            IncomeList = list.toArray(new String[0]);
-            incomeFilters.put(Filter.Income, IncomeList);
-        } else {
-            List<String> list = new ArrayList<String>(Arrays.asList(ContextList));
-            list.add(filt);
-            ContextList = list.toArray(new String[0]);
-            contextFilters.put(Filter.Context, ContextList);
-        }
-    }
-
-    /**
-     * Method to create a filter MenuButton and bind actions to its items
-     *
-     * @param filterNames - List of filters to be added to the MenuButton
-     * @param filterType - Label for the MenuButton
-     */
-    public MenuButton filterMenu(String[] filterNames, String filterType){
-        //Creating a MenuButton to allow the user to select filters to apply to the graph
-        MenuButton menuButton = new MenuButton(filterType);
-        for (String i : filterNames) {
-            //Creating different CheckMenuItems for each filter
-            CheckMenuItem CMItem = new CheckMenuItem(i);
-            //Binding actions to the CheckMenuItems
-            CMItem.setOnAction(e -> {
-                //Adding filters to the values when they are selected
-                if (CMItem.isSelected()) {
-                    addFilters(util.filterType(i),i);
-                    reRequestFilteredValues();
-                }
-                //Removing filters from the values when they are unselected
-                else {
-                    removeFilters(util.filterType(i),i);
-                    reRequestFilteredValues();
-                }
-            });
-            menuButton.getItems().add(CMItem);
-        }
-        return menuButton;
-    }
-
-    /**
-     * Method to merge the three filter hashmaps to apply them all
-     *
-     * @param genderFilters - The filter hashmap for the gender filters
-     * @param ageFilters - The filter hashmap for the age filters
-     * @param incomeFilters - The filter hashmap for the income filters
-     * @param contextFilters - The filter hashmap for the context filters
-     * @return - The merged filter hashmap
-     */
-    public HashMap<Filter, String[]> mergeFilter (HashMap<Filter, String[]> genderFilters, HashMap<Filter, String[]> ageFilters, HashMap<Filter, String[]> incomeFilters, HashMap<Filter, String[]> contextFilters){
-        HashMap<Filter, String[]> combinedFilters = new HashMap<>();
-        combinedFilters.putAll(genderFilters);
-        combinedFilters.putAll(ageFilters);
-        combinedFilters.putAll(incomeFilters);
-        combinedFilters.putAll(contextFilters);
-        return combinedFilters;
     }
 
     /**
@@ -440,6 +278,59 @@ public class OverviewPane extends BasePane {
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
         return region;
+    }
+
+    /**
+     * Polymorphically redefined updateButtonAction to remove the settings that do not apply to the overview pane
+     *
+     * @param filterComponent - The corresponding filter component
+     */
+    public void updateButtonAction(FilterComponent filterComponent) {
+        filterComponent.getUpdateButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                granularity = Utility.getGranularity(filterComponent.getGranularity());
+                GenderList = addGenderFilters(filterComponent, GenderList);
+                AgeList = addAgeFilters(filterComponent, AgeList);
+                IncomeList = addIncomeFilters(filterComponent, IncomeList);
+                ContextList = addContextFilters(filterComponent, ContextList);
+                genderFilters = addFilters(genderFilters, Filter.Gender, GenderList);
+                ageFilters = addFilters(ageFilters, Filter.Age, AgeList);
+                incomeFilters = addFilters(incomeFilters, Filter.Income, IncomeList);
+                contextFilters = addFilters(contextFilters, Filter.Context, ContextList);
+                buildGraph();
+                filterHbox.getChildren().get(1).toFront();
+
+
+            }
+        });
+    }
+
+    /**
+     * Polymorphically redefined resetButtonAction to remove the settings that do not apply to the overview pane
+     *
+     * @param filterComponent - The corresponding filter component
+     */
+    public void resetButtonAction(FilterComponent filterComponent){
+        filterComponent.getResetButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                filters.resetCheckBoxes();
+                granularity = Granularity.Day;
+                filters.fireDay();
+                GenderList = listClear(GenderList);
+                AgeList = listClear(AgeList);
+                IncomeList = listClear(IncomeList);
+                ContextList = listClear(ContextList);
+                genderFilters.clear();
+                ageFilters.clear();
+                incomeFilters.clear();
+                contextFilters.clear();
+                resetBounces();
+                buildGraph();
+                filterHbox.getChildren().get(1).toFront();
+            }
+        });
     }
 
 
