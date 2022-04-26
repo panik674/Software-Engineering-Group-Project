@@ -38,6 +38,7 @@ public class FilterComponent extends StackPane {
     private String filtCompType;
     private Button updateButton;
     private Button resetButton;
+    private Button saveButton;
     private String[] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Rate of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
     private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
     private DatePicker startdp = new DatePicker();
@@ -58,6 +59,7 @@ public class FilterComponent extends StackPane {
         this.filtCompType=filtCompType;
         updateButton = new Button("Update " + filtCompType);
         resetButton = new Button("Reset Filters");
+        saveButton = new Button("Save Campaign");
         build();
     }
 
@@ -89,6 +91,7 @@ public class FilterComponent extends StackPane {
         vbox.getChildren().add(filterAccord);
         vbox.getChildren().add(new HBox(regionBuild(), updateButton, regionBuild()));
         vbox.getChildren().add(new HBox(regionBuild(), resetButton, regionBuild()));
+        vbox.getChildren().add(new HBox(regionBuild(), saveButton, regionBuild()));
         //Adding the vbox to the stackpane
         getChildren().add(vbox);
 
@@ -455,6 +458,15 @@ public class FilterComponent extends StackPane {
      */
     public Button getResetButton(){
         return resetButton;
+    }
+
+    /**
+     * Getter method for the save button
+     *
+     * @return - The save button
+     */
+    public Button getSaveButton(){
+        return saveButton;
     }
 
     /**
