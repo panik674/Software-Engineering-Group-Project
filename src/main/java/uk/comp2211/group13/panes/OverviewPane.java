@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.apache.logging.log4j.LogManager;
@@ -117,6 +118,7 @@ public class OverviewPane extends BasePane {
         nOB_Block = new ValueBlock("Number of Bounces", requestValue(Metric.BouncePage));
 
         pAndVToggle_1 = new Button("Visits");
+        pAndVToggle_1.setTooltip(new Tooltip("Toggle between Bounce Visits and Bounce Pages"));
         nOB_Block.getVBox().getChildren().add(pAndVToggle_1);
         pAndVToggle_1.setOnMouseClicked(this::toggleForNum);
         pAndVToggle_1.setMaxWidth(50);
@@ -138,6 +140,7 @@ public class OverviewPane extends BasePane {
         bR_Block = new ValueBlock("Bounce Rate", requestValue(Metric.BounceRatePage));
 
         pAndVToggle_2 = new Button("Visits");
+        pAndVToggle_2.setTooltip(new Tooltip("Toggle between Bounce Visits and Bounce Pages"));
         bR_Block.getVBox().getChildren().add(pAndVToggle_2);
         pAndVToggle_2.setOnMouseClicked(this::toggleForRate);
         pAndVToggle_2.setMaxWidth(50);

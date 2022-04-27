@@ -38,6 +38,7 @@ public class FilterComponent extends StackPane {
     private String filtCompType;
     private Button updateButton;
     private Button resetButton;
+    private Button saveButton;
     private String[] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Rate of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
     private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
     private DatePicker startdp = new DatePicker();
@@ -56,8 +57,25 @@ public class FilterComponent extends StackPane {
      */
     public FilterComponent(String filtCompType){
         this.filtCompType=filtCompType;
+        male.fire();
+        female.fire();
+        ageRange1.fire();
+        ageRange2.fire();
+        ageRange3.fire();
+        ageRange4.fire();
+        ageRange5.fire();
+        low.fire();
+        medium.fire();
+        high.fire();
+        news.fire();
+        shopping.fire();
+        socialMedia.fire();
+        blog.fire();
+        hobby.fire();
+        travel.fire();
         updateButton = new Button("Update " + filtCompType);
         resetButton = new Button("Reset Filters");
+        saveButton = new Button("Save Campaign");
         build();
     }
 
@@ -87,8 +105,12 @@ public class FilterComponent extends StackPane {
         dropdowns(filtCompType);
         //Adding the accordion and the update button to the vbox
         vbox.getChildren().add(filterAccord);
+        updateButton.setTooltip(new Tooltip("This button will apply the filters to the displayed data."));
+        resetButton.setTooltip(new Tooltip("This button resets the filter settings to default."));
+        saveButton.setTooltip(new Tooltip("This button saves the current filter settings."));
         vbox.getChildren().add(new HBox(regionBuild(), updateButton, regionBuild()));
         vbox.getChildren().add(new HBox(regionBuild(), resetButton, regionBuild()));
+        vbox.getChildren().add(new HBox(regionBuild(), saveButton, regionBuild()));
         //Adding the vbox to the stackpane
         getChildren().add(vbox);
 
@@ -129,7 +151,7 @@ public class FilterComponent extends StackPane {
                 //Setting default metricbox value
                 metricBox.setValue(metrics[0]);
                 //Adding questionmark and the metric box to an hbox and then adding that to the vbox
-                vbox.getChildren().add(new HBox(questionMarkLabel("Select a Metric","Some Tip"), regionBuild(), metricBox));
+                vbox.getChildren().add(new HBox(questionMarkLabel("Select a Metric","Select the metric to be displayed."), regionBuild(), metricBox));
                 //Calling the dateFilters and bounceFilters methods to build the start and end datepickers and the bounce spinners
                 dateFilters();
                 bounceFilters();
@@ -162,8 +184,8 @@ public class FilterComponent extends StackPane {
      * Adds the start and end datepickers to the vbox
      */
     public void dateFilters(){
-        vbox.getChildren().add(new HBox(questionMarkLabel("Start Date","Some Tip"), regionBuild(), startdp));
-        vbox.getChildren().add(new HBox(questionMarkLabel("End Date","Some Tip"), regionBuild(), enddp));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Start Date","Select start date of the time period to be displayed."), regionBuild(), startdp));
+        vbox.getChildren().add(new HBox(questionMarkLabel("End Date","Select end date of the time period to be displayed."), regionBuild(), enddp));
     }
 
     /**
@@ -172,8 +194,8 @@ public class FilterComponent extends StackPane {
     public void bounceFilters(){
         visitSpnr = bounceSpinner(0,10000,15);
         pageSpnr = bounceSpinner(0,1000,1);
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Some Tip"), regionBuild(), visitSpnr));
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Some Tip"), regionBuild(), pageSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Visit bound defined by time user visits website, values less or equal than this setting are defined as a bounce. (default: 15)"), regionBuild(), visitSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Visit bound defined by pages a user visits on a website, values less or equal than this setting are defined as a bounce. (default: 1)"), regionBuild(), pageSpnr));
     }
 
     /**
@@ -229,25 +251,25 @@ public class FilterComponent extends StackPane {
     }
 
     /**
-     * Unchecks all checkboxes
+     * Checks all checkboxes
      */
     public void resetCheckBoxes(){
-        male.setSelected(false);
-        female.setSelected(false);
-        ageRange1.setSelected(false);
-        ageRange2.setSelected(false);
-        ageRange3.setSelected(false);
-        ageRange4.setSelected(false);
-        ageRange5.setSelected(false);
-        low.setSelected(false);
-        medium.setSelected(false);
-        high.setSelected(false);
-        news.setSelected(false);
-        shopping.setSelected(false);
-        socialMedia.setSelected(false);
-        blog.setSelected(false);
-        hobby.setSelected(false);
-        travel.setSelected(false);
+        male.setSelected(true);
+        female.setSelected(true);
+        ageRange1.setSelected(true);
+        ageRange2.setSelected(true);
+        ageRange3.setSelected(true);
+        ageRange4.setSelected(true);
+        ageRange5.setSelected(true);
+        low.setSelected(true);
+        medium.setSelected(true);
+        high.setSelected(true);
+        news.setSelected(true);
+        shopping.setSelected(true);
+        socialMedia.setSelected(true);
+        blog.setSelected(true);
+        hobby.setSelected(true);
+        travel.setSelected(true);
     }
 
     /**
@@ -455,6 +477,15 @@ public class FilterComponent extends StackPane {
      */
     public Button getResetButton(){
         return resetButton;
+    }
+
+    /**
+     * Getter method for the save button
+     *
+     * @return - The save button
+     */
+    public Button getSaveButton(){
+        return saveButton;
     }
 
     /**
