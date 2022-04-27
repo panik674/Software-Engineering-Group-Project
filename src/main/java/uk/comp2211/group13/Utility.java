@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class Utility {
   private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  private static final SimpleDateFormat sdf2 = new SimpleDateFormat(" E dd/MM/yy HH:ss");
 
   /**
    * Converts a string into a Date
@@ -37,6 +38,16 @@ public class Utility {
    */
   public static String date2String(Date date) {
     return sdf.format(date);
+  }
+
+  /**
+   * Converts a Date into a fancy string
+   *
+   * @param date Date
+   * @return string date
+   */
+  public static String date2StringGraphing(Date date) {
+    return sdf2.format(date);
   }
 
   /**

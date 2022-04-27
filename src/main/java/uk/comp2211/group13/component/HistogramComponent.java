@@ -51,7 +51,7 @@ public class HistogramComponent extends StackPane {
 
         //Iterating through the list of dates and adding the date along with its corresponding Click Cost value to the chart series and then adding the series to the histogram
         for (Date i : dates) {
-            dataValues.getData().add(new XYChart.Data(Utility.date2String(i), clickCosts.get(i)));
+            dataValues.getData().add(new XYChart.Data(Utility.date2StringGraphing(i), clickCosts.get(i)));
         }
 
         //Adding the series to the chart, setting its name and adding it the parsed VBox
