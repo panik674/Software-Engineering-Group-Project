@@ -140,7 +140,7 @@ public class OverviewPane extends BasePane {
         bR_Block = new ValueBlock("Bounce Rate", requestValue(Metric.BounceRatePage));
 
         pAndVToggle_2 = new Button("Visits");
-        pAndVToggle_1.setTooltip(new Tooltip("Toggle between Bounce Visits and Bounce Pages"));
+        pAndVToggle_2.setTooltip(new Tooltip("Toggle between Bounce Visits and Bounce Pages"));
         bR_Block.getVBox().getChildren().add(pAndVToggle_2);
         pAndVToggle_2.setOnMouseClicked(this::toggleForRate);
         pAndVToggle_2.setMaxWidth(50);

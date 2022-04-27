@@ -4,6 +4,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.RotateTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -171,8 +173,12 @@ public class MainScene extends BaseScene {
 
         ImageView camera = new ImageView(new Image(getClass().getResource("/camera.png").toExternalForm()));
 
+
         camera.setFitWidth(25);
         camera.setPreserveRatio(true);
+
+        Label cameraLabel = new Label("",camera);
+        cameraLabel.setTooltip(new Tooltip("Screenshot"));
 
         //camera.setOnMouseClicked(this::addPane);
 
@@ -199,7 +205,7 @@ public class MainScene extends BaseScene {
         horizontalPane.getChildren().add(hBox);
         horizontalPane.getChildren().add(addTabHBox);
         horizontalPane.getChildren().add(plusImage);
-        horizontalPane.getChildren().add(camera);
+        horizontalPane.getChildren().add(cameraLabel);
     }
 
     /**
