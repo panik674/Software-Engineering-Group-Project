@@ -105,9 +105,9 @@ public class FilterComponent extends StackPane {
         dropdowns(filtCompType);
         //Adding the accordion and the update button to the vbox
         vbox.getChildren().add(filterAccord);
-        updateButton.setTooltip(new Tooltip("This button rebuilds updates the values based on the newly applied filters"));
-        resetButton.setTooltip(new Tooltip("This button resets the filter selection"));
-        saveButton.setTooltip(new Tooltip("This button saves the current campaign"));
+        updateButton.setTooltip(new Tooltip("This button will apply the filters to the displayed data."));
+        resetButton.setTooltip(new Tooltip("This button resets the filter settings to default."));
+        saveButton.setTooltip(new Tooltip("This button saves the current filter settings."));
         vbox.getChildren().add(new HBox(regionBuild(), updateButton, regionBuild()));
         vbox.getChildren().add(new HBox(regionBuild(), resetButton, regionBuild()));
         vbox.getChildren().add(new HBox(regionBuild(), saveButton, regionBuild()));
@@ -151,7 +151,7 @@ public class FilterComponent extends StackPane {
                 //Setting default metricbox value
                 metricBox.setValue(metrics[0]);
                 //Adding questionmark and the metric box to an hbox and then adding that to the vbox
-                vbox.getChildren().add(new HBox(questionMarkLabel("Select a Metric","Selection of the metric to be displayed in this campaign"), regionBuild(), metricBox));
+                vbox.getChildren().add(new HBox(questionMarkLabel("Select a Metric","Select the metric to be displayed."), regionBuild(), metricBox));
                 //Calling the dateFilters and bounceFilters methods to build the start and end datepickers and the bounce spinners
                 dateFilters();
                 bounceFilters();
@@ -184,8 +184,8 @@ public class FilterComponent extends StackPane {
      * Adds the start and end datepickers to the vbox
      */
     public void dateFilters(){
-        vbox.getChildren().add(new HBox(questionMarkLabel("Start Date","Selection of the initial date of the campaign"), regionBuild(), startdp));
-        vbox.getChildren().add(new HBox(questionMarkLabel("End Date","Selection of the final date of the campaign"), regionBuild(), enddp));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Start Date","Select start date of the time period to be displayed."), regionBuild(), startdp));
+        vbox.getChildren().add(new HBox(questionMarkLabel("End Date","Select end date of the time period to be displayed."), regionBuild(), enddp));
     }
 
     /**
@@ -194,8 +194,8 @@ public class FilterComponent extends StackPane {
     public void bounceFilters(){
         visitSpnr = bounceSpinner(0,10000,15);
         pageSpnr = bounceSpinner(0,1000,1);
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Selection of the visit bounce time (Will impact the Number of Bounce Visits and Bounce Visit Rate metric data)"), regionBuild(), visitSpnr));
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Selection of the page bounce limit (Will impact the Number of Bounce Pages and Bounce Page Rate metric data)"), regionBuild(), pageSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Visit bound defined by time user visits website, values less or equal than this setting are defined as a bounce. (default: 15)"), regionBuild(), visitSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Visit bound defined by pages a user visits on a website, values less or equal than this setting are defined as a bounce. (default: 1)"), regionBuild(), pageSpnr));
     }
 
     /**
