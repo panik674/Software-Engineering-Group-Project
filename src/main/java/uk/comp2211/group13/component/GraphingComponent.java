@@ -52,7 +52,7 @@ public class GraphingComponent extends StackPane {
 
         //Iterating through the list of dates and adding the date along with its corresponding metric value to the chart series and then adding the series to the graph
         for (Date i : dates) {
-            dataValues.getData().add(new XYChart.Data(Utility.date2String(i), metricToPlot.get(i)));
+            dataValues.getData().add(new XYChart.Data(Utility.date2StringGraphing(i), metricToPlot.get(i)));
         }
         lineChart.getData().add(dataValues);
 
