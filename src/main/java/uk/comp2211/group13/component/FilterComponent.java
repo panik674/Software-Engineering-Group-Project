@@ -251,7 +251,7 @@ public class FilterComponent extends StackPane {
     }
 
     /**
-     * Unchecks all checkboxes
+     * Checks all checkboxes
      */
     public void resetCheckBoxes(){
         male.setSelected(true);
