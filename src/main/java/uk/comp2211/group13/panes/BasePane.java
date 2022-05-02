@@ -158,6 +158,22 @@ public abstract class BasePane extends BorderPane {
         filterComponent.getSaveButton().setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                if (filterComponent.getStartDate().before(filterComponent.getEndDate())) {
+                    startDate = filterComponent.getStartDate();
+                    endDate = filterComponent.getEndDate();
+                    granularity = Utility.getGranularity(filterComponent.getGranularity());
+                    GenderList = addGenderFilters(filterComponent, GenderList);
+                    AgeList = addAgeFilters(filterComponent, AgeList);
+                    IncomeList = addIncomeFilters(filterComponent, IncomeList);
+                    ContextList = addContextFilters(filterComponent, ContextList);
+                    genderFilters = addFilters(genderFilters, Filter.Gender, GenderList);
+                    ageFilters = addFilters(ageFilters, Filter.Age, AgeList);
+                    incomeFilters = addFilters(incomeFilters, Filter.Income, IncomeList);
+                    contextFilters = addFilters(contextFilters, Filter.Context, ContextList);
+                    buildGraph();
+                    filterHbox.getChildren().get(0).toFront();
+
+                }
                 Save.saveFilters(genderFilters, ageFilters, incomeFilters, contextFilters, startDate, endDate, granularity);
             }
         });
@@ -326,9 +342,6 @@ public abstract class BasePane extends BorderPane {
         }
         if (filterComponent.getHobbyFilter()){
             list.add("Hobbies");
-        }
-        if (filterComponent.getsocialMediaFilter()){
-            list.add("Social Media");
         }
         if (filterComponent.getTravelFilter()){
             list.add("Travel");

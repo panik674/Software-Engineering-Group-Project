@@ -377,11 +377,14 @@ public class FilterComponent extends StackPane {
                     case ("Blog"):
                         blog.setSelected(true);
                         break;
-                    case ("Hobby"):
+                    case ("Hobbies"):
                         hobby.setSelected(true);
                         break;
                     case ("Travel"):
                         travel.setSelected(true);
+                        break;
+                    case ("News"):
+                        news.setSelected(true);
                         break;
                 }
             }
