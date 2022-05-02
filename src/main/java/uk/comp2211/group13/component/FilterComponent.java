@@ -114,7 +114,7 @@ public class FilterComponent extends StackPane {
         updateButton.setTooltip(new Tooltip("This button will apply the filters to the displayed data."));
         resetButton.setTooltip(new Tooltip("This button resets the filter settings to default."));
         saveButton.setTooltip(new Tooltip("This button saves the current filter settings."));
-        loadButton.setTooltip(new Tooltip("This button loads any saved filter settings,"));
+        loadButton.setTooltip(new Tooltip("This button loads the saved filter settings,"));
         filterhbox.getChildren().add(regionBuild());
         filterhbox.getChildren().add(updateButton);
         filterhbox.getChildren().add(resetButton);
