@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.component.FilterComponent;
 import uk.comp2211.group13.component.ValueBlock;
+import uk.comp2211.group13.data.Save;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
@@ -88,6 +89,8 @@ public class OverviewPane extends BasePane {
         filterHbox.getChildren().add(vBox);
         updateButtonAction(filters);
         resetButtonAction(filters);
+        saveButtonAction(filters);
+        loadButtonAction(filters);
         filters.setPrefWidth(appWindow.getWidth()/3);
         filters.setPrefHeight(appWindow.getHeight());
         filters.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
@@ -335,6 +338,38 @@ public class OverviewPane extends BasePane {
             }
         });
     }
+    public void loadButtonAction(FilterComponent filterComponent) {
+        filterComponent.getLoadButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Save.loadFilters();
+                genderFilters = Save.genderFilters;
+                ageFilters = Save.ageFilters;
+                incomeFilters = Save.incomeFilters;
+                contextFilters = Save.contextFilters;
+
+                granularity = Save.granularity;
+                GenderList = genderFilters.get(Filter.Gender);
+                AgeList = ageFilters.get(Filter.Age);
+                IncomeList = incomeFilters.get(Filter.Income);
+                ContextList = contextFilters.get(Filter.Context);
+
+                filters.setCheckBoxes(GenderList, AgeList, IncomeList, ContextList, granularity);
+                resetBounces();
+                buildGraph();
+            }
+        });
+    }
+
+        public void saveButtonAction(FilterComponent filterComponent) {
+        filterComponent.getSaveButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Save.saveFilters(genderFilters, ageFilters, incomeFilters, contextFilters, startDate, endDate, granularity);
+            }
+        });
+    }
+
 
 
 }

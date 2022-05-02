@@ -17,6 +17,7 @@ import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.comp2211.group13.component.TabButton;
+import uk.comp2211.group13.data.Screenshot;
 import uk.comp2211.group13.panes.BasePane;
 import uk.comp2211.group13.panes.GraphPane;
 import uk.comp2211.group13.panes.HistogramPane;
@@ -43,6 +44,7 @@ public class MainScene extends BaseScene {
     private HBox hBox;
 
     private ImageView plusImage;
+    private ImageView camera;
 
     private Boolean togglePlus;
 
@@ -171,16 +173,13 @@ public class MainScene extends BaseScene {
 
         plusImage.setOnMouseClicked(this::addPane);
 
-        ImageView camera = new ImageView(new Image(getClass().getResource("/camera.png").toExternalForm()));
-
-
+        camera = new ImageView(new Image(getClass().getResource("/camera.png").toExternalForm()));
         camera.setFitWidth(25);
         camera.setPreserveRatio(true);
 
         Label cameraLabel = new Label("",camera);
         cameraLabel.setTooltip(new Tooltip("Screenshot"));
-
-        //camera.setOnMouseClicked(this::addPane);
+        cameraLabel.setOnMouseClicked(this::takeScreenshot);
 
         //Hbox for the options of tab when pressing the plus symbol
         addTabHBox = new HBox();
@@ -286,6 +285,11 @@ public class MainScene extends BaseScene {
         }
         rotate.play();
         togglePlus = !togglePlus;
+    }
+
+    private void takeScreenshot(MouseEvent mouseEvent) {
+        logger.info("Taking screenshot");
+        Screenshot.screenshot(this.scene);
     }
 
     /**

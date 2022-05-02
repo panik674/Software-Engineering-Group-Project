@@ -7,6 +7,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.control.CheckBox;
+import uk.comp2211.group13.enums.Granularity;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -39,6 +41,7 @@ public class FilterComponent extends StackPane {
     private Button updateButton;
     private Button resetButton;
     private Button saveButton;
+    private Button loadButton;
     private String[] metrics = {"Number of Clicks", "Number of Impressions", "Number of Uniques", "Number of Bounce Pages", "Number of Bounce Visits", "Rate of Conversions", "Total Costs", "CTR", "CPA", "CPC", "CPM", "Bounce Visit Rate", "Bounce Page Rate"};
     private ComboBox<String> metricBox = new ComboBox<>(FXCollections.observableArrayList(metrics));
     private DatePicker startdp = new DatePicker();
@@ -76,6 +79,7 @@ public class FilterComponent extends StackPane {
         updateButton = new Button("Update " + filtCompType);
         resetButton = new Button("Reset Filters");
         saveButton = new Button("Save Campaign");
+        loadButton = new Button("Load Campaign");
         build();
     }
 
@@ -108,9 +112,11 @@ public class FilterComponent extends StackPane {
         updateButton.setTooltip(new Tooltip("This button will apply the filters to the displayed data."));
         resetButton.setTooltip(new Tooltip("This button resets the filter settings to default."));
         saveButton.setTooltip(new Tooltip("This button saves the current filter settings."));
+        loadButton.setTooltip(new Tooltip("This button loads any saved filter settings,"));
         vbox.getChildren().add(new HBox(regionBuild(), updateButton, regionBuild()));
         vbox.getChildren().add(new HBox(regionBuild(), resetButton, regionBuild()));
         vbox.getChildren().add(new HBox(regionBuild(), saveButton, regionBuild()));
+        vbox.getChildren().add(new HBox(regionBuild(), loadButton, regionBuild()));
         //Adding the vbox to the stackpane
         getChildren().add(vbox);
 
@@ -253,7 +259,7 @@ public class FilterComponent extends StackPane {
     /**
      * Checks all checkboxes
      */
-    public void resetCheckBoxes(){
+    public void resetCheckBoxes() {
         male.setSelected(true);
         female.setSelected(true);
         ageRange1.setSelected(true);
@@ -270,6 +276,108 @@ public class FilterComponent extends StackPane {
         blog.setSelected(true);
         hobby.setSelected(true);
         travel.setSelected(true);
+    }
+
+    public void setCheckBoxes(String[] gender, String[] age, String[] income, String[] contextList, Granularity granularity) {
+        male.setSelected(false);
+        female.setSelected(false);
+        ageRange1.setSelected(false);
+        ageRange2.setSelected(false);
+        ageRange3.setSelected(false);
+        ageRange4.setSelected(false);
+        ageRange5.setSelected(false);
+        low.setSelected(false);
+        medium.setSelected(false);
+        high.setSelected(false);
+        news.setSelected(false);
+        shopping.setSelected(false);
+        socialMedia.setSelected(false);
+        blog.setSelected(false);
+        hobby.setSelected(false);
+        travel.setSelected(false);
+
+        if (granularity.equals(Granularity.Hour)) {
+            hour.fire();
+        } else if (granularity.equals(Granularity.Day)) {
+            day.fire();
+        } else if (granularity.equals(Granularity.Month)) {
+            month.fire();
+        }
+
+        if (gender != null) {
+            for (String genderVal : gender) {
+                switch (genderVal) {
+                    case ("Male"):
+                        male.setSelected(true);
+                        break;
+                    case ("Female"):
+                        female.setSelected(true);
+                        break;
+                }
+            }
+        }
+
+        if (age != null) {
+            for (String ageVal : age) {
+                switch (ageVal) {
+                    case ("<25"):
+                        ageRange1.setSelected(true);
+                        break;
+                    case ("25-34"):
+                        ageRange2.setSelected(true);
+                        break;
+                    case ("35-44"):
+                        ageRange3.setSelected(true);
+                        break;
+                    case ("45-54"):
+                        ageRange4.setSelected(true);
+                        break;
+                    case (">54"):
+                        ageRange5.setSelected(true);
+                        break;
+                }
+            }
+        }
+
+        if (income != null) {
+            for (String incomeVal : income) {
+
+                switch (incomeVal) {
+                    case ("Low"):
+                        low.setSelected(true);
+                        break;
+                    case ("Medium"):
+                        medium.setSelected(true);
+                        break;
+                    case ("High"):
+                        high.setSelected(true);
+                        break;
+                }
+            }
+        }
+
+        if (contextList != null) {
+
+            for (String contextVal : contextList) {
+                switch (contextVal) {
+                    case ("Shopping"):
+                        shopping.setSelected(true);
+                        break;
+                    case ("Social Media"):
+                        socialMedia.setSelected(true);
+                        break;
+                    case ("Blog"):
+                        blog.setSelected(true);
+                        break;
+                    case ("Hobby"):
+                        hobby.setSelected(true);
+                        break;
+                    case ("Travel"):
+                        travel.setSelected(true);
+                        break;
+                }
+            }
+        }
     }
 
     /**
@@ -488,6 +596,12 @@ public class FilterComponent extends StackPane {
         return saveButton;
     }
 
+    /**
+     * Getter method for the load button
+     *
+     * @return - The load button
+     */
+    public Button getLoadButton() {return loadButton;}
     /**
      * Fires the day radio button
      */

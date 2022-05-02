@@ -8,11 +8,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import uk.comp2211.group13.Utility;
 import uk.comp2211.group13.component.FilterComponent;
+import uk.comp2211.group13.data.Save;
 import uk.comp2211.group13.enums.Filter;
 import uk.comp2211.group13.enums.Granularity;
 import uk.comp2211.group13.enums.Metric;
 import uk.comp2211.group13.ui.AppWindow;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -81,6 +83,8 @@ public abstract class BasePane extends BorderPane {
         buildGraph();
         updateButtonAction(filters);
         resetButtonAction(filters);
+        saveButtonAction(filters);
+        loadButtonAction(filters);
         filters.setPrefWidth(appWindow.getWidth()/3);
         filters.setPrefHeight(appWindow.getHeight());
         filters.setStyle("-fx-border-color: black;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;"
@@ -149,6 +153,53 @@ public abstract class BasePane extends BorderPane {
             }
         });
     }
+
+    public void saveButtonAction(FilterComponent filterComponent) {
+        filterComponent.getSaveButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Save.saveFilters(genderFilters, ageFilters, incomeFilters, contextFilters, startDate, endDate, granularity);
+            }
+        });
+    }
+
+    public void loadButtonAction(FilterComponent filterComponent) {
+        filterComponent.getLoadButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Save.loadFilters();
+//                System.out.println(Save.ageFilters.toString());
+//                System.out.println(Save.genderFilters.toString());
+//                System.out.println(Save.incomeFilters.toString());
+//                System.out.println(Save.contextFilters.toString());
+                if (Save.startDate.before(Save.endDate)) {
+                    startDate = Save.startDate;
+                    endDate = Save.endDate;
+                    granularity = Save.granularity;
+                    GenderList = Save.genderFilters.get(Filter.Gender);
+                    AgeList = Save.ageFilters.get(Filter.Age);
+                    IncomeList = Save.incomeFilters.get(Filter.Income);
+                    ContextList = Save.contextFilters.get(Filter.Context);
+                    genderFilters = Save.genderFilters;
+                    ageFilters = Save.ageFilters;
+                    incomeFilters = Save.incomeFilters;
+                    contextFilters = Save.incomeFilters;
+                    filterComponent.setCheckBoxes(GenderList, AgeList, IncomeList, ContextList, granularity);
+                    filterComponent.setStartDate(Save.startDate.toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate());
+                    filterComponent.setEndDate(Save.endDate.toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate());
+                    buildGraph();
+                    filterHbox.getChildren().get(0).toFront();
+
+                }
+            }
+        });
+
+    }
+
 
     /**
      * Builds the graph or histogram. Defined in those classes and used polymorphically here
@@ -346,9 +397,7 @@ public abstract class BasePane extends BorderPane {
      * @return The cleared string list
      */
     public String[] listClear(String[] stringList){
-        List<String> list = new ArrayList<String>(Arrays.asList(GenderList));
-        list.clear();
-        return list.toArray(new String[0]);
+        return (new String[0]);
     }
 
 }
