@@ -123,7 +123,7 @@ public class WelcomeScene extends BaseScene {
     radioButton = new RadioButton();
     tncHbox.getChildren().add(radioButton);
 
-    Text termsText = new Text("I have read and agreed to the terms and conditions of this app");
+    Text termsText = new Text("I have read and agreed to the terms and conditions of this app (https://oldbiddy.co.uk/terms-conditions)");
     tncHbox.getChildren().add(termsText);
 
     error = new Text("");
