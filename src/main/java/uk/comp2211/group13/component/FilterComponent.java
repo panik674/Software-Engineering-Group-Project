@@ -15,6 +15,8 @@ import java.util.Date;
 
 public class FilterComponent extends StackPane {
     protected VBox vbox = new VBox();
+    private HBox filterhbox = new HBox();
+    private HBox saveloadhbox = new HBox();
     private Accordion filterAccord = new Accordion();
     private RadioButton hour = new RadioButton("Hour");
     private RadioButton day = new RadioButton("Day");
@@ -78,8 +80,8 @@ public class FilterComponent extends StackPane {
         travel.fire();
         updateButton = new Button("Update " + filtCompType);
         resetButton = new Button("Reset Filters");
-        saveButton = new Button("Save Campaign");
-        loadButton = new Button("Load Campaign");
+        saveButton = new Button("Save Filters");
+        loadButton = new Button("Load Filters");
         build();
     }
 
@@ -113,10 +115,16 @@ public class FilterComponent extends StackPane {
         resetButton.setTooltip(new Tooltip("This button resets the filter settings to default."));
         saveButton.setTooltip(new Tooltip("This button saves the current filter settings."));
         loadButton.setTooltip(new Tooltip("This button loads any saved filter settings,"));
-        vbox.getChildren().add(new HBox(regionBuild(), updateButton, regionBuild()));
-        vbox.getChildren().add(new HBox(regionBuild(), resetButton, regionBuild()));
-        vbox.getChildren().add(new HBox(regionBuild(), saveButton, regionBuild()));
-        vbox.getChildren().add(new HBox(regionBuild(), loadButton, regionBuild()));
+        filterhbox.getChildren().add(regionBuild());
+        filterhbox.getChildren().add(updateButton);
+        filterhbox.getChildren().add(resetButton);
+        filterhbox.getChildren().add(regionBuild());
+        vbox.getChildren().add(filterhbox);
+        saveloadhbox.getChildren().add(regionBuild());
+        saveloadhbox.getChildren().add(saveButton);
+        saveloadhbox.getChildren().add(loadButton);
+        saveloadhbox.getChildren().add(regionBuild());
+        vbox.getChildren().add(saveloadhbox);
         //Adding the vbox to the stackpane
         getChildren().add(vbox);
 

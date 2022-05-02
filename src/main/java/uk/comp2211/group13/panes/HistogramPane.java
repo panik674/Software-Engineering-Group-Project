@@ -39,4 +39,11 @@ public class HistogramPane extends BasePane {
         histogram.setPrefHeight(appWindow.getHeight());
         filterHbox.getChildren().add(histogram);
     }
+
+    /**
+     * Polymorphically redefining the resetBounces method to prevent non-existent spinner widgets being referenced
+     */
+    @Override
+    public void resetBounces() {
+    }
 }
