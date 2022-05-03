@@ -23,11 +23,18 @@ public class UtilityTest {
     Assert.assertThrows(ParseException.class, () -> Utility.string2Date("16:45:23 2016-01-01"));
   }
 
-  @Test
+  @Test // "yyyy-MM-dd HH:mm:ss"
   public void testDate2String() {
     Assert.assertEquals("2015-01-01 12:04:29", Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 1, 12, 4, 29).getTime()));
     Assert.assertEquals("2015-01-01 13:28:22", Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 1, 13, 28, 22).getTime()));
     Assert.assertEquals("2015-01-13 13:29:51", Utility.date2String(new GregorianCalendar(2015, Calendar.JANUARY, 13, 13, 29, 51).getTime()));
+  }
+
+  @Test // "E dd/MM/yy HH:ss"
+  public void testDate2StringGraphing() {
+    Assert.assertEquals("Thu 01/01/15 12:29", Utility.date2StringGraphing(new GregorianCalendar(2015, Calendar.JANUARY, 1, 12, 4, 29).getTime()));
+    Assert.assertEquals("Thu 01/01/15 13:22", Utility.date2StringGraphing(new GregorianCalendar(2015, Calendar.JANUARY, 1, 13, 28, 22).getTime()));
+    Assert.assertEquals("Tue 13/01/15 13:51", Utility.date2StringGraphing(new GregorianCalendar(2015, Calendar.JANUARY, 13, 13, 29, 51).getTime()));
   }
 
   @Test
