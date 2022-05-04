@@ -208,7 +208,7 @@ public class FilterComponent extends StackPane {
     public void bounceFilters(){
         visitSpnr = bounceSpinner(0,10000,15);
         pageSpnr = bounceSpinner(0,1000,1);
-        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time","Visit bound defined by time user visits website, values less or equal than this setting are defined as a bounce. (default: 15)"), regionBuild(), visitSpnr));
+        vbox.getChildren().add(new HBox(questionMarkLabel("Define Visit Bounce Time (s)","Visit bound defined by time (in seconds) user visits website, values less or equal than this setting are defined as a bounce. (default: 15)"), regionBuild(), visitSpnr));
         vbox.getChildren().add(new HBox(questionMarkLabel("Define Page Bounce Limit    ","Visit bound defined by pages a user visits on a website, values less or equal than this setting are defined as a bounce. (default: 1)"), regionBuild(), pageSpnr));
     }
 
